@@ -1,17 +1,24 @@
+import { useState } from 'react';
 import GradientBackground from '../components/common/GradientBackground';
 import GlassCard from '../components/common/GlassCard';
 import AppHeader from '../components/common/AppHeader';
 import UserAvatar from '../components/common/UserAvatar';
+import { getRandomGreeting } from '../config/profiles';
 import {
   CheckSquare2,
   Heart,
   LogOut,
   ArrowRight,
   CalendarHeart,
+  Sparkles,
 } from 'lucide-react';
 
 export default function DashboardView({ user, onNavigate, onLogout }) {
-  const greeting = user?.greeting || `Hello ${user?.name || 'Sayang'}, let's get into it`;
+  const [greeting, setGreeting] = useState(() => getRandomGreeting(user));
+
+  const handleRerollGreeting = () => {
+    setGreeting(getRandomGreeting(user));
+  };
 
   const navItems = [
     {
@@ -86,8 +93,13 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
             </div>
           </div>
 
-          <h2 className="text-xl font-bold text-pink-100 tracking-tight mb-1.5 px-2">
-            {greeting}
+          <h2
+            onClick={handleRerollGreeting}
+            title="Sentuh untuk acak panggilan sayang ✨"
+            className="text-lg sm:text-xl font-bold text-pink-100 tracking-tight mb-1.5 px-3 cursor-pointer hover:text-pink-200 transition-colors inline-flex items-center justify-center gap-1.5 flex-wrap leading-snug select-none group"
+          >
+            <span>{greeting}</span>
+            <Sparkles className="w-3.5 h-3.5 text-pink-400/60 group-hover:text-pink-300 group-hover:rotate-12 transition-all" />
           </h2>
           <p className="text-xs text-neutral-400 max-w-xs leading-relaxed">
             Tempat privat kita untuk saling menjaga kesehatan, merencanakan kencan impian, dan berbagi rindu.

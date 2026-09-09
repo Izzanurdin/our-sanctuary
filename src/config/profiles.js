@@ -1,12 +1,16 @@
 /**
  * Konfigurasi Profil Pengguna (Izza & Pasangan)
  *
- * Di file ini kamu bisa mengubah:
- * 1. name: Nama panggilan yang tampil di seluruh aplikasi
- * 2. greeting: Otomatis memanggil 'name' menggunakan getter (tidak perlu ketik manual!)
- * 3. avatarUrl: Path file foto di folder public/avatars/
- * 4. description: Pesan/bio singkat di kartu profil
+ * Fitur Spesial:
+ * - nicknames: Daftar panggilan sayang (diacak setiap kali login/masuk)
+ * - loveNames: Daftar kata panggilan cinta (diacak di bagian 'my ...?')
+ * - getRandomGreeting(): Menghasilkan sapaan romantis dinamis secara acak
  */
+
+const pickRandom = (arr) => {
+  if (!arr || arr.length === 0) return '';
+  return arr[Math.floor(Math.random() * arr.length)];
+};
 
 export const PROFILES = [
   {
@@ -14,9 +18,12 @@ export const PROFILES = [
     name: 'Cahayu',
     role: 'girlfriend',
     tag: 'Girlfriend ❤️',
-    // Otomatis mengambil dari value 'name'
+    // Pilihan panggilan nama yang diacak (Hello Cahayu {nickname}...)
+    nicknames: ['Cantikku', 'Manisku', 'Cintaku', 'Bidadariku', 'Sayangku'],
+    // Pilihan kata sayang di ujung sapaan (...how's your day my {loveName}?)
+    loveNames: ['sunshine', 'love', 'sweetheart', 'everything', 'cutie pie'],
     get greeting() {
-      return `Hello ${this.name}, let's get into it`;
+      return getRandomGreeting(this);
     },
     // File foto Cahayu di public/avatars/cahayu.jpeg
     avatarUrl: '/avatars/cahayu.jpeg',
@@ -30,9 +37,12 @@ export const PROFILES = [
     name: 'Izza',
     role: 'boyfriend',
     tag: 'Boyfriend 💫',
-    // Otomatis mengambil dari value 'name'
+    // Pilihan panggilan nama yang diacak (Hello Izza {nickname}...)
+    nicknames: ['Gantengku', 'Cintaku', 'Manisku', 'Sayangku'],
+    // Pilihan kata sayang di ujung sapaan (...how's your day my {loveName}?)
+    loveNames: ['sunshine', 'love', 'schatzi', 'world', 'universe'],
     get greeting() {
-      return `Hello ${this.name}, let's get into it`;
+      return getRandomGreeting(this);
     },
     // File foto Izza di public/avatars/izza.jpeg
     avatarUrl: '/avatars/izza.jpeg',
@@ -42,3 +52,24 @@ export const PROFILES = [
     description: 'Selalu ada dan siap nemenin kamu',
   },
 ];
+
+/**
+ * Fungsi pembantu untuk mengacak sapaan romantis:
+ * Format: "Hello {name} {nickname}, how's your day my {loveName}?"
+ */
+export function getRandomGreeting(profile) {
+  if (!profile) return "Hello Sayang, let's get into it";
+
+  // Ambil data referensi dari PROFILES jika ada agar daftar panggilan lengkap
+  const source = PROFILES.find((p) => p.id === profile.id) || profile;
+  const nicknames = source.nicknames || ['Sayangku'];
+  const loveNames = source.loveNames || ['love'];
+
+  const nickname = pickRandom(nicknames);
+  const loveName = pickRandom(loveNames);
+
+  const nickPart = nickname ? ` ${nickname}` : '';
+  const lovePart = loveName ? ` my ${loveName}` : '';
+
+  return `Hello ${source.name}${nickPart}, how's your day${lovePart}?`;
+}
