@@ -3,6 +3,7 @@ import GradientBackground from '../components/common/GradientBackground';
 import GlassCard from '../components/common/GlassCard';
 import AppHeader from '../components/common/AppHeader';
 import UserAvatar from '../components/common/UserAvatar';
+import BaliClock from '../components/features/BaliClock';
 import { getRandomGreeting } from '../config/profiles';
 import {
   CheckSquare2,
@@ -104,6 +105,9 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
           <p className="text-xs text-neutral-400 max-w-xs leading-relaxed">
             Tempat privat kita untuk saling menjaga kesehatan, merencanakan kencan impian, dan berbagi rindu.
           </p>
+
+          {/* Bali Time Widget */}
+          <BaliClock className="mt-3.5" />
         </div>
 
         {/* 3 Main Navigation Glass Cards */}
