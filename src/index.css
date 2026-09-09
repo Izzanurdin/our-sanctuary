@@ -3,8 +3,15 @@
 @tailwind utilities;
 
 body {
-  @apply bg-background text-white min-h-screen overflow-x-hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  @apply bg-background text-white min-h-screen overflow-x-hidden font-sans;
+}
+
+h1, h2, h3, .font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-playfair, .font-romantic {
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
 @keyframes shake {

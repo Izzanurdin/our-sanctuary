@@ -246,7 +246,7 @@ export default function MissYouView({ onBack, user }) {
             </button>
           </div>
 
-          <div className="p-3 rounded-xl bg-black/20 border border-white/5 text-xs text-neutral-200 leading-relaxed font-sans whitespace-pre-line italic">
+          <div className="p-3.5 rounded-xl bg-black/30 border border-white/10 text-xs sm:text-sm text-pink-100/90 leading-relaxed font-playfair whitespace-pre-line italic shadow-inner">
             "{currentPreviewMessage}"
           </div>
 

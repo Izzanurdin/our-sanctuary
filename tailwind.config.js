@@ -16,6 +16,12 @@ export default {
         },
         accent: "#fda4af",
       },
+      fontFamily: {
+        cinzel: ['Cinzel', 'serif'],
+        playfair: ['"Playfair Display"', 'Georgia', 'serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+      },
     },
   },
   plugins: [],

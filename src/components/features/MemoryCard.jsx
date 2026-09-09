@@ -63,7 +63,7 @@ export default function MemoryCard({ memory, onDelete, onViewDrive }) {
       {/* Polaroid Caption Bottom Area */}
       <div className="mt-3 px-1 space-y-2">
         <div>
-          <h4 className="text-xs sm:text-sm font-bold text-pink-100 line-clamp-1">
+          <h4 className="text-xs sm:text-sm font-bold text-pink-100 line-clamp-1 font-cinzel">
             {memory.title}
           </h4>
 
@@ -86,7 +86,7 @@ export default function MemoryCard({ memory, onDelete, onViewDrive }) {
 
         {/* Romantic Handwritten-like Caption */}
         {memory.caption && (
-          <p className="text-xs text-neutral-300 italic leading-relaxed bg-white/[0.02] p-2 rounded-lg border border-white/5">
+          <p className="text-xs text-neutral-200 font-playfair italic leading-relaxed bg-white/[0.03] p-2.5 rounded-lg border border-white/5">
             &ldquo;{memory.caption}&rdquo;
           </p>
         )}

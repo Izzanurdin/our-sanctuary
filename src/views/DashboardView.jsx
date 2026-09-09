@@ -140,7 +140,7 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
           <h2
             onClick={handleRerollGreeting}
             title="Sentuh untuk acak panggilan sayang ✨"
-            className="text-lg sm:text-xl font-bold text-pink-100 tracking-tight mb-1.5 px-3 cursor-pointer hover:text-pink-200 transition-colors inline-flex items-center justify-center gap-1.5 flex-wrap leading-snug select-none group"
+            className="text-lg sm:text-xl font-bold text-pink-100 tracking-wider mb-1.5 px-3 cursor-pointer hover:text-pink-200 transition-colors inline-flex items-center justify-center gap-1.5 flex-wrap leading-snug select-none group font-cinzel"
           >
             <span>{greeting}</span>
             <Sparkles className="w-3.5 h-3.5 text-pink-400/60 group-hover:text-pink-300 group-hover:rotate-12 transition-all" />
@@ -195,7 +195,7 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
                     </div>
                     <div className="text-left">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold text-pink-100 group-hover:text-pink-200">
+                        <h3 className="text-sm font-semibold text-pink-100 group-hover:text-pink-200 font-cinzel tracking-wider">
                           {item.title}
                         </h3>
                         <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10 text-pink-200/80 font-medium">
