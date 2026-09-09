@@ -5,6 +5,8 @@
  * album kenangan Polaroid (Memory Vault), dan pembuatan link otomatis Google Calendar.
  */
 
+import { supabase, isSupabaseConfigured } from './supabaseClient';
+
 const STORAGE_KEY = 'ops_lovelife_data';
 
 export const MAIN_GOOGLE_DRIVE_FOLDER =
@@ -317,6 +319,26 @@ export function addDateIdea({
 
   data.dates = [newDate, ...data.dates];
   saveLoveLifeData(data);
+
+  // Sinkronisasi ke Supabase jika terhubung
+  if (isSupabaseConfigured() && supabase) {
+    supabase
+      .from('date_plans')
+      .insert([
+        {
+          title: newDate.title,
+          description: newDate.notes,
+          location: newDate.location,
+          status: newDate.status,
+          created_by: newDate.createdBy,
+        },
+      ])
+      .then(({ error }) => {
+        if (error) console.error('Error syncing date plan to Supabase:', error.message);
+      })
+      .catch((err) => console.error('Network error syncing date plan:', err));
+  }
+
   return data;
 }
 
@@ -395,6 +417,28 @@ export function addDirectMemory({
   };
   data.dates = [newMemory, ...data.dates];
   saveLoveLifeData(data);
+
+  // Sinkronisasi ke Supabase jika terhubung
+  if (isSupabaseConfigured() && supabase) {
+    supabase
+      .from('memories')
+      .insert([
+        {
+          title: newMemory.title,
+          caption: newMemory.caption,
+          photo_url: newMemory.photoUrl,
+          event_date: newMemory.completedAt,
+          is_favorite: true,
+          tags: ['garden', 'unwithering'],
+          created_by: capturedBy,
+        },
+      ])
+      .then(({ error }) => {
+        if (error) console.error('Error syncing memory to Supabase:', error.message);
+      })
+      .catch((err) => console.error('Network error syncing memory:', err));
+  }
+
   return newMemory;
 }
 

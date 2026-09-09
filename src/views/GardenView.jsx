@@ -12,6 +12,9 @@ import {
   addGardenFlower,
   resetGardenFlowers,
   getFlowerBasket,
+  fetchGardenFlowersFromCloud,
+  fetchFlowerBasketFromCloud,
+  subscribeToGardenFlowers,
   playBloomChime,
   playWindBreezeSound,
   playSecretFoundSound,
@@ -65,6 +68,35 @@ export default function GardenView({ onBack, user }) {
       setHintVisible(false);
     }, 7000);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Sinkronisasi Data Cloud Supabase & Realtime Listener
+  useEffect(() => {
+    // 1. Ambil data terbaru dari Cloud jika terkonfigurasi
+    fetchGardenFlowersFromCloud().then((cloudFlowers) => {
+      if (cloudFlowers && cloudFlowers.length > 0) {
+        setFlowers(cloudFlowers);
+      }
+    });
+
+    fetchFlowerBasketFromCloud().then((cloudBasket) => {
+      if (cloudBasket) {
+        setBasketItems(cloudBasket);
+      }
+    });
+
+    // 2. Langganan Realtime: Bunga yang ditanam pasangan langsung mekar seketika
+    const channel = subscribeToGardenFlowers((newFlower) => {
+      setFlowers((prev) => {
+        if (prev.some((f) => f.id === newFlower.id)) return prev;
+        playBloomChime();
+        return [...prev, newFlower];
+      });
+    });
+
+    return () => {
+      channel?.unsubscribe?.();
+    };
   }, []);
 
   // Toggle Audio Soundscape

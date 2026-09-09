@@ -9,6 +9,8 @@
  * - Audio toggle preference (ops_garden_audio_enabled)
  */
 
+import { supabase, isSupabaseConfigured } from './supabaseClient';
+
 const GARDEN_FLOWERS_KEY = 'ops_garden_flowers';
 const GARDEN_AUDIO_KEY = 'ops_garden_audio_enabled';
 const GARDEN_FLOWER_BASKET_KEY = 'ops_garden_flower_basket';
@@ -150,8 +152,37 @@ const INITIAL_STARTER_FLOWERS = [
   },
 ];
 
+// Mapper helper antar skema Postgres (snake_case) dan React state (camelCase)
+function mapFlowerFromDb(dbRow) {
+  return {
+    id: dbRow.id,
+    type: dbRow.type || 'lily',
+    xPercent: parseFloat(dbRow.x_percent),
+    yPercent: parseFloat(dbRow.y_percent),
+    scale: parseFloat(dbRow.scale || 0.85),
+    profileIndex: dbRow.profile_index ?? 0,
+    secretMessage: dbRow.secret_message || '',
+    plantedBy: typeof dbRow.planted_by === 'string' ? JSON.parse(dbRow.planted_by) : dbRow.planted_by,
+    plantedAt: dbRow.planted_at || new Date().toISOString(),
+  };
+}
+
+function mapFlowerToDb(flower) {
+  return {
+    id: flower.id,
+    type: flower.type || 'lily',
+    x_percent: flower.xPercent,
+    y_percent: flower.yPercent,
+    scale: flower.scale,
+    profile_index: flower.profileIndex,
+    secret_message: flower.secretMessage || null,
+    planted_by: flower.plantedBy,
+    planted_at: flower.plantedAt || new Date().toISOString(),
+  };
+}
+
 /**
- * Mengambil daftar bunga Lily yang tersimpan di localStorage
+ * Mengambil daftar bunga Lily yang tersimpan di localStorage (sinkron lokal instan)
  */
 export function getGardenFlowers() {
   try {
@@ -166,6 +197,37 @@ export function getGardenFlowers() {
 }
 
 /**
+ * Mengambil daftar bunga dari Supabase Cloud (dengan fallback localStorage)
+ */
+export async function fetchGardenFlowersFromCloud() {
+  if (!isSupabaseConfigured() || !supabase) {
+    return getGardenFlowers();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('garden_flowers')
+      .select('*')
+      .order('planted_at', { ascending: true });
+
+    if (error) {
+      console.warn('Supabase fetch flowers error, using local fallback:', error.message);
+      return getGardenFlowers();
+    }
+
+    if (data && data.length > 0) {
+      const mapped = data.map(mapFlowerFromDb);
+      saveGardenFlowers(mapped);
+      return mapped;
+    }
+  } catch (err) {
+    console.error('Error fetching garden flowers from Supabase:', err);
+  }
+
+  return getGardenFlowers();
+}
+
+/**
  * Menyimpan daftar bunga ke localStorage
  */
 export function saveGardenFlowers(flowers) {
@@ -177,13 +239,56 @@ export function saveGardenFlowers(flowers) {
 }
 
 /**
- * Menambahkan 1 bunga baru ke taman
+ * Menambahkan 1 bunga baru ke taman (Simpan ke localStorage & Sinkron ke Supabase)
  */
 export function addGardenFlower(newFlower) {
   const current = getGardenFlowers();
   const updated = [...current, newFlower];
   saveGardenFlowers(updated);
+
+  // Sinkronisasi asinkron ke Supabase Cloud
+  if (isSupabaseConfigured() && supabase) {
+    supabase
+      .from('garden_flowers')
+      .insert([mapFlowerToDb(newFlower)])
+      .then(({ error }) => {
+        if (error) console.error('Error syncing new flower to Supabase:', error.message);
+      })
+      .catch((err) => console.error('Network error syncing flower:', err));
+  }
+
   return updated;
+}
+
+/**
+ * Berlangganan (Subscribe) Realtime ke tabel bunga Supabase
+ * Bunga yang ditanam pasangan di HP/laptop lain langsung mekar seketika!
+ */
+export function subscribeToGardenFlowers(onFlowerInserted) {
+  if (!isSupabaseConfigured() || !supabase) {
+    return null;
+  }
+
+  try {
+    const channel = supabase
+      .channel('realtime:garden_flowers')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'garden_flowers' },
+        (payload) => {
+          if (payload?.new) {
+            const mapped = mapFlowerFromDb(payload.new);
+            onFlowerInserted(mapped);
+          }
+        }
+      )
+      .subscribe();
+
+    return channel;
+  } catch (err) {
+    console.warn('Realtime subscription error:', err);
+    return null;
+  }
 }
 
 /**
@@ -191,6 +296,16 @@ export function addGardenFlower(newFlower) {
  */
 export function resetGardenFlowers() {
   saveGardenFlowers([]);
+
+  if (isSupabaseConfigured() && supabase) {
+    supabase
+      .from('garden_flowers')
+      .delete()
+      .neq('id', 'flower_starter_welcome')
+      .then(() => {})
+      .catch((err) => console.error('Error resetting flowers in Supabase:', err));
+  }
+
   return [];
 }
 
@@ -233,6 +348,45 @@ export function getFlowerBasket() {
 }
 
 /**
+ * Mengambil daftar item Flower Basket dari Supabase Cloud
+ */
+export async function fetchFlowerBasketFromCloud() {
+  if (!isSupabaseConfigured() || !supabase) {
+    return getFlowerBasket();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('flower_basket')
+      .select('*')
+      .order('saved_at', { ascending: false });
+
+    if (error) {
+      console.warn('Supabase fetch flower basket error, using local fallback:', error.message);
+      return getFlowerBasket();
+    }
+
+    if (data) {
+      const mapped = data.map((row) => ({
+        id: row.id,
+        flowerId: row.flower_id,
+        secretMessage: row.secret_message,
+        plantedBy: typeof row.planted_by === 'string' ? JSON.parse(row.planted_by) : row.planted_by,
+        savedBy: row.saved_by,
+        plantedAt: row.planted_at,
+        savedAt: row.saved_at,
+      }));
+      saveFlowerBasket(mapped);
+      return mapped;
+    }
+  } catch (err) {
+    console.error('Error fetching flower basket from Supabase:', err);
+  }
+
+  return getFlowerBasket();
+}
+
+/**
  * Menyimpan seluruh daftar item Flower Basket ke localStorage
  */
 export function saveFlowerBasket(items) {
@@ -244,11 +398,10 @@ export function saveFlowerBasket(items) {
 }
 
 /**
- * Menambahkan pesan rahasia bunga ke Flower Basket
+ * Menambahkan pesan rahasia bunga ke Flower Basket (Lokal & Supabase Cloud)
  */
 export function addToFlowerBasket(whisperItem) {
   const current = getFlowerBasket();
-  // Cek apakah sudah ada berdasarkan flowerId atau id yang sama
   const exists = current.some(
     (item) => item.flowerId === whisperItem.id || item.id === whisperItem.id || item.flowerId === whisperItem.flowerId
   );
@@ -267,11 +420,32 @@ export function addToFlowerBasket(whisperItem) {
 
   const updated = [newItem, ...current];
   saveFlowerBasket(updated);
+
+  // Simpan ke Supabase Cloud
+  if (isSupabaseConfigured() && supabase) {
+    supabase
+      .from('flower_basket')
+      .insert([
+        {
+          id: newItem.id,
+          flower_id: newItem.flowerId,
+          secret_message: newItem.secretMessage,
+          planted_by: newItem.plantedBy,
+          planted_at: newItem.plantedAt,
+          saved_at: newItem.savedAt,
+        },
+      ])
+      .then(({ error }) => {
+        if (error) console.error('Error saving basket to Supabase:', error.message);
+      })
+      .catch((err) => console.error('Network error saving to flower basket:', err));
+  }
+
   return updated;
 }
 
 /**
- * Menghapus 1 pesan dari Flower Basket
+ * Menghapus 1 pesan dari Flower Basket (Lokal & Supabase Cloud)
  */
 export function removeFromFlowerBasket(basketItemId) {
   const current = getFlowerBasket();
@@ -279,6 +453,16 @@ export function removeFromFlowerBasket(basketItemId) {
     (item) => item.id !== basketItemId && item.flowerId !== basketItemId
   );
   saveFlowerBasket(updated);
+
+  if (isSupabaseConfigured() && supabase) {
+    supabase
+      .from('flower_basket')
+      .delete()
+      .or(`id.eq.${basketItemId},flower_id.eq.${basketItemId}`)
+      .then(() => {})
+      .catch((err) => console.error('Error deleting from flower basket in Supabase:', err));
+  }
+
   return updated;
 }
 
