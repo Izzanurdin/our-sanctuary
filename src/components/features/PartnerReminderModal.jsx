@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ModalWrapper from '../common/ModalWrapper';
 import { Copy, Check, Sparkles, MessageCircleHeart } from 'lucide-react';
 import { getRandomNickname } from '../../config/profiles';
+import { getGatewayConfig, sendWhatsAppMessage } from '../../services/whatsapp';
 
 export default function PartnerReminderModal({
   isOpen,
@@ -10,8 +11,14 @@ export default function PartnerReminderModal({
   partnerProgress,
 }) {
   const [copied, setCopied] = useState(false);
-  const [phone, setPhone] = useState(partner?.partnerPhone || '');
+  const [phone, setPhone] = useState(() => {
+    const config = getGatewayConfig();
+    return partner?.role === 'girlfriend'
+      ? config.phoneCahayu || partner?.partnerPhone || ''
+      : config.phoneIzza || partner?.partnerPhone || '';
+  });
   const [sentToast, setSentToast] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   const nickname = getRandomNickname(partner);
 
@@ -23,18 +30,38 @@ export default function PartnerReminderModal({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSendWA = () => {
+  const handleSendWA = async () => {
     const targetPhone = phone.replace(/[^0-9]/g, '');
-    const encoded = encodeURIComponent(defaultMessage);
 
-    if (targetPhone) {
-      window.open(`https://wa.me/${targetPhone}?text=${encoded}`, '_blank');
-      onClose();
-    } else {
-      // Fallback: copy to clipboard & show toast
+    if (!targetPhone) {
       handleCopy();
       setSentToast('Nomor WA belum diisi, pesan sudah disalin ke clipboard! Siap dipaste di chat ya sayang 💕');
       setTimeout(() => setSentToast(''), 3000);
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const res = await sendWhatsAppMessage({
+        targetPhone,
+        message: defaultMessage,
+      });
+
+      if (res.method === 'fonnte') {
+        setSentToast('Pesan pengingat terkirim otomatis di latar belakang! 🟢');
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      } else {
+        setSentToast('Membuka WhatsApp untuk mengirim pesan... 🟡');
+        setTimeout(() => {
+          onClose();
+        }, 1200);
+      }
+    } catch (err) {
+      setSentToast(`Gagal mengirim: ${err.message}`);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -71,7 +98,7 @@ export default function PartnerReminderModal({
           </div>
         </div>
 
-        {/* WhatsApp Phone Input (if not configured in profiles.js) */}
+        {/* WhatsApp Phone Input */}
         <div>
           <label className="block text-xs font-medium text-pink-200 mb-1">
             Nomor WhatsApp {partner?.name} (Awali 628...):
@@ -80,8 +107,8 @@ export default function PartnerReminderModal({
             type="text"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="Contoh: 6281234567890 (atau atur di profiles.js)"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 focus:border-pink-500/50 text-xs text-white placeholder-neutral-500 outline-none"
+            placeholder="Contoh: 6281234567890 (tersinkron dengan Gateway)"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 focus:border-pink-500/50 text-xs text-white placeholder-neutral-500 outline-none font-mono"
           />
         </div>
 
@@ -105,10 +132,11 @@ export default function PartnerReminderModal({
           <button
             type="button"
             onClick={handleSendWA}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-semibold shadow-lg shadow-emerald-500/25 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+            disabled={isSending}
+            className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-semibold shadow-lg shadow-emerald-500/25 active:scale-95 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
           >
             <MessageCircleHeart className="w-4 h-4" />
-            Kirim via WhatsApp
+            {isSending ? 'Mengirim...' : 'Kirim via WhatsApp'}
           </button>
         </div>
       </div>
