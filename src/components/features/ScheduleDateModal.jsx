@@ -88,7 +88,7 @@ export default function ScheduleDateModal({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Tanggal */}
           <div>
-            <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+            <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
               <Calendar className="w-3.5 h-3.5 text-pink-400" />
               Tanggal Kencan:
             </label>
@@ -103,7 +103,7 @@ export default function ScheduleDateModal({
 
           {/* Jam */}
           <div>
-            <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+            <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
               <Clock className="w-3.5 h-3.5 text-pink-400" />
               Jam (Mulai - Selesai):
             </label>
@@ -128,7 +128,7 @@ export default function ScheduleDateModal({
         {/* Location & Maps Link */}
         <div className="space-y-2">
           <div>
-            <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+            <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
               <MapPin className="w-3.5 h-3.5 text-pink-400" />
               Nama Lokasi Kencan:
             </label>
@@ -143,7 +143,7 @@ export default function ScheduleDateModal({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+            <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
               <ExternalLink className="w-3.5 h-3.5 text-pink-400" />
               Link Google Maps (Opsional):
             </label>
@@ -159,7 +159,7 @@ export default function ScheduleDateModal({
 
         {/* Dress Code Section */}
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1.5 flex items-center gap-1">
+          <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1.5">
             <Shirt className="w-3.5 h-3.5 text-rose-400" />
             Pilihan Dress Code:
           </label>
@@ -197,7 +197,7 @@ export default function ScheduleDateModal({
 
         {/* Shared Email / Guest Input */}
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+          <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
             <Mail className="w-3.5 h-3.5 text-pink-400" />
             Email Kalender Bersama / Email Pasangan (Opsional):
           </label>

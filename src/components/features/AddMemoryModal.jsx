@@ -122,7 +122,7 @@ export default function AddMemoryModal({
         {/* Date & Location */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+            <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
               <Calendar className="w-3.5 h-3.5 text-pink-400" />
               Tanggal Momen:
             </label>
@@ -136,7 +136,7 @@ export default function AddMemoryModal({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+            <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
               <MapPin className="w-3.5 h-3.5 text-pink-400" />
               Lokasi:
             </label>
@@ -152,7 +152,7 @@ export default function AddMemoryModal({
 
         {/* Photo Upload Area */}
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1.5 flex items-center gap-1">
+          <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1.5">
             <Camera className="w-3.5 h-3.5 text-pink-400" />
             Upload Foto Polaroid (Langsung Tampil di Website):
           </label>
@@ -193,7 +193,7 @@ export default function AddMemoryModal({
 
         {/* Folder Drive Name */}
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+          <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
             <FolderHeart className="w-3.5 h-3.5 text-pink-400" />
             Nama Folder Google Drive (Opsional):
           </label>
@@ -208,7 +208,7 @@ export default function AddMemoryModal({
 
         {/* Caption */}
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+          <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
             <Heart className="w-3.5 h-3.5 text-pink-400" />
             Pesan Cinta / Kesan Kencan Manis:
           </label>
@@ -224,7 +224,7 @@ export default function AddMemoryModal({
 
         {/* Diabadikan oleh */}
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+          <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
             <Sparkles className="w-3.5 h-3.5 text-pink-400" />
             Diabadikan oleh:
           </label>

@@ -74,7 +74,7 @@ export default function AddDateModal({ isOpen, onClose, onAddDate, user }) {
         {/* Location & Maps */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label className="block text-xs font-medium text-pink-200 mb-1 flex items-center gap-1">
+            <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
               <MapPin className="w-3.5 h-3.5 text-pink-400" />
               Lokasi Kencan:
             </label>
@@ -107,7 +107,7 @@ export default function AddDateModal({ isOpen, onClose, onAddDate, user }) {
 
         {/* Energy Level Selection */}
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1.5 flex items-center gap-1">
+          <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1.5">
             <Tag className="w-3.5 h-3.5 text-pink-400" />
             Pilih Suasana / Energy Level:
           </label>

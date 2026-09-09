@@ -361,36 +361,43 @@ export default function LoveLifeView({ onBack, user }) {
       />
 
       {/* 2. Schedule Date Modal */}
-      <ScheduleDateModal
-        isOpen={isScheduleOpen}
-        onClose={() => {
-          setIsScheduleOpen(false);
-          setSelectedDateToSchedule(null);
-        }}
-        date={selectedDateToSchedule}
-        onConfirmSchedule={handleConfirmSchedule}
-      />
+      {isScheduleOpen && (
+        <ScheduleDateModal
+          isOpen={isScheduleOpen}
+          onClose={() => {
+            setIsScheduleOpen(false);
+            setSelectedDateToSchedule(null);
+          }}
+          date={selectedDateToSchedule}
+          onConfirmSchedule={handleConfirmSchedule}
+        />
+      )}
 
       {/* 3. Add Custom Date Idea Modal */}
-      <AddDateModal
-        isOpen={isAddDateOpen}
-        onClose={() => setIsAddDateOpen(false)}
-        onAddDate={handleAddDate}
-        user={user}
-      />
+      {isAddDateOpen && (
+        <AddDateModal
+          isOpen={isAddDateOpen}
+          onClose={() => setIsAddDateOpen(false)}
+          onAddDate={handleAddDate}
+          user={user}
+        />
+      )}
 
       {/* 4. Add Memory Modal */}
-      <AddMemoryModal
-        isOpen={isAddMemoryOpen}
-        onClose={() => {
-          setIsAddMemoryOpen(false);
-          setSelectedDateForMemory(null);
-        }}
-        completedDates={completedMemories}
-        initialDate={selectedDateForMemory}
-        onSaveMemory={handleSaveMemory}
-        user={user}
-      />
+      {isAddMemoryOpen && (
+        <AddMemoryModal
+          key={selectedDateForMemory?.id || 'new_memory'}
+          isOpen={isAddMemoryOpen}
+          onClose={() => {
+            setIsAddMemoryOpen(false);
+            setSelectedDateForMemory(null);
+          }}
+          completedDates={completedMemories}
+          initialDate={selectedDateForMemory}
+          onSaveMemory={handleSaveMemory}
+          user={user}
+        />
+      )}
     </GradientBackground>
   );
 }
