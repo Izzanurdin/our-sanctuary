@@ -8,6 +8,7 @@ import JoggingTracker from '../components/features/JoggingTracker';
 import TaskItem from '../components/features/TaskItem';
 import AddTaskModal from '../components/features/AddTaskModal';
 import HealthStreakBanner from '../components/features/HealthStreakBanner';
+import PartnerReminderModal from '../components/features/PartnerReminderModal';
 import {
   getDailyData,
   toggleWaterSlot,
@@ -16,10 +17,10 @@ import {
   addTask,
   toggleTask,
   deleteTask,
-  getHealthProgress,
+  getCoupleHealthStatus,
   getBaliDateString,
 } from '../services/checklistService';
-import { Plus, ListTodo, Calendar, UserCheck } from 'lucide-react';
+import { Plus, ListTodo, Calendar, UserCheck, Bell } from 'lucide-react';
 import { PROFILES } from '../config/profiles';
 
 export default function DailyChecklistView({ onBack, user }) {
@@ -27,19 +28,24 @@ export default function DailyChecklistView({ onBack, user }) {
   const [selectedUserId, setSelectedUserId] = useState(user?.id || 'user_sayang');
   const [taskFilter, setTaskFilter] = useState('active'); // 'all' | 'active' | 'completed'
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
 
   const isMyChecklist = selectedUserId === user?.id;
   const partnerId = user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang';
   const partnerName = user?.id === 'user_sayang' ? 'Izza' : 'Cahayu';
   const activeProfile = PROFILES.find((p) => p.id === selectedUserId) || user;
+  const partnerProfile = PROFILES.find((p) => p.id === partnerId) || { name: partnerName };
+  const myProfile = PROFILES.find((p) => p.id === user?.id) || user;
+
+  const coupleStatus = getCoupleHealthStatus(data);
+  const myProgress = user?.id === 'user_sayang' ? coupleStatus.sayangProgress : coupleStatus.izzaProgress;
+  const partnerProgress = user?.id === 'user_sayang' ? coupleStatus.izzaProgress : coupleStatus.sayangProgress;
 
   const currentChecklist = data[selectedUserId] || {
     water: [false, false, false, false],
     meals: { breakfast: false, lunch: false, dinner: false },
     jogging: false,
   };
-
-  const progress = getHealthProgress(selectedUserId, data);
 
   // Handlers
   const handleToggleWater = (slotIndex) => {
@@ -143,17 +149,32 @@ export default function DailyChecklistView({ onBack, user }) {
 
         {/* Read-Only Notice if viewing partner */}
         {!isMyChecklist && (
-          <div className="py-2 px-3 rounded-xl bg-pink-500/10 border border-pink-500/20 text-[11px] text-pink-200 text-center">
-            👀 Kamu sedang melihat progres hidup sehat <span className="font-semibold text-pink-100">{partnerName}</span> hari ini.
+          <div className="py-2.5 px-3.5 rounded-xl bg-pink-500/10 border border-pink-500/20 text-xs text-pink-200 flex items-center justify-between gap-2">
+            <div>
+              👀 Kamu sedang melihat progres hidup sehat <span className="font-semibold text-pink-100">{partnerName}</span>.
+            </div>
+            {!partnerProgress.isFullyCompleted && (
+              <button
+                type="button"
+                onClick={() => setIsReminderOpen(true)}
+                className="py-1 px-2.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/40 text-[11px] font-semibold text-pink-100 flex items-center gap-1 active:scale-95 transition-all flex-shrink-0 shadow-sm"
+              >
+                <Bell className="w-3 h-3 text-pink-300" />
+                Ingatkan
+              </button>
+            )}
           </div>
         )}
 
-        {/* 1. Health Streak Banner */}
+        {/* 1. Health Streak Banner (Couple Streak) */}
         <HealthStreakBanner
-          streakCount={data.streak?.count || 0}
-          isCompletedToday={progress.isFullyCompleted}
-          progressPercent={progress.percent}
-          profile={activeProfile}
+          streakCount={coupleStatus.displayStreak}
+          isCoupleCompleted={coupleStatus.isCoupleDone}
+          myProgress={myProgress}
+          partnerProgress={partnerProgress}
+          user={myProfile}
+          partner={partnerProfile}
+          onOpenReminder={() => setIsReminderOpen(true)}
         />
 
         {/* 2. Water Tracker (2.000 ml) */}
@@ -281,6 +302,14 @@ export default function DailyChecklistView({ onBack, user }) {
         onClose={() => setIsAddTaskOpen(false)}
         onAddTask={handleAddTask}
         user={user}
+      />
+
+      {/* Partner Reminder Modal */}
+      <PartnerReminderModal
+        isOpen={isReminderOpen}
+        onClose={() => setIsReminderOpen(false)}
+        partner={partnerProfile}
+        partnerProgress={partnerProgress}
       />
     </GradientBackground>
   );

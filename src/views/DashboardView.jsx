@@ -4,8 +4,8 @@ import GlassCard from '../components/common/GlassCard';
 import AppHeader from '../components/common/AppHeader';
 import UserAvatar from '../components/common/UserAvatar';
 import BaliClock from '../components/features/BaliClock';
-import { getRandomGreeting } from '../config/profiles';
-import { getDailyData, getHealthProgress } from '../services/checklistService';
+import { getRandomGreeting, getRandomNickname, PROFILES } from '../config/profiles';
+import { getDailyData, getCoupleHealthStatus } from '../services/checklistService';
 import {
   CheckSquare2,
   Heart,
@@ -24,9 +24,25 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
     setGreeting(getRandomGreeting(user));
   };
 
-  const progress = getHealthProgress(user?.id, dailyData);
-  const isHealthyToday = progress.isFullyCompleted;
-  const streakCount = dailyData.streak?.count || 0;
+  const coupleStatus = getCoupleHealthStatus(dailyData);
+  const partnerId = user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang';
+  const partnerProfile = PROFILES.find((p) => p.id === partnerId);
+  const partnerName = partnerProfile?.name || (user?.id === 'user_sayang' ? 'Izza' : 'Cahayu');
+  const partnerNickname = getRandomNickname(partnerProfile) || partnerName;
+
+  const myProgress = user?.id === 'user_sayang' ? coupleStatus.sayangProgress : coupleStatus.izzaProgress;
+  const partnerProgress = user?.id === 'user_sayang' ? coupleStatus.izzaProgress : coupleStatus.sayangProgress;
+
+  const isCoupleHealthy = coupleStatus.isCoupleDone;
+  const streakCount = coupleStatus.displayStreak;
+
+  const checklistBadge = isCoupleHealthy
+    ? '🔥 Streak Berdua Aktif'
+    : myProgress.isFullyCompleted
+    ? `Kamu 100% • Tunggu ${partnerName}`
+    : partnerProgress.isFullyCompleted
+    ? `${partnerName} 100% • Giliranmu!`
+    : `${myProgress.completedItems}/${myProgress.totalItems} Kamu • ${partnerProgress.completedItems}/${partnerProgress.totalItems} ${partnerName}`;
 
   const navItems = [
     {
@@ -34,9 +50,7 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
       title: 'Daily Checklist',
       subtitle: 'Target 2L Air, Jadwal Makan & Tugas Kuliah',
       icon: CheckSquare2,
-      badge: isHealthyToday
-        ? '🔥 100% Selesai'
-        : `${progress.completedItems}/${progress.totalItems} Target`,
+      badge: checklistBadge,
       accentColor: 'text-pink-300',
       iconBg: 'bg-pink-500/20 border-pink-500/30',
       hoverBorder: 'hover:border-pink-500/50',
@@ -95,9 +109,9 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
       <div className="my-auto py-2 space-y-6">
         {/* Center Glowing Hero / Greeting */}
         <div className="flex flex-col items-center text-center py-4">
-          {/* Animated Glowing Orb: Flame if Healthy, Heart if normal */}
+          {/* Animated Glowing Orb: Flame if Couple Health Completed, Heart if normal */}
           <div className="relative mb-5 flex items-center justify-center">
-            {isHealthyToday ? (
+            {isCoupleHealthy ? (
               <>
                 <div className="absolute w-32 h-32 rounded-full bg-orange-500/25 blur-3xl animate-pulse" />
                 <div className="relative p-5 rounded-full bg-gradient-to-b from-orange-500/20 to-rose-600/20 border border-orange-400/50 shadow-[0_0_35px_rgba(249,115,22,0.4)] animate-soft-pulse">
@@ -123,11 +137,21 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
             <Sparkles className="w-3.5 h-3.5 text-pink-400/60 group-hover:text-pink-300 group-hover:rotate-12 transition-all" />
           </h2>
 
-          {isHealthyToday ? (
+          {isCoupleHealthy ? (
             <div className="my-1.5 px-3.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-xs text-orange-200 animate-in fade-in flex items-center gap-1.5 shadow-[0_0_15px_rgba(249,115,22,0.2)]">
               <Flame className="w-3.5 h-3.5 text-orange-400" />
-              <span className="font-semibold">{streakCount > 0 ? `${streakCount} Hari Streak!` : 'Target Sehat Selesai!'}</span>
-              <span className="text-[11px] text-orange-300/90">• Keren banget sayang, konsisten terus ya! ❤️</span>
+              <span className="font-semibold">{streakCount > 0 ? `${streakCount} Hari Streak Berdua!` : 'Target Sehat Selesai!'}</span>
+              <span className="text-[11px] text-orange-300/90">• Keren berdua, api cinta & sehat terus menyala! 🔥❤️</span>
+            </div>
+          ) : myProgress.isFullyCompleted ? (
+            <div className="my-1.5 px-3.5 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-xs text-pink-200 animate-in fade-in flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-pink-300" />
+              <span>Target kamu tuntas! Tunggu {partnerNickname} untuk nyalakan streak ya ✨</span>
+            </div>
+          ) : partnerProgress.isFullyCompleted ? (
+            <div className="my-1.5 px-3.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-xs text-rose-200 animate-in fade-in flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-rose-300" />
+              <span>{partnerNickname} sudah 100%! Yuk selesaikan bagianmu 💪</span>
             </div>
           ) : (
             <p className="text-xs text-neutral-400 max-w-xs leading-relaxed">

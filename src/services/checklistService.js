@@ -96,16 +96,16 @@ export function getDailyData() {
 
     // Jika tanggal berbeda (sudah lewat 00:00 tengah malam waktu Bali)
     if (data.date !== currentDate) {
-      // Periksa apakah kemarin sudah lengkap untuk update streak
+      // Periksa apakah kemarin sudah lengkap untuk update streak (KEDUANYA HARUS LENGKAP)
       const wasYesterdayCompleted =
-        isUserHealthCompleted('user_sayang', data) ||
+        isUserHealthCompleted('user_sayang', data) &&
         isUserHealthCompleted('user_izza', data);
 
       let newStreakCount = data.streak?.count || 0;
       if (wasYesterdayCompleted) {
         newStreakCount += 1;
       } else {
-        // Jika kemarin terlewat, streak mulai lagi dari 0 (atau pertahankan jika baru hari pertama)
+        // Jika kemarin terlewat oleh salah satu, streak mulai lagi dari 0
         if (data.streak?.lastCompletedDate && data.streak.lastCompletedDate !== currentDate) {
           newStreakCount = 0;
         }
@@ -166,6 +166,36 @@ export function isUserHealthCompleted(userId, data) {
   const joggingDone = joggingScheduled ? Boolean(userChecklist.jogging) : true;
 
   return Boolean(waterDone && mealsDone && joggingDone);
+}
+
+// Cek apakah KEDUANYA (Izza dan Cahayu) sudah selesai hari ini
+export function isCoupleHealthCompleted(data) {
+  return (
+    isUserHealthCompleted('user_sayang', data) &&
+    isUserHealthCompleted('user_izza', data)
+  );
+}
+
+// Ambil status progres lengkap kesehatan berdua (Couple Streak Info)
+export function getCoupleHealthStatus(data) {
+  const sayangProgress = getHealthProgress('user_sayang', data);
+  const izzaProgress = getHealthProgress('user_izza', data);
+  const isCoupleDone = sayangProgress.isFullyCompleted && izzaProgress.isFullyCompleted;
+
+  let displayStreak = data?.streak?.count || 0;
+  // Jika hari ini berdua sudah tuntas dan belum tersimpan di streak
+  if (isCoupleDone && data?.streak?.lastCompletedDate !== data?.date) {
+    displayStreak += 1;
+  }
+
+  return {
+    isCoupleDone,
+    displayStreak,
+    sayangProgress,
+    izzaProgress,
+    sayangDone: sayangProgress.isFullyCompleted,
+    izzaDone: izzaProgress.isFullyCompleted,
+  };
 }
 
 // Hitung persentase progress kesehatan harian pengguna
