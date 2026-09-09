@@ -4,6 +4,7 @@ import DashboardView from './views/DashboardView';
 import DailyChecklistView from './views/DailyChecklistView';
 import LoveLifeView from './views/LoveLifeView';
 import MissYouView from './views/MissYouView';
+import GardenView from './views/GardenView';
 import { PROFILES } from './config/profiles';
 
 const STORAGE_KEY = 'ops_current_user';
@@ -22,7 +23,7 @@ export default function App() {
     }
   });
 
-  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'daily' | 'lovelife' | 'missyou'
+  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'daily' | 'lovelife' | 'missyou' | 'garden'
 
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
@@ -78,6 +79,13 @@ export default function App() {
     case 'missyou':
       return (
         <MissYouView
+          user={currentUser}
+          onBack={handleBackToDashboard}
+        />
+      );
+    case 'garden':
+      return (
+        <GardenView
           user={currentUser}
           onBack={handleBackToDashboard}
         />

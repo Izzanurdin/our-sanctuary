@@ -42,3 +42,98 @@ h1, h2, h3, .font-cinzel {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Animasi Aurora & Bunga Mekar Unwithering Garden */
+@keyframes auroraSky {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-aurora {
+  background: linear-gradient(-45deg, #0a2610, #2d0e3d, #122c1d, #250928);
+  background-size: 400% 400%;
+  animation: auroraSky 16s ease infinite;
+}
+
+@keyframes bloom {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(-15deg); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+.animate-bloom {
+  animation: bloom 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Animasi Ayunan Alami Semilir Angin Malam (Organic Sway) */
+@keyframes flower-sway-slow {
+  0% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  25% {
+    transform: rotate(3.2deg) translate3d(2px, -2px, 0);
+  }
+  50% {
+    transform: rotate(-0.8deg) translate3d(-1px, 0.5px, 0);
+  }
+  75% {
+    transform: rotate(-3.5deg) translate3d(-2px, -1.5px, 0);
+  }
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes flower-sway-gentle {
+  0% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  30% {
+    transform: rotate(-3.8deg) translate3d(-2px, -2px, 0);
+  }
+  60% {
+    transform: rotate(1.5deg) translate3d(1px, 0.5px, 0);
+  }
+  85% {
+    transform: rotate(3deg) translate3d(2px, -1px, 0);
+  }
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes flower-sway-breeze {
+  0% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  22% {
+    transform: rotate(4.2deg) translate3d(3px, -2.5px, 0);
+  }
+  55% {
+    transform: rotate(-3deg) translate3d(-2px, -1px, 0);
+  }
+  82% {
+    transform: rotate(1.8deg) translate3d(1.5px, -1.5px, 0);
+  }
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+}
+
+.animate-sway-1 {
+  animation: flower-sway-slow 5.4s ease-in-out infinite;
+  transform-origin: 50% 92%;
+  will-change: transform;
+}
+
+.animate-sway-2 {
+  animation: flower-sway-gentle 4.6s ease-in-out infinite;
+  transform-origin: 50% 92%;
+  will-change: transform;
+}
+
+.animate-sway-3 {
+  animation: flower-sway-breeze 5.0s ease-in-out infinite;
+  transform-origin: 50% 92%;
+  will-change: transform;
+}

@@ -367,6 +367,37 @@ export function completeDateWithMemory(dateId, { caption = '', photoUrl = '', dr
   return data;
 }
 
+// Tambah memori langsung ke Memory Vault (misal dari potret Unwithering Garden)
+export function addDirectMemory({
+  title = 'Potret Taman Bunga Abadi',
+  caption = '',
+  photoUrl = '',
+  location = 'Unwithering Garden',
+  capturedBy = 'user_sayang',
+}) {
+  const data = getLoveLifeData();
+  const newMemory = {
+    id: `memory_${Date.now()}`,
+    title,
+    location,
+    gmapsUrl: '',
+    energyKey: 'romantic',
+    category: 'Memory & Love',
+    status: 'completed',
+    completedAt: new Date().toISOString().split('T')[0],
+    driveFolder: 'Unwithering Garden',
+    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
+    notes: 'Potret pemandangan bunga abadi mekar di Our Private Space',
+    dressCode: '',
+    caption,
+    photoUrl,
+    capturedBy,
+  };
+  data.dates = [newMemory, ...data.dates];
+  saveLoveLifeData(data);
+  return newMemory;
+}
+
 // Hapus kencan
 export function deleteDate(dateId) {
   const data = getLoveLifeData();

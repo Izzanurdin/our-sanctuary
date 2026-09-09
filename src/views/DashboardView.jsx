@@ -7,6 +7,7 @@ import BaliClock from '../components/features/BaliClock';
 import { getRandomGreeting, getRandomNickname, PROFILES } from '../config/profiles';
 import { getDailyData, getCoupleHealthStatus } from '../services/checklistService';
 import { getLoveLifeData } from '../services/loveLifeService';
+import { getGardenFlowers } from '../services/gardenService';
 import {
   CheckSquare2,
   Heart,
@@ -15,12 +16,14 @@ import {
   CalendarHeart,
   Sparkles,
   Flame,
+  Flower2,
 } from 'lucide-react';
 
 export default function DashboardView({ user, onNavigate, onLogout }) {
   const [greeting, setGreeting] = useState(() => getRandomGreeting(user));
   const [dailyData] = useState(() => getDailyData());
   const [loveLifeData] = useState(() => getLoveLifeData());
+  const [gardenFlowers] = useState(() => getGardenFlowers());
 
   const handleRerollGreeting = () => {
     setGreeting(getRandomGreeting(user));
@@ -84,6 +87,16 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
       iconBg: 'bg-gradient-to-r from-pink-500/30 to-rose-600/30 border-pink-500/40',
       hoverBorder: 'hover:border-pink-400/60',
       isPulse: true,
+    },
+    {
+      id: 'garden',
+      title: 'Unwithering Garden',
+      subtitle: 'Taman Bunga Abadi, Bisikan Rahasia & Kunang-kunang',
+      icon: Flower2,
+      badge: `${gardenFlowers?.length || 0} Bunga Mekar 🌸`,
+      accentColor: 'text-emerald-300',
+      iconBg: 'bg-gradient-to-r from-emerald-500/30 to-teal-600/30 border-emerald-500/40',
+      hoverBorder: 'hover:border-emerald-400/60',
     },
   ];
 
