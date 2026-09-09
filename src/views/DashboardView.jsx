@@ -6,6 +6,7 @@ import UserAvatar from '../components/common/UserAvatar';
 import BaliClock from '../components/features/BaliClock';
 import { getRandomGreeting, getRandomNickname, PROFILES } from '../config/profiles';
 import { getDailyData, getCoupleHealthStatus } from '../services/checklistService';
+import { getLoveLifeData } from '../services/loveLifeService';
 import {
   CheckSquare2,
   Heart,
@@ -19,6 +20,7 @@ import {
 export default function DashboardView({ user, onNavigate, onLogout }) {
   const [greeting, setGreeting] = useState(() => getRandomGreeting(user));
   const [dailyData] = useState(() => getDailyData());
+  const [loveLifeData] = useState(() => getLoveLifeData());
 
   const handleRerollGreeting = () => {
     setGreeting(getRandomGreeting(user));
@@ -44,6 +46,13 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
     ? `${partnerName} 100% • Giliranmu!`
     : `${myProgress.completedItems}/${myProgress.totalItems} Kamu • ${partnerProgress.completedItems}/${partnerProgress.totalItems} ${partnerName}`;
 
+  const scheduledDates = loveLifeData?.dates?.filter((d) => d.status === 'scheduled') || [];
+  const completedDatesCount = loveLifeData?.dates?.filter((d) => d.status === 'completed')?.length || 8;
+
+  const loveLifeBadge = scheduledDates.length > 0
+    ? `🗓️ ${scheduledDates[0].title}`
+    : `${completedDatesCount} Kencan Selesai ❤️`;
+
   const navItems = [
     {
       id: 'daily',
@@ -60,7 +69,7 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
       title: 'Love Life',
       subtitle: 'Date Deck, Shuffler Kencan & Memory Vault',
       icon: CalendarHeart,
-      badge: 'Kencan & Foto',
+      badge: loveLifeBadge,
       accentColor: 'text-rose-300',
       iconBg: 'bg-rose-500/20 border-rose-500/30',
       hoverBorder: 'hover:border-rose-500/50',

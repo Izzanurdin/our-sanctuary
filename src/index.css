@@ -25,3 +25,13 @@ body {
 .animate-soft-pulse {
   animation: soft-pulse 3s infinite ease-in-out;
 }
+
+/* Utilitas sembunyikan scrollbar kasar di browser */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
