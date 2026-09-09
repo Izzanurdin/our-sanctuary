@@ -73,3 +73,19 @@ export function getRandomGreeting(profile) {
 
   return `Hello ${source.name}${nickPart}, how's your day${lovePart}?`;
 }
+
+/**
+ * Fungsi untuk mengambil satu panggilan acak dari daftar nicknames profil
+ */
+export function getRandomNickname(profileOrId) {
+  if (!profileOrId) return 'sayang';
+  let profile = profileOrId;
+  if (typeof profileOrId === 'string') {
+    profile = PROFILES.find((p) => p.id === profileOrId) || { nicknames: ['sayang'] };
+  } else if (profileOrId.id) {
+    profile = PROFILES.find((p) => p.id === profileOrId.id) || profileOrId;
+  }
+  const nicknames = profile?.nicknames || ['sayang'];
+  return pickRandom(nicknames);
+}
+

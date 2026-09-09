@@ -5,6 +5,7 @@ import AppHeader from '../components/common/AppHeader';
 import UserAvatar from '../components/common/UserAvatar';
 import BaliClock from '../components/features/BaliClock';
 import { getRandomGreeting } from '../config/profiles';
+import { getDailyData, getHealthProgress } from '../services/checklistService';
 import {
   CheckSquare2,
   Heart,
@@ -12,14 +13,20 @@ import {
   ArrowRight,
   CalendarHeart,
   Sparkles,
+  Flame,
 } from 'lucide-react';
 
 export default function DashboardView({ user, onNavigate, onLogout }) {
   const [greeting, setGreeting] = useState(() => getRandomGreeting(user));
+  const [dailyData] = useState(() => getDailyData());
 
   const handleRerollGreeting = () => {
     setGreeting(getRandomGreeting(user));
   };
+
+  const progress = getHealthProgress(user?.id, dailyData);
+  const isHealthyToday = progress.isFullyCompleted;
+  const streakCount = dailyData.streak?.count || 0;
 
   const navItems = [
     {
@@ -27,7 +34,9 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
       title: 'Daily Checklist',
       subtitle: 'Target 2L Air, Jadwal Makan & Tugas Kuliah',
       icon: CheckSquare2,
-      badge: 'Rutinitas',
+      badge: isHealthyToday
+        ? '🔥 100% Selesai'
+        : `${progress.completedItems}/${progress.totalItems} Target`,
       accentColor: 'text-pink-300',
       iconBg: 'bg-pink-500/20 border-pink-500/30',
       hoverBorder: 'hover:border-pink-500/50',
@@ -86,12 +95,23 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
       <div className="my-auto py-2 space-y-6">
         {/* Center Glowing Hero / Greeting */}
         <div className="flex flex-col items-center text-center py-4">
-          {/* Animated Glowing Heart Orb */}
+          {/* Animated Glowing Orb: Flame if Healthy, Heart if normal */}
           <div className="relative mb-5 flex items-center justify-center">
-            <div className="absolute w-28 h-28 rounded-full bg-pink-500/20 blur-2xl animate-pulse" />
-            <div className="relative p-5 rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-pink-500/30 shadow-[0_0_30px_rgba(244,114,182,0.25)] animate-soft-pulse">
-              <Heart className="w-10 h-10 text-pink-400 fill-pink-500/30" />
-            </div>
+            {isHealthyToday ? (
+              <>
+                <div className="absolute w-32 h-32 rounded-full bg-orange-500/25 blur-3xl animate-pulse" />
+                <div className="relative p-5 rounded-full bg-gradient-to-b from-orange-500/20 to-rose-600/20 border border-orange-400/50 shadow-[0_0_35px_rgba(249,115,22,0.4)] animate-soft-pulse">
+                  <Flame className="w-10 h-10 text-orange-400 fill-orange-400/80 animate-bounce" />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="absolute w-28 h-28 rounded-full bg-pink-500/20 blur-2xl animate-pulse" />
+                <div className="relative p-5 rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-pink-500/30 shadow-[0_0_30px_rgba(244,114,182,0.25)] animate-soft-pulse">
+                  <Heart className="w-10 h-10 text-pink-400 fill-pink-500/30" />
+                </div>
+              </>
+            )}
           </div>
 
           <h2
@@ -102,9 +122,18 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
             <span>{greeting}</span>
             <Sparkles className="w-3.5 h-3.5 text-pink-400/60 group-hover:text-pink-300 group-hover:rotate-12 transition-all" />
           </h2>
-          <p className="text-xs text-neutral-400 max-w-xs leading-relaxed">
-            Tempat privat kita untuk saling menjaga kesehatan, merencanakan kencan impian, dan berbagi rindu.
-          </p>
+
+          {isHealthyToday ? (
+            <div className="my-1.5 px-3.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-xs text-orange-200 animate-in fade-in flex items-center gap-1.5 shadow-[0_0_15px_rgba(249,115,22,0.2)]">
+              <Flame className="w-3.5 h-3.5 text-orange-400" />
+              <span className="font-semibold">{streakCount > 0 ? `${streakCount} Hari Streak!` : 'Target Sehat Selesai!'}</span>
+              <span className="text-[11px] text-orange-300/90">• Keren banget sayang, konsisten terus ya! ❤️</span>
+            </div>
+          ) : (
+            <p className="text-xs text-neutral-400 max-w-xs leading-relaxed">
+              Tempat privat kita untuk saling menjaga kesehatan, merencanakan kencan impian, dan berbagi rindu.
+            </p>
+          )}
 
           {/* Bali Time Widget */}
           <BaliClock className="mt-3.5" />
