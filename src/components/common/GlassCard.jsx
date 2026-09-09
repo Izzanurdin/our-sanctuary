@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function GlassCard({ children, className = '', onClick, ...props }) {
   const interactiveClasses = onClick
