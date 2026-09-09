@@ -185,44 +185,44 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
           <BaliClock className="mt-3.5" />
         </div>
 
-        {/* 3 Main Navigation Glass Cards */}
-        <div className="space-y-3">
+        {/* 4 Main Navigation Glass Cards (1 Col on Mobile, 2x2 Grid on PC) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <GlassCard
                 key={item.id}
                 onClick={() => onNavigate && onNavigate(item.id)}
-                className={`group border-white/10 ${item.hoverBorder} transition-all duration-300`}
+                className={`group border-white/10 ${item.hoverBorder} transition-all duration-300 md:p-5 flex flex-col justify-center`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3.5">
+                  <div className="flex items-center gap-3.5 sm:gap-4">
                     <div
-                      className={`p-3 rounded-2xl ${item.iconBg} border shadow-[0_4px_16px_rgba(0,0,0,0.3)] group-hover:scale-105 transition-transform duration-200`}
+                      className={`p-3 sm:p-3.5 rounded-2xl ${item.iconBg} border shadow-[0_4px_16px_rgba(0,0,0,0.3)] group-hover:scale-105 transition-transform duration-200 flex-shrink-0`}
                     >
                       <Icon
-                        className={`w-5 h-5 ${item.accentColor} ${
+                        className={`w-5 h-5 sm:w-6 sm:h-6 ${item.accentColor} ${
                           item.isPulse ? 'animate-pulse fill-pink-500/40' : ''
                         }`}
                       />
                     </div>
                     <div className="text-left">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold text-pink-100 group-hover:text-pink-200 font-cinzel tracking-wider">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-sm sm:text-base font-semibold text-pink-100 group-hover:text-pink-200 font-cinzel tracking-wider">
                           {item.title}
                         </h3>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10 text-pink-200/80 font-medium">
+                        <span className="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md bg-white/10 text-pink-200/80 font-medium">
                           {item.badge}
                         </span>
                       </div>
-                      <p className="text-xs text-neutral-400 mt-0.5 line-clamp-1">
+                      <p className="text-xs text-neutral-400 mt-0.5 line-clamp-1 sm:line-clamp-2">
                         {item.subtitle}
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-2 rounded-xl bg-white/[0.03] text-neutral-500 group-hover:text-pink-300 group-hover:translate-x-1 transition-all duration-200">
-                    <ArrowRight className="w-4 h-4" />
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] text-neutral-500 group-hover:text-pink-300 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0 ml-2">
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                 </div>
               </GlassCard>

@@ -176,117 +176,127 @@ export default function DailyChecklistView({ onBack, user }) {
           partner={partnerProfile}
           onOpenReminder={() => setIsReminderOpen(true)}
         />
+        
+        {/* Responsive Grid: Left Column (Health Routine) & Right Column (Tasks) on Desktop PC */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* Left Column: Water, Meal, Jogging (6 cols on lg) */}
+          <div className="lg:col-span-6 space-y-4">
+            {/* 2. Water Tracker (2.000 ml) */}
+            <WaterTracker
+              water={currentChecklist.water}
+              onToggleSlot={handleToggleWater}
+              readOnly={!isMyChecklist}
+            />
 
-        {/* 2. Water Tracker (2.000 ml) */}
-        <WaterTracker
-          water={currentChecklist.water}
-          onToggleSlot={handleToggleWater}
-          readOnly={!isMyChecklist}
-        />
+            {/* 3. Meal Tracker (3x Sehari) */}
+            <MealTracker
+              meals={currentChecklist.meals}
+              onToggleMeal={handleToggleMeal}
+              readOnly={!isMyChecklist}
+              profile={activeProfile}
+            />
 
-        {/* 3. Meal Tracker (3x Sehari) */}
-        <MealTracker
-          meals={currentChecklist.meals}
-          onToggleMeal={handleToggleMeal}
-          readOnly={!isMyChecklist}
-          profile={activeProfile}
-        />
-
-        {/* 4. Jogging Tracker (Selasa, Kamis, Minggu) */}
-        <JoggingTracker
-          jogging={currentChecklist.jogging}
-          onToggleJogging={handleToggleJogging}
-          readOnly={!isMyChecklist}
-          profile={activeProfile}
-        />
-
-        {/* 5. Custom Tasks Section */}
-        <GlassCard className="space-y-4 border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent">
-          {/* Section Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-300">
-                <ListTodo className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-pink-100">
-                  Tugas Kerja & Kuliah
-                </h3>
-                <p className="text-[11px] text-neutral-400">
-                  {activeCount} aktif, {completedCount} selesai
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsAddTaskOpen(true)}
-              className="py-1.5 px-3 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/40 text-xs font-medium text-pink-200 active:scale-95 transition-all flex items-center gap-1 shadow-sm"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Tambah
-            </button>
+            {/* 4. Jogging Tracker (Selasa, Kamis, Minggu) */}
+            <JoggingTracker
+              jogging={currentChecklist.jogging}
+              onToggleJogging={handleToggleJogging}
+              readOnly={!isMyChecklist}
+              profile={activeProfile}
+            />
           </div>
 
-          {/* Filter Tabs (Decision #3: Opsi B) */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
-            <button
-              type="button"
-              onClick={() => setTaskFilter('all')}
-              className={`flex-1 py-1.5 px-2 rounded-lg text-center font-medium transition-all ${
-                taskFilter === 'all'
-                  ? 'bg-white/10 text-pink-100 shadow-sm'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              Semua ({allTasks.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setTaskFilter('active')}
-              className={`flex-1 py-1.5 px-2 rounded-lg text-center font-medium transition-all ${
-                taskFilter === 'active'
-                  ? 'bg-pink-500/20 text-pink-200 border border-pink-500/30'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              Aktif ({activeCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setTaskFilter('completed')}
-              className={`flex-1 py-1.5 px-2 rounded-lg text-center font-medium transition-all ${
-                taskFilter === 'completed'
-                  ? 'bg-white/10 text-pink-100 shadow-sm'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              Selesai ({completedCount})
-            </button>
-          </div>
+          {/* Right Column: Custom Tasks Section (6 cols on lg) */}
+          <div className="lg:col-span-6">
+            <GlassCard className="space-y-4 border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent">
+              {/* Section Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-300">
+                    <ListTodo className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-pink-100">
+                      Tugas Kerja & Kuliah
+                    </h3>
+                    <p className="text-[11px] text-neutral-400">
+                      {activeCount} aktif, {completedCount} selesai
+                    </p>
+                  </div>
+                </div>
 
-          {/* Tasks List */}
-          <div className="space-y-2 pt-1">
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onToggle={handleToggleTask}
-                  onDelete={handleDeleteTask}
-                />
-              ))
-            ) : (
-              <div className="py-6 text-center text-xs text-neutral-500">
-                {taskFilter === 'completed'
-                  ? 'Belum ada tugas yang selesai.'
-                  : taskFilter === 'active'
-                  ? 'Yeay! Semua tugas aktif sudah selesai 🎉'
-                  : 'Belum ada tugas yang ditambahkan.'}
+                {isMyChecklist && (
+                  <button
+                    type="button"
+                    onClick={() => setIsAddTaskOpen(true)}
+                    className="p-1.5 px-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Tambah
+                  </button>
+                )}
               </div>
-            )}
+
+              {/* Task Filters */}
+              <div className="flex items-center p-1 rounded-xl bg-black/40 border border-white/10 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setTaskFilter('all')}
+                  className={`flex-1 py-1.5 rounded-lg font-medium transition-all ${
+                    taskFilter === 'all'
+                      ? 'bg-white/10 text-pink-100 shadow-sm'
+                      : 'text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  Semua ({allTasks.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTaskFilter('active')}
+                  className={`flex-1 py-1.5 rounded-lg font-medium transition-all ${
+                    taskFilter === 'active'
+                      ? 'bg-white/10 text-pink-100 shadow-sm'
+                      : 'text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  Aktif ({activeCount})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTaskFilter('completed')}
+                  className={`flex-1 py-1.5 rounded-lg font-medium transition-all ${
+                    taskFilter === 'completed'
+                      ? 'bg-white/10 text-pink-100 shadow-sm'
+                      : 'text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  Selesai ({completedCount})
+                </button>
+              </div>
+
+              {/* Tasks List */}
+              <div className="space-y-2 pt-1">
+                {filteredTasks.length > 0 ? (
+                  filteredTasks.map((task) => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      onToggle={handleToggleTask}
+                      onDelete={handleDeleteTask}
+                    />
+                  ))
+                ) : (
+                  <div className="py-6 text-center text-xs text-neutral-500">
+                    {taskFilter === 'completed'
+                      ? 'Belum ada tugas yang selesai.'
+                      : taskFilter === 'active'
+                      ? 'Yeay! Semua tugas aktif sudah selesai 🎉'
+                      : 'Belum ada tugas yang ditambahkan.'}
+                  </div>
+                )}
+              </div>
+            </GlassCard>
           </div>
-        </GlassCard>
+        </div>
       </div>
 
       {/* Footer Info */}

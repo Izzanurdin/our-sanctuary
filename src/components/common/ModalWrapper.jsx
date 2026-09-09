@@ -40,11 +40,11 @@ export default function ModalWrapper({
         className={`w-full max-w-md transform transition-all duration-300 scale-100 ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <GlassCard className="relative border-pink-500/30 bg-[#120a11]/90 shadow-[0_16px_48px_rgba(0,0,0,0.7)] p-6">
+        <GlassCard className="relative border-pink-500/30 bg-[#120a11]/95 shadow-[0_16px_48px_rgba(0,0,0,0.7)] p-5 sm:p-6 max-h-[90vh] flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+          <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/10 shrink-0">
             {title && (
-              <h2 className="text-base font-semibold tracking-wide text-pink-100">
+              <h2 className="text-base font-semibold tracking-wide text-pink-100 font-cinzel">
                 {title}
               </h2>
             )}
@@ -59,7 +59,7 @@ export default function ModalWrapper({
           </div>
 
           {/* Modal Body */}
-          <div className="text-neutral-200">
+          <div className="text-neutral-200 overflow-y-auto flex-1 pr-0.5">
             {children}
           </div>
         </GlassCard>

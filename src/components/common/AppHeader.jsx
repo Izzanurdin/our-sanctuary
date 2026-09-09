@@ -22,12 +22,12 @@ export default function AppHeader({
         )}
         <div>
           {title && (
-            <h1 className="text-lg font-semibold tracking-wide text-pink-100">
+            <h1 className="text-lg sm:text-xl font-semibold tracking-wide text-pink-100 font-cinzel">
               {title}
             </h1>
           )}
           {subtitle && (
-            <p className="text-xs text-pink-200/60 leading-tight">
+            <p className="text-xs sm:text-sm text-pink-200/60 leading-tight">
               {subtitle}
             </p>
           )}

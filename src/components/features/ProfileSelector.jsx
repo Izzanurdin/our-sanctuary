@@ -5,13 +5,13 @@ import { PROFILES } from '../../config/profiles';
 
 export default function ProfileSelector({ onSelectProfile, className = '' }) {
   return (
-    <div className={`w-full max-w-sm mx-auto space-y-4 select-none ${className}`}>
+    <div className={`w-full max-w-sm md:max-w-xl mx-auto space-y-4 select-none ${className}`}>
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-xs text-pink-300 mb-3">
           <Sparkles className="w-3.5 h-3.5" />
           PIN Terverifikasi
         </div>
-        <h2 className="text-xl font-semibold text-pink-100 tracking-wide">
+        <h2 className="text-xl font-semibold text-pink-100 tracking-wide font-cinzel">
           Siapa yang Membuka?
         </h2>
         <p className="text-xs text-neutral-400 mt-1">
@@ -19,7 +19,7 @@ export default function ProfileSelector({ onSelectProfile, className = '' }) {
         </p>
       </div>
 
-      <div className="space-y-3.5">
+      <div className="space-y-3.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
         {PROFILES.map((profile) => (
           <GlassCard
             key={profile.id}

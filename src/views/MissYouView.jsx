@@ -153,7 +153,7 @@ export default function MissYouView({ onBack, user }) {
         }
       />
 
-      <div className="space-y-4 max-w-md mx-auto pb-6">
+      <div className="w-full pb-6 space-y-4">
         {/* Status Notification Banner */}
         {statusBanner && (
           <div
@@ -178,129 +178,138 @@ export default function MissYouView({ onBack, user }) {
           </div>
         )}
 
-        {/* Gateway Connection Indicator Pill */}
-        <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-[11px]">
-          <span className="text-neutral-400 flex items-center gap-1.5">
-            <Radio
-              className={`w-3 h-3 ${
-                isFonnteActive ? 'text-emerald-400 animate-pulse' : 'text-amber-400'
-              }`}
-            />
-            {isFonnteActive ? 'Gateway Fonnte Siap' : 'Direct Link wa.me'}
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsSettingsOpen(true)}
-            className="text-pink-300/80 hover:text-pink-200 underline decoration-pink-500/30"
-          >
-            Ubah Pengaturan
-          </button>
-        </div>
+        {/* Responsive Grid: Left (Heart Stage) & Right (Message Preview + Stats) on Desktop PC */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column: Mood Selector & Glowing Heart Centerpiece (7 cols on lg) */}
+          <div className="lg:col-span-7 space-y-5 flex flex-col items-center">
+            {/* 1. Mood Selector Pills */}
+            <div className="w-full space-y-1.5">
+              <label className="text-[11px] font-semibold text-neutral-300 uppercase tracking-wider px-1">
+                Pilih Suasana Rindumu:
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {MOOD_OPTIONS.map((mood) => {
+                  const isSelected = activeMood === mood.id;
+                  return (
+                    <button
+                      key={mood.id}
+                      type="button"
+                      onClick={() => setActiveMood(mood.id)}
+                      className={`py-2.5 px-3 rounded-xl border text-xs font-medium transition-all flex items-center gap-2 text-left ${
+                        isSelected
+                          ? 'bg-pink-500/25 border-pink-400/80 text-white shadow-lg shadow-pink-500/20 scale-[1.02]'
+                          : 'bg-white/[0.04] border-white/10 text-neutral-300 hover:bg-white/[0.08] hover:text-white'
+                      }`}
+                    >
+                      <span className="text-base">{mood.emoji}</span>
+                      <span className="truncate">{mood.shortLabel}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-        {/* 1. Mood Selector Pills */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold text-neutral-300 uppercase tracking-wider px-1">
-            Pilih Suasana Rindumu:
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {MOOD_OPTIONS.map((mood) => {
-              const isSelected = activeMood === mood.id;
-              return (
-                <button
-                  key={mood.id}
-                  type="button"
-                  onClick={() => setActiveMood(mood.id)}
-                  className={`py-2.5 px-3 rounded-xl border text-xs font-medium transition-all flex items-center gap-2 text-left ${
-                    isSelected
-                      ? 'bg-pink-500/25 border-pink-400/80 text-white shadow-lg shadow-pink-500/20 scale-[1.02]'
-                      : 'bg-white/[0.04] border-white/10 text-neutral-300 hover:bg-white/[0.08] hover:text-white'
+            {/* Glowing Heart Centerpiece Button */}
+            <div className="w-full py-4 flex items-center justify-center">
+              <GlowingHeartButton
+                partnerName={partnerName}
+                cooldownRemaining={cooldown}
+                onSend={handleSendMissYou}
+                onTapCountChange={setLoveCount}
+                isSending={isSending}
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Live Message Preview Card & Stats (5 cols on lg) */}
+          <div className="lg:col-span-5 space-y-4 w-full">
+            {/* Gateway Connection Indicator Pill */}
+            <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 text-[11px]">
+              <span className="text-neutral-400 flex items-center gap-1.5">
+                <Radio
+                  className={`w-3 h-3 ${
+                    isFonnteActive ? 'text-emerald-400 animate-pulse' : 'text-amber-400'
                   }`}
-                >
-                  <span className="text-base">{mood.emoji}</span>
-                  <span className="truncate">{mood.shortLabel}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                />
+                {isFonnteActive ? 'Gateway Fonnte Siap' : 'Direct Link wa.me'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsSettingsOpen(true)}
+                className="text-pink-300/80 hover:text-pink-200 underline decoration-pink-500/30 font-medium"
+              >
+                Ubah Pengaturan
+              </button>
+            </div>
 
-        {/* 2. Dynamic Live Message Preview Card */}
-        <GlassCard className="p-3.5 space-y-2 border-pink-500/20">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-pink-200 flex items-center gap-1">
-              <span>Draf Pesan WhatsApp:</span>
-              {loveCount > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-pink-500/20 border border-amber-500/40 text-[10px] text-amber-300 font-bold animate-pulse">
-                  <Flame className="w-2.5 h-2.5" />
-                  {loveCount}x Taps!
+            {/* 2. Dynamic Live Message Preview Card */}
+            <GlassCard className="p-4 space-y-3 border-pink-500/20">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-pink-200 flex items-center gap-1">
+                  <span>Draf Pesan WhatsApp:</span>
+                  {loveCount > 0 && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-pink-500/20 border border-amber-500/40 text-[10px] text-amber-300 font-bold animate-pulse">
+                      <Flame className="w-2.5 h-2.5" />
+                      {loveCount}x Taps!
+                    </span>
+                  )}
                 </span>
-              )}
-            </span>
-            <button
-              type="button"
-              onClick={handleShuffleMessage}
-              className="text-[11px] text-pink-300/80 hover:text-pink-200 flex items-center gap-1 px-2 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-all"
-            >
-              <Dices className="w-3 h-3 text-pink-400" />
-              <span>Acak Variasi</span>
-            </button>
+                <button
+                  type="button"
+                  onClick={handleShuffleMessage}
+                  className="text-[11px] text-pink-300/80 hover:text-pink-200 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-all"
+                >
+                  <Dices className="w-3 h-3 text-pink-400" />
+                  <span>Acak Variasi</span>
+                </button>
+              </div>
+
+              <div className="p-4 rounded-xl bg-black/35 border border-white/10 text-xs sm:text-sm text-pink-100/90 leading-relaxed font-playfair whitespace-pre-line italic shadow-inner">
+                &ldquo;{currentPreviewMessage}&rdquo;
+              </div>
+
+              <p className="text-[10px] text-neutral-400 text-right">
+                Penerima:{' '}
+                <span className="text-pink-300 font-semibold">{partnerName}</span>{' '}
+                ({partnerRole === 'girlfriend' ? 'Girlfriend ❤️' : 'Boyfriend 💫'})
+              </p>
+            </GlassCard>
+
+            {/* 3. Love Stats Card */}
+            <GlassCard className="p-3.5 rounded-2xl border-white/10 text-center">
+              <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-2.5">
+                Statistik Sinyal Rindu Berdua
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="font-mono text-sm sm:text-base font-bold text-pink-300">
+                    {stats.totalSignalsSent || 0}x
+                  </div>
+                  <div className="text-[10px] text-neutral-400 mt-0.5">
+                    Terkirim
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="font-mono text-sm sm:text-base font-bold text-rose-300">
+                    {stats.totalTapsRecorded || 0}x
+                  </div>
+                  <div className="text-[10px] text-neutral-400 mt-0.5">
+                    Total Ketukan
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="font-mono text-sm sm:text-base font-bold text-amber-300">
+                    {stats.highestSpamRecord || 0}x
+                  </div>
+                  <div className="text-[10px] text-neutral-400 mt-0.5">
+                    Rekor Spam
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
           </div>
-
-          <div className="p-3.5 rounded-xl bg-black/30 border border-white/10 text-xs sm:text-sm text-pink-100/90 leading-relaxed font-playfair whitespace-pre-line italic shadow-inner">
-            "{currentPreviewMessage}"
-          </div>
-
-          <p className="text-[10px] text-neutral-400 text-right">
-            Penerima:{' '}
-            <span className="text-pink-300 font-semibold">{partnerName}</span>{' '}
-            ({partnerRole === 'girlfriend' ? 'Girlfriend ❤️' : 'Boyfriend 💫'})
-          </p>
-        </GlassCard>
-
-        {/* 3. Centerpiece: Glowing Heart Button with Love Charge & Spam Counter */}
-        <GlowingHeartButton
-          partnerName={partnerName}
-          cooldownRemaining={cooldown}
-          onSend={handleSendMissYou}
-          onTapCountChange={setLoveCount}
-          isSending={isSending}
-        />
-
-        {/* 4. Love Stats Footer Card */}
-        <div className="pt-2">
-          <GlassCard className="p-3 rounded-2xl border-white/10 text-center">
-            <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-2">
-              Statistik Sinyal Rindu Berdua
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5">
-                <div className="font-mono text-sm font-bold text-pink-300">
-                  {stats.totalSignalsSent || 0}x
-                </div>
-                <div className="text-[10px] text-neutral-400 mt-0.5">
-                  Terkirim
-                </div>
-              </div>
-
-              <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5">
-                <div className="font-mono text-sm font-bold text-rose-300">
-                  {stats.totalTapsRecorded || 0}x
-                </div>
-                <div className="text-[10px] text-neutral-400 mt-0.5">
-                  Total Ketukan
-                </div>
-              </div>
-
-              <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5">
-                <div className="font-mono text-sm font-bold text-amber-300">
-                  {stats.highestSpamRecord || 0}x
-                </div>
-                <div className="text-[10px] text-neutral-400 mt-0.5">
-                  Rekor Spam
-                </div>
-              </div>
-            </div>
-          </GlassCard>
         </div>
       </div>
 

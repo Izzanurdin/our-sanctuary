@@ -262,8 +262,8 @@ export default function LoveLifeView({ onBack, user }) {
               })}
             </div>
 
-            {/* Dates Grid / List */}
-            <div className="space-y-3">
+            {/* Dates Grid / List (1 Col on Mobile, 2 Cols on PC) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
               {filteredDates.length > 0 ? (
                 filteredDates.map((date) => (
                   <DateCard
@@ -276,7 +276,7 @@ export default function LoveLifeView({ onBack, user }) {
                   />
                 ))
               ) : (
-                <div className="py-10 text-center text-xs text-neutral-500 bg-white/[0.02] rounded-2xl border border-white/5 p-4">
+                <div className="col-span-full py-10 text-center text-xs text-neutral-500 bg-white/[0.02] rounded-2xl border border-white/5 p-4">
                   Tidak ada ide kencan pada filter ini.
                 </div>
               )}
@@ -323,8 +323,8 @@ export default function LoveLifeView({ onBack, user }) {
               </div>
             </div>
 
-            {/* Polaroid Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Polaroid Cards Grid (1 Col on Mobile, 2 Col on Tablet, 3 Col on PC) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {completedMemories.length > 0 ? (
                 completedMemories.map((memory) => (
                   <MemoryCard
