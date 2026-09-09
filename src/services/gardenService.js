@@ -11,6 +11,7 @@
 
 const GARDEN_FLOWERS_KEY = 'ops_garden_flowers';
 const GARDEN_AUDIO_KEY = 'ops_garden_audio_enabled';
+const GARDEN_FLOWER_BASKET_KEY = 'ops_garden_flower_basket';
 
 // Profil warna 3 Gerbera Penjaga Taman (Puncak, Kiri Bawah, Kanan Bawah)
 export const GERBERA_PROFILES = [
@@ -208,6 +209,86 @@ export function getGardenStats() {
     izzaCount,
     cahayuCount,
   };
+}
+
+/**
+ * ==========================================
+ * FLOWER BASKET (KERANJANG SURAT RAHASIA)
+ * ==========================================
+ */
+
+/**
+ * Mengambil daftar pesan rahasia yang disimpan di Flower Basket
+ */
+export function getFlowerBasket() {
+  try {
+    const saved = localStorage.getItem(GARDEN_FLOWER_BASKET_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (err) {
+    console.error('Error reading flower basket:', err);
+  }
+  return [];
+}
+
+/**
+ * Menyimpan seluruh daftar item Flower Basket ke localStorage
+ */
+export function saveFlowerBasket(items) {
+  try {
+    localStorage.setItem(GARDEN_FLOWER_BASKET_KEY, JSON.stringify(items));
+  } catch (err) {
+    console.error('Error saving flower basket:', err);
+  }
+}
+
+/**
+ * Menambahkan pesan rahasia bunga ke Flower Basket
+ */
+export function addToFlowerBasket(whisperItem) {
+  const current = getFlowerBasket();
+  // Cek apakah sudah ada berdasarkan flowerId atau id yang sama
+  const exists = current.some(
+    (item) => item.flowerId === whisperItem.id || item.id === whisperItem.id || item.flowerId === whisperItem.flowerId
+  );
+  if (exists) {
+    return current;
+  }
+
+  const newItem = {
+    id: `basket_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+    flowerId: whisperItem.flowerId || whisperItem.id,
+    secretMessage: whisperItem.secretMessage,
+    plantedBy: whisperItem.plantedBy || { name: 'Pasanganmu', role: 'partner' },
+    plantedAt: whisperItem.plantedAt || new Date().toISOString(),
+    savedAt: new Date().toISOString(),
+  };
+
+  const updated = [newItem, ...current];
+  saveFlowerBasket(updated);
+  return updated;
+}
+
+/**
+ * Menghapus 1 pesan dari Flower Basket
+ */
+export function removeFromFlowerBasket(basketItemId) {
+  const current = getFlowerBasket();
+  const updated = current.filter(
+    (item) => item.id !== basketItemId && item.flowerId !== basketItemId
+  );
+  saveFlowerBasket(updated);
+  return updated;
+}
+
+/**
+ * Mengecek apakah bunga rahasia sudah tersimpan di Flower Basket
+ */
+export function isInFlowerBasket(flowerId) {
+  if (!flowerId) return false;
+  const current = getFlowerBasket();
+  return current.some((item) => item.flowerId === flowerId || item.id === flowerId);
 }
 
 /**

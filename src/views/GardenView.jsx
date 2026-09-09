@@ -6,10 +6,12 @@ import PlantSecretModal from '../components/features/garden/PlantSecretModal';
 import SecretWhisperModal from '../components/features/garden/SecretWhisperModal';
 import SavePictureModal from '../components/features/garden/SavePictureModal';
 import ResetGardenModal from '../components/features/garden/ResetGardenModal';
+import FlowerBasketModal from '../components/features/garden/FlowerBasketModal';
 import {
   getGardenFlowers,
   addGardenFlower,
   resetGardenFlowers,
+  getFlowerBasket,
   playBloomChime,
   playWindBreezeSound,
   playSecretFoundSound,
@@ -25,6 +27,7 @@ import {
   Maximize2,
   Minimize2,
   Sparkles,
+  ShoppingBag,
 } from 'lucide-react';
 
 export default function GardenView({ onBack, user }) {
@@ -35,11 +38,17 @@ export default function GardenView({ onBack, user }) {
   const [isSavePictureOpen, setIsSavePictureOpen] = useState(false);
   const [capturedImageUrl, setCapturedImageUrl] = useState(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isBasketOpen, setIsBasketOpen] = useState(false);
+  const [basketItems, setBasketItems] = useState(getFlowerBasket);
   const [audioEnabled, setAudioEnabled] = useState(isGardenAudioEnabled);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
   const [isCapturing, setIsCapturing] = useState(false);
   const [windAngle, setWindAngle] = useState(0);
+
+  const refreshBasket = useCallback(() => {
+    setBasketItems(getFlowerBasket());
+  }, []);
 
   const canvasRef = useRef(null);
   const gardenContainerRef = useRef(null);
@@ -404,6 +413,21 @@ export default function GardenView({ onBack, user }) {
             <span>SAVE PICTURE</span>
           </button>
 
+          {/* Tombol Keranjang Bunga (Flower Basket) */}
+          <button
+            type="button"
+            onClick={() => setIsBasketOpen(true)}
+            title="Buka Flower Basket (Surat & Bisikan Rahasia Tersimpan)"
+            className="relative p-2.5 rounded-full bg-black/40 hover:bg-amber-500/20 border border-white/15 hover:border-amber-400/40 text-amber-300 backdrop-blur-md active:scale-95 transition-all shadow-lg flex items-center justify-center"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            {basketItems.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[10px] font-bold flex items-center justify-center shadow-md animate-pulse">
+                {basketItems.length}
+              </span>
+            )}
+          </button>
+
           <button
             type="button"
             onClick={() => setIsResetModalOpen(true)}
@@ -427,6 +451,7 @@ export default function GardenView({ onBack, user }) {
         isOpen={Boolean(activeSecretFlower)}
         onClose={() => setActiveSecretFlower(null)}
         flower={activeSecretFlower}
+        onBasketUpdated={refreshBasket}
       />
 
       {/* MODAL 3: Save Picture & Simpan ke Memory Vault */}
@@ -443,6 +468,14 @@ export default function GardenView({ onBack, user }) {
         isOpen={isResetModalOpen}
         onClose={() => setIsResetModalOpen(false)}
         onConfirmReset={handleConfirmReset}
+      />
+
+      {/* MODAL 5: Flower Basket (Surat & Bisikan Rahasia Tersimpan) */}
+      <FlowerBasketModal
+        isOpen={isBasketOpen}
+        onClose={() => setIsBasketOpen(false)}
+        basketItems={basketItems}
+        onBasketUpdated={refreshBasket}
       />
     </div>
   );
