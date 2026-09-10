@@ -409,7 +409,7 @@ export function addDirectMemory({
     completedAt: new Date().toISOString().split('T')[0],
     driveFolder: 'Unwithering Garden',
     driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
-    notes: 'Potret pemandangan bunga abadi mekar di Our Private Space',
+    notes: 'Potret pemandangan bunga abadi mekar di Our Sanctuary',
     dressCode: '',
     caption,
     photoUrl,
@@ -478,7 +478,7 @@ export function generateGoogleCalendarUrl({
     notes ? `📝 Catatan: ${notes}` : '',
     '',
     'Reminder: H-1 Bersiap kencan manis kita! ❤️',
-    'Created with ❤️ from Our Private Space',
+    'Created with ❤️ from Our Sanctuary',
   ].filter(Boolean).join('\n');
 
   const fullLocation = gmapsUrl ? `${location} (${gmapsUrl})` : location;

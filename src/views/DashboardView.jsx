@@ -4,7 +4,7 @@ import GlassCard from '../components/common/GlassCard';
 import AppHeader from '../components/common/AppHeader';
 import UserAvatar from '../components/common/UserAvatar';
 import BaliClock from '../components/features/BaliClock';
-import { getRandomGreeting, getRandomNickname, PROFILES } from '../config/profiles';
+import { getRandomGreeting, PROFILES } from '../config/profiles';
 import { getDailyData, getCoupleHealthStatus } from '../services/checklistService';
 import { getLoveLifeData } from '../services/loveLifeService';
 import { getGardenFlowers } from '../services/gardenService';
@@ -33,7 +33,6 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
   const partnerId = user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang';
   const partnerProfile = PROFILES.find((p) => p.id === partnerId);
   const partnerName = partnerProfile?.name || (user?.id === 'user_sayang' ? 'Izza' : 'Cahayu');
-  const partnerNickname = getRandomNickname(partnerProfile) || partnerName;
 
   const myProgress = user?.id === 'user_sayang' ? coupleStatus.sayangProgress : coupleStatus.izzaProgress;
   const partnerProgress = user?.id === 'user_sayang' ? coupleStatus.izzaProgress : coupleStatus.sayangProgress;
@@ -104,7 +103,7 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
     <GradientBackground>
       {/* Top Bar with User Info & Logout */}
       <AppHeader
-        title="Our Private Space"
+        title="Our Sanctuary"
         subtitle="Digital Love Journal & Daily Tracker"
         rightAction={
           <div className="flex items-center gap-2">
@@ -168,12 +167,12 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
           ) : myProgress.isFullyCompleted ? (
             <div className="my-1.5 px-3.5 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-xs text-pink-200 animate-in fade-in flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-pink-300" />
-              <span>Target kamu tuntas! Tunggu {partnerNickname} untuk nyalakan streak ya ✨</span>
+              <span>Target kamu tuntas! Tunggu {partnerName} untuk nyalakan streak ya ✨</span>
             </div>
           ) : partnerProgress.isFullyCompleted ? (
             <div className="my-1.5 px-3.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-xs text-rose-200 animate-in fade-in flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-rose-300" />
-              <span>{partnerNickname} sudah 100%! Yuk selesaikan bagianmu 💪</span>
+              <span>{partnerName} sudah 100%! Yuk selesaikan bagianmu 💪</span>
             </div>
           ) : (
             <p className="text-xs text-neutral-400 max-w-xs leading-relaxed">

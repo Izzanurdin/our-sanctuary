@@ -229,21 +229,21 @@ export function generateMissYouMessage({
     if (loveCount >= 100) {
       return `[${mood.emoji} ${mood.label}]\n` +
         `"I Love You 3000 my dear ${nameLabel}! ❤️"\n\n` +
-        `Barusan aku spam tombol rindu di Our Private Space sebanyak ${loveCount}x TAPS (100% OVERCHARGED! 🌌👑) tanpa henti!\n` +
+        `Barusan aku spam tombol rindu di Our Sanctuary sebanyak ${loveCount}x TAPS (100% OVERCHARGED! 🌌👑) tanpa henti!\n` +
         `Sinyal rinduku sudah sampai level kosmik khusus buat kamu, tolong peluk aku secepatnya ya sayang! 🥰✨\n\n` +
-        `— Dikirim dengan penuh cinta dari Our Private Space`;
+        `— Dikirim dengan penuh cinta dari Our Sanctuary`;
     }
 
     const spamTemplates = [
       `[${mood.emoji} ${mood.label}]\n` +
         `"I miss you ${loveCount} times hari ini, ${nameLabel}! 🥰"\n\n` +
-        `Barusan aku memompa tombol rindu di Our Private Space sebanyak ${loveCount}x khusus buat kamu! Tolong luangkan waktu peluk aku ya! 🥺💖\n\n` +
-        `— Dikirim dengan penuh cinta dari Our Private Space`,
+        `Barusan aku memompa tombol rindu di Our Sanctuary sebanyak ${loveCount}x khusus buat kamu! Tolong luangkan waktu peluk aku ya! 🥺💖\n\n` +
+        `— Dikirim dengan penuh cinta dari Our Sanctuary`,
 
       `[${mood.emoji} ${mood.label}]\n` +
         `"Tingkat Rinduku ke Kamu: ${loveCount}x Taps! 💕"\n\n` +
         `Hai ${nameLabel}, jariku nggak bisa berhenti mencet tombol rindu tadi (total ${loveCount}x ketukan!). Itu bukti kalau aku bener-bener kangen berat sama kamu sekarang! ❤️\n\n` +
-        `— Dikirim dengan penuh cinta dari Our Private Space`,
+        `— Dikirim dengan penuh cinta dari Our Sanctuary`,
     ];
 
     return spamTemplates[seed % spamTemplates.length];
@@ -252,7 +252,7 @@ export function generateMissYouMessage({
   // Ambil draf single tap sesuai mood
   const templates = singleTapTemplates[moodId] || singleTapTemplates.kangen;
   const picked = templates[seed % templates.length];
-  return `[${mood.emoji} ${mood.label}]\n${picked}\n\n— Dikirim via Our Private Space`;
+  return `[${mood.emoji} ${mood.label}]\n${picked}\n\n— Dikirim via Our Sanctuary`;
 }
 
 /**

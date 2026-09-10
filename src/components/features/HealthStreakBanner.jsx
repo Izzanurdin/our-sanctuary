@@ -1,6 +1,5 @@
 import GlassCard from '../common/GlassCard';
 import { Flame, Trophy, Bell, Sparkles } from 'lucide-react';
-import { getRandomNickname } from '../../config/profiles';
 
 export default function HealthStreakBanner({
   streakCount = 0,
@@ -12,7 +11,7 @@ export default function HealthStreakBanner({
   onOpenReminder,
   className = '',
 }) {
-  const partnerNickname = getRandomNickname(partner) || partner?.name || 'Pasangan';
+  const partnerName = partner?.name || (user?.name === 'Izza' ? 'Cahayu' : 'Izza');
 
   return (
     <GlassCard
@@ -76,11 +75,11 @@ export default function HealthStreakBanner({
                 {isCoupleCompleted ? (
                   'Luar biasa! Kalian berdua berhasil menyelesaikan target hidup sehat hari ini bersama! ❤️🏆'
                 ) : myProgress.isFullyCompleted ? (
-                  `Target kamu tuntas! Tunggu ${partnerNickname} menyelesaikan targetnya ya agar streak berdua menyala!`
+                  `Target kamu tuntas! Tunggu ${partnerName} menyelesaikan targetnya ya agar streak berdua menyala!`
                 ) : partnerProgress.isFullyCompleted ? (
-                  `${partnerNickname} sudah 100% selesai lho! Yuk selesaikan bagianmu agar streak kita menyala! 💕`
+                  `${partnerName} sudah 100% selesai lho! Yuk selesaikan bagianmu agar streak kita menyala! 💕`
                 ) : (
-                  `Yuk saling semangati! Kamu dan ${partnerNickname} harus sama-sama menyelesaikan target sehat hari ini agar streak bertambah!`
+                  `Yuk saling semangati! Kamu dan ${partnerName} harus sama-sama menyelesaikan target sehat hari ini agar streak bertambah!`
                 )}
               </p>
             </div>

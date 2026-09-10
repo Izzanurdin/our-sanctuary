@@ -52,7 +52,7 @@ export default function GatewaySettingsModal({ isOpen, onClose, currentUser }) {
     try {
       const res = await sendWhatsAppMessage({
         targetPhone,
-        message: `✨ [Tes Koneksi Our Private Space]\nHalo ${partnerName}! Ini adalah pesan uji coba WhatsApp Gateway dari ${currentUser?.name || 'Pasanganmu'}. Koneksi berhasil terhubung! ❤️`,
+        message: `✨ [Tes Koneksi Our Sanctuary]\nHalo ${partnerName}! Ini adalah pesan uji coba WhatsApp Gateway dari ${currentUser?.name || 'Pasanganmu'}. Koneksi berhasil terhubung! ❤️`,
       });
 
       if (res.method === 'fonnte') {

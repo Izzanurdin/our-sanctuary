@@ -10,7 +10,6 @@ import {
   Flame,
   CheckCircle2,
   AlertCircle,
-  Radio,
 } from 'lucide-react';
 import {
   MOOD_OPTIONS,
@@ -131,9 +130,6 @@ export default function MissYouView({ onBack, user }) {
     }
   };
 
-  const config = getGatewayConfig();
-  const isFonnteActive = Boolean(config.fonnteToken?.trim());
-
   return (
     <GradientBackground>
       <AppHeader
@@ -223,25 +219,6 @@ export default function MissYouView({ onBack, user }) {
 
           {/* Right Column: Live Message Preview Card & Stats (5 cols on lg) */}
           <div className="lg:col-span-5 space-y-4 w-full">
-            {/* Gateway Connection Indicator Pill */}
-            <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 text-[11px]">
-              <span className="text-neutral-400 flex items-center gap-1.5">
-                <Radio
-                  className={`w-3 h-3 ${
-                    isFonnteActive ? 'text-emerald-400 animate-pulse' : 'text-amber-400'
-                  }`}
-                />
-                {isFonnteActive ? 'Gateway Fonnte Siap' : 'Direct Link wa.me'}
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsSettingsOpen(true)}
-                className="text-pink-300/80 hover:text-pink-200 underline decoration-pink-500/30 font-medium"
-              >
-                Ubah Pengaturan
-              </button>
-            </div>
-
             {/* 2. Dynamic Live Message Preview Card */}
             <GlassCard className="p-4 space-y-3 border-pink-500/20">
               <div className="flex items-center justify-between">
