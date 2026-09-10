@@ -149,7 +149,7 @@ export default function MissYouView({ onBack, user }) {
         }
       />
 
-      <div className="w-full pb-6 space-y-4">
+      <div className="my-auto w-full py-4 space-y-5">
         {/* Status Notification Banner */}
         {statusBanner && (
           <div
@@ -289,6 +289,16 @@ export default function MissYouView({ onBack, user }) {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="text-center pt-2 pb-2 text-[11px] text-neutral-500 select-none">
+        <p className="flex items-center justify-center gap-1">
+          Made from Love, with love, and for Love.
+        </p>
+        <p className="text-[10px] text-neutral-600 mt-0.5">
+          &copy; 2026
+        </p>
+      </footer>
 
       {/* Gateway Settings Modal */}
       <GatewaySettingsModal

@@ -233,10 +233,10 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
       {/* Footer */}
       <footer className="text-center pt-4 pb-2 text-[11px] text-neutral-500 select-none">
         <p className="flex items-center justify-center gap-1">
-          Made with <Heart className="w-3 h-3 text-pink-400 fill-pink-400" /> for Sayang
+          Made from Love, with love, and for Love.
         </p>
         <p className="text-[10px] text-neutral-600 mt-0.5">
-          Target Rilis: 15 September 2026
+          &copy; 2026
         </p>
       </footer>
     </GradientBackground>

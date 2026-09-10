@@ -2,7 +2,7 @@ import { useState } from 'react';
 import GradientBackground from '../components/common/GradientBackground';
 import PinPad from '../components/features/PinPad';
 import ProfileSelector from '../components/features/ProfileSelector';
-import { Heart, ChevronLeft, HelpCircle, Sparkles } from 'lucide-react';
+import { ChevronLeft, HelpCircle, Sparkles } from 'lucide-react';
 
 const VALID_PINS = ['260426'];
 
@@ -102,10 +102,10 @@ export default function LoginView({ onLoginSuccess }) {
       {/* Footer */}
       <footer className="text-center pt-4 pb-2 text-[11px] text-neutral-500 select-none">
         <p className="flex items-center justify-center gap-1">
-          Made with <Heart className="w-3 h-3 text-pink-400 fill-pink-400" /> for Our Memories
+          Made from Love, with love, and for Love.
         </p>
         <p className="text-[10px] text-neutral-600 mt-0.5">
-          Target Rilis: 15 September 2026
+          &copy; 2026
         </p>
       </footer>
     </GradientBackground>
