@@ -10,7 +10,7 @@ import { supabase, isSupabaseConfigured } from './supabaseClient';
 const STORAGE_KEY = 'ops_lovelife_data';
 
 export const MAIN_GOOGLE_DRIVE_FOLDER =
-  'https://drive.google.com/drive/folders/1xG4Z-xUO0c1g49uTqUmMihSYPtAlspXi?hl=ID';
+  'https://drive.google.com/drive/folders/1xG4Z-xUO0z1g49oTqUmMhSYPtAfapXii?usp=drive_link';
 
 // Pilihan Preset Energy Levels
 export const ENERGY_LEVELS = [
@@ -61,7 +61,7 @@ export const DRESS_CODE_PRESETS = [
   '🏃 Sporty / Active Wear',
 ];
 
-// Data awal default (8 Kencan Nyata dari Google Drive bertanda SELESAI + 4 Wishlist)
+// Data awal default (11 Kencan Nyata dari Google Drive bertanda SELESAI + 4 Wishlist Kencan)
 const INITIAL_DATES = [
   {
     id: 'date_1_matcha',
@@ -73,32 +73,16 @@ const INITIAL_DATES = [
     status: 'completed',
     completedAt: '2026-07-21',
     driveFolder: '1. Matcha & Flowers! :33',
-    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
+    driveUrl: 'https://drive.google.com/drive/folders/1V5eJAV_QtEAod8TVty8p5yBGLk4ZIQFO',
     notes: 'Matcha & flowers date yang manis :33',
     dressCode: 'Comfy Casual',
     caption: 'Matcha enak dan bunga cantik buat kamu yang paling manis :33 🍵💐',
     photoUrl: '',
     capturedBy: 'user_izza',
+    createdBy: 'user_izza',
   },
   {
-    id: 'date_2_study',
-    title: 'Study Date',
-    location: 'Kopken',
-    gmapsUrl: '',
-    energyKey: 'cozy',
-    category: 'Productive / Cafe',
-    status: 'completed',
-    completedAt: '2026-07-21',
-    driveFolder: '3. :Cafie',
-    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
-    notes: 'Nugas & ngobrol santai berdua di Kopken',
-    dressCode: 'Comfy Casual',
-    caption: 'Nemenin kamu nugas sambil ngopi, suasana tenang dan selalu nyaman kalau bareng kamu ☕📖',
-    photoUrl: '',
-    capturedBy: 'user_sayang',
-  },
-  {
-    id: 'date_3_basketball',
+    id: 'date_2_basketball',
     title: 'Basketball',
     location: 'Barty',
     gmapsUrl: '',
@@ -107,12 +91,31 @@ const INITIAL_DATES = [
     status: 'completed',
     completedAt: '2026-07-21',
     driveFolder: '2. Basketball :O',
-    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
+    driveUrl: 'https://drive.google.com/drive/folders/1Pv9L5L2SJSlTagj64riKqkfdjUh9m7_T',
     notes: 'Main basket seru bareng di Barty :O',
     dressCode: 'Sporty / Active Wear',
     caption: 'Keringetan bareng main basket di Barty, kamu jago banget nge-shoot bola! 🏀✨',
     photoUrl: '',
     capturedBy: 'user_izza',
+    createdBy: 'user_izza',
+  },
+  {
+    id: 'date_3_study',
+    title: 'Study Date',
+    location: 'Kopken',
+    gmapsUrl: '',
+    energyKey: 'cozy',
+    category: 'Productive / Cafe',
+    status: 'completed',
+    completedAt: '2026-07-21',
+    driveFolder: '3. :Cafie',
+    driveUrl: 'https://drive.google.com/drive/folders/1M6TGKs4AMB3KGM7aC3QHM2BKKxqQWOI7',
+    notes: 'Nugas & ngobrol santai berdua di Kopken',
+    dressCode: 'Comfy Casual',
+    caption: 'Nemenin kamu nugas sambil ngopi, suasana tenang dan selalu nyaman kalau bareng kamu ☕📖',
+    photoUrl: '',
+    capturedBy: 'user_sayang',
+    createdBy: 'user_sayang',
   },
   {
     id: 'date_4_gelato',
@@ -124,15 +127,52 @@ const INITIAL_DATES = [
     status: 'completed',
     completedAt: '2026-07-21',
     driveFolder: '4. Geyato',
-    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
+    driveUrl: 'https://drive.google.com/drive/folders/1D6MrUNgdmT4TN4vxUgUyCKuT0VqZRMt7',
     notes: 'Nyobain varian gelato favorit di Gusto Gelato',
     dressCode: 'Casual Santai',
     caption: 'Manisnya gelato Gusto ga ada apa-apanya dibanding senyum manis kamu hari itu 🍨❤️',
     photoUrl: '',
     capturedBy: 'user_sayang',
+    createdBy: 'user_sayang',
   },
   {
-    id: 'date_5_pkb',
+    id: 'date_5_mall',
+    title: 'Mall Date',
+    location: 'Living World',
+    gmapsUrl: '',
+    energyKey: 'casual',
+    category: 'Shopping & Chill',
+    status: 'completed',
+    completedAt: '2026-07-21',
+    driveFolder: '5. Malu D:ong',
+    driveUrl: 'https://drive.google.com/drive/folders/1c_KKcEvh_VL_m7RQXET8WdkfB6Pidc0n',
+    notes: 'Jalan-jalan, belanja, & hunting kuliner di Living World',
+    dressCode: 'Smart Casual / Rapi Manis',
+    caption: 'Keliling Living World gandengan tangan sambil nyari makan dan ngobrol seru 🛍️🍽️',
+    photoUrl: '',
+    capturedBy: 'user_izza',
+    createdBy: 'user_izza',
+  },
+  {
+    id: 'date_6_yendeem',
+    title: 'Yendeem',
+    location: 'Yendeem',
+    gmapsUrl: '',
+    energyKey: 'casual',
+    category: 'Food & Drinks',
+    status: 'completed',
+    completedAt: '2026-07-22',
+    driveFolder: '6. Yendeem',
+    driveUrl: 'https://drive.google.com/drive/folders/1VUWm9SnR2ywcGm9MCfpQkews63FTDQU3',
+    notes: 'Kencan kuliner santai dan seru bareng di Yendeem',
+    dressCode: 'Comfy Casual',
+    caption: 'Momen kulineran santai dan hangat berdua di Yendeem 🥢🍲❤️',
+    photoUrl: '',
+    capturedBy: 'user_sayang',
+    createdBy: 'user_sayang',
+  },
+  {
+    id: 'date_7_pkb',
     title: 'PKB : Pekan Kebudayaan Bali',
     location: 'Art Center Denpasar',
     gmapsUrl: '',
@@ -141,15 +181,16 @@ const INITIAL_DATES = [
     status: 'completed',
     completedAt: '2026-07-22',
     driveFolder: '7. Pekabeh',
-    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
+    driveUrl: 'https://drive.google.com/drive/folders/1wwSDOvjYSkWZrsHrkrXoJ-_ZlACHbz_u',
     notes: 'Keliling pameran seni & festival budaya bareng',
     dressCode: 'Batik / Semi Formal',
     caption: 'Jalan santai liat karya seni & pertunjukan budaya di Pekan Kebudayaan Bali 🎭✨',
     photoUrl: '',
     capturedBy: 'user_izza',
+    createdBy: 'user_izza',
   },
   {
-    id: 'date_6_trampoline',
+    id: 'date_8_trampoline',
     title: 'Trampoline Date',
     location: 'Aero X Space',
     gmapsUrl: '',
@@ -158,32 +199,52 @@ const INITIAL_DATES = [
     status: 'completed',
     completedAt: '2026-07-22',
     driveFolder: '9. Aero X Space',
-    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
+    driveUrl: 'https://drive.google.com/drive/folders/1VRCjxLpnkyfCocE53SkddLKYyql9hcHX',
     notes: 'Lompat-lompat seru di Aero X Space',
     dressCode: 'Sporty / Active Wear',
     caption: 'Tertawa lepas lompat-lompat di trampolin Aero X Space, energi kita tumpah ruah! 🤸‍♀️⚡',
     photoUrl: '',
     capturedBy: 'user_sayang',
+    createdBy: 'user_sayang',
   },
   {
-    id: 'date_7_mall',
-    title: 'Mall Date',
-    location: 'Living World',
+    id: 'date_9_jimbaran',
+    title: 'Jimbaran & Banyoo',
+    location: 'Pantai Jimbaran & Banyoo',
     gmapsUrl: '',
-    energyKey: 'casual',
-    category: 'Shopping & Chill',
+    energyKey: 'romantic',
+    category: 'Beach & Sunset',
     status: 'completed',
     completedAt: '2026-07-22',
-    driveFolder: '5. Malu D;ong',
-    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
-    notes: 'Jalan-jalan, belanja, & hunting kuliner di Living World',
-    dressCode: 'Smart Casual / Rapi Manis',
-    caption: 'Keliling Living World gandengan tangan sambil nyari makan dan ngobrol seru 🛍️🍽️',
+    driveFolder: '10. Jimbaran && Banyoo!!',
+    driveUrl: 'https://drive.google.com/drive/folders/1BccOXee6NYJoxxHH3PPN_9QINObat_mF',
+    notes: 'Menikmati sunset romantis di tepi pantai Jimbaran dan serunya Banyoo',
+    dressCode: 'Sunset / Beach Wear',
+    caption: 'Deburan ombak pantai Jimbaran, sunset jingga, dan momen magis di Banyoo berdua bersamamu 🌅🌊❤️',
     photoUrl: '',
     capturedBy: 'user_izza',
+    createdBy: 'user_izza',
   },
   {
-    id: 'date_8_concert',
+    id: 'date_10_kencan_lewe',
+    title: 'Kencan Lewe',
+    location: 'Lewe',
+    gmapsUrl: '',
+    energyKey: 'cozy',
+    category: 'Night Ride / Cozy',
+    status: 'completed',
+    completedAt: '2026-07-22',
+    driveFolder: '11. Kencan Lewe :O',
+    driveUrl: 'https://drive.google.com/drive/folders/1WAMCW3SdbcpfLurh7NulHSayg2hGJNst',
+    notes: 'Kencan santai Lewe berdua :O',
+    dressCode: 'Comfy Casual',
+    caption: 'Kencan manis dan hangat berdua tanpa beban, penuh tawa dan kebahagiaan 🌙✨',
+    photoUrl: '',
+    capturedBy: 'user_sayang',
+    createdBy: 'user_sayang',
+  },
+  {
+    id: 'date_11_concert',
     title: 'Concert Date : Nadin & Baskara',
     location: 'Kebun Raya Bedugul',
     gmapsUrl: '',
@@ -192,14 +253,15 @@ const INITIAL_DATES = [
     status: 'completed',
     completedAt: '2026-07-26',
     driveFolder: '12. Konser!!',
-    driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
+    driveUrl: 'https://drive.google.com/drive/folders/1Afhqd6Z02kOOP9wsr8_FzJ0h_a7nOuc8',
     notes: 'Nonton penampilan Nadin Amizah & Hindia/Baskara di sejuknya alam Bedugul',
     dressCode: 'Warm Outer & Earth Tone',
     caption: 'Momen magis nyanyi bareng lagu Nadin & Baskara di tengah dingin dan kabut Bedugul, salah satu kencan terbaik kita 🌲🎶❤️',
     photoUrl: '',
     capturedBy: 'user_sayang',
+    createdBy: 'user_sayang',
   },
-  // 4 Ide Wishlist Baru untuk Di-shuffle & Dijadwalkan
+  // 4 Ide Wishlist Awal
   {
     id: 'date_wish_1',
     title: 'Sunset Picnic di Pantai',
@@ -212,6 +274,9 @@ const INITIAL_DATES = [
     dressCode: 'Sunset / Beach Wear',
     caption: '',
     photoUrl: '',
+    driveFolder: '',
+    driveUrl: '',
+    createdBy: 'user_izza',
   },
   {
     id: 'date_wish_2',
@@ -225,6 +290,9 @@ const INITIAL_DATES = [
     dressCode: 'Comfy Casual / Santai',
     caption: '',
     photoUrl: '',
+    driveFolder: '',
+    driveUrl: '',
+    createdBy: 'user_sayang',
   },
   {
     id: 'date_wish_3',
@@ -238,6 +306,9 @@ const INITIAL_DATES = [
     dressCode: 'Kaos Santai & Celemek',
     caption: '',
     photoUrl: '',
+    driveFolder: '',
+    driveUrl: '',
+    createdBy: 'user_sayang',
   },
   {
     id: 'date_wish_4',
@@ -251,10 +322,65 @@ const INITIAL_DATES = [
     dressCode: 'Elegant / Dress-up Formal',
     caption: '',
     photoUrl: '',
+    driveFolder: '',
+    driveUrl: '',
+    createdBy: 'user_izza',
   },
 ];
 
-// Ambil seluruh data Love Life dari localStorage
+// Helper: Konversi baris DB (snake_case) ke format objek frontend (camelCase)
+export function mapDbToDatePlan(row) {
+  return {
+    id: row.id,
+    title: row.title || '',
+    location: row.location || '',
+    gmapsUrl: row.gmaps_url || '',
+    energyKey: row.energy_key || 'casual',
+    category: row.category || 'Food & Drinks',
+    dressCode: row.dress_code || '',
+    status: row.status || 'wishlist',
+    scheduledDate: row.scheduled_date || '',
+    scheduledStartTime: row.scheduled_start_time || '16:00',
+    scheduledEndTime: row.scheduled_end_time || '19:00',
+    completedAt: row.completed_at || '',
+    notes: row.notes || '',
+    caption: row.caption || '',
+    photoUrl: row.photo_url || '',
+    driveFolder: row.drive_folder || '',
+    driveUrl: row.drive_url || (row.drive_folder ? MAIN_GOOGLE_DRIVE_FOLDER : ''),
+    capturedBy: row.captured_by || 'user_sayang',
+    createdBy: row.created_by || 'user_izza',
+    createdAt: row.created_at || new Date().toISOString(),
+  };
+}
+
+// Helper: Konversi objek frontend (camelCase) ke baris DB (snake_case)
+export function mapDatePlanToDb(d) {
+  return {
+    id: d.id,
+    title: d.title,
+    location: d.location || null,
+    gmaps_url: d.gmapsUrl || null,
+    energy_key: d.energyKey || 'casual',
+    category: d.category || 'Food & Drinks',
+    dress_code: d.dressCode || null,
+    status: d.status || 'wishlist',
+    scheduled_date: d.scheduledDate || null,
+    scheduled_start_time: d.scheduledStartTime || '16:00',
+    scheduled_end_time: d.scheduledEndTime || '19:00',
+    completed_at: d.completedAt || null,
+    notes: d.notes || null,
+    caption: d.caption || null,
+    photo_url: d.photoUrl || null,
+    drive_folder: d.driveFolder || null,
+    drive_url: d.driveUrl || null,
+    captured_by: d.capturedBy || null,
+    created_by: d.createdBy || null,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+// Ambil seluruh data Love Life dari cache localStorage (Synchronous untuk render awal instan)
 export function getLoveLifeData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -270,6 +396,14 @@ export function getLoveLifeData() {
     if (!parsed.dates || parsed.dates.length === 0) {
       parsed.dates = INITIAL_DATES;
       saveLoveLifeData(parsed);
+    } else if (parsed.dates.length < 15) {
+      // Migrasikan otomatis cache lama yang baru memiliki 8 atau 12 item
+      const existingIds = new Set(parsed.dates.map((d) => d.id));
+      const missing = INITIAL_DATES.filter((d) => !existingIds.has(d.id));
+      if (missing.length > 0) {
+        parsed.dates = [...parsed.dates, ...missing];
+        saveLoveLifeData(parsed);
+      }
     }
     return parsed;
   } catch (err) {
@@ -278,12 +412,74 @@ export function getLoveLifeData() {
   }
 }
 
-// Simpan data Love Life ke localStorage
+// Simpan data Love Life ke cache localStorage
 export function saveLoveLifeData(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (err) {
     console.error('Error saving Love Life data:', err);
+  }
+}
+
+// Mengambil data kencan langsung dari Supabase Cloud (dengan fallback localStorage)
+export async function fetchLoveLifeData() {
+  if (!isSupabaseConfigured() || !supabase) {
+    return getLoveLifeData();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('date_plans')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Supabase fetch date_plans error, using local fallback:', error.message);
+      return getLoveLifeData();
+    }
+
+    if (data && data.length > 0) {
+      const normalizedDates = data.map(mapDbToDatePlan);
+      const payload = {
+        dates: normalizedDates,
+        lastUpdated: new Date().toISOString(),
+      };
+      saveLoveLifeData(payload);
+      return payload;
+    }
+
+    return getLoveLifeData();
+  } catch (err) {
+    console.error('Error fetching date plans from Supabase:', err);
+    return getLoveLifeData();
+  }
+}
+
+// Berlangganan (Subscribe) Realtime ke tabel date_plans Supabase
+export function subscribeToLoveLifeRealtime(onSync) {
+  if (!isSupabaseConfigured() || !supabase) {
+    return () => {};
+  }
+
+  try {
+    const channel = supabase
+      .channel('public:date_plans')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'date_plans' },
+        async () => {
+          const refreshed = await fetchLoveLifeData();
+          if (onSync) onSync(refreshed);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  } catch (err) {
+    console.error('Error subscribing to date_plans realtime:', err);
+    return () => {};
   }
 }
 
@@ -306,15 +502,20 @@ export function addDateIdea({
     gmapsUrl,
     energyKey,
     category,
-    status: 'wishlist', // Default selalu wishlist
+    status: 'wishlist',
     notes,
     dressCode,
     createdBy,
     createdAt: new Date().toISOString(),
     scheduledDate: '',
-    scheduledTime: '',
+    scheduledStartTime: '16:00',
+    scheduledEndTime: '19:00',
     caption: '',
     photoUrl: '',
+    driveFolder: '',
+    driveUrl: '',
+    completedAt: '',
+    capturedBy: '',
   };
 
   data.dates = [newDate, ...data.dates];
@@ -324,15 +525,7 @@ export function addDateIdea({
   if (isSupabaseConfigured() && supabase) {
     supabase
       .from('date_plans')
-      .insert([
-        {
-          title: newDate.title,
-          description: newDate.notes,
-          location: newDate.location,
-          status: newDate.status,
-          created_by: newDate.createdBy,
-        },
-      ])
+      .insert([mapDatePlanToDb(newDate)])
       .then(({ error }) => {
         if (error) console.error('Error syncing date plan to Supabase:', error.message);
       })
@@ -345,9 +538,11 @@ export function addDateIdea({
 // Kunci jadwal kencan (Update status ke 'scheduled')
 export function scheduleDate(dateId, { date, startTime = '16:00', endTime = '19:00', location, gmapsUrl, dressCode, notes }) {
   const data = getLoveLifeData();
+  let updatedItem = null;
+
   data.dates = data.dates.map((d) => {
     if (d.id === dateId) {
-      return {
+      updatedItem = {
         ...d,
         status: 'scheduled',
         scheduledDate: date,
@@ -359,33 +554,86 @@ export function scheduleDate(dateId, { date, startTime = '16:00', endTime = '19:
         notes: notes || d.notes,
         scheduledAt: new Date().toISOString(),
       };
+      return updatedItem;
     }
     return d;
   });
 
   saveLoveLifeData(data);
+
+  // Sinkronisasi ke Supabase
+  if (isSupabaseConfigured() && supabase && updatedItem) {
+    supabase
+      .from('date_plans')
+      .update({
+        status: 'scheduled',
+        scheduled_date: updatedItem.scheduledDate,
+        scheduled_start_time: updatedItem.scheduledStartTime,
+        scheduled_end_time: updatedItem.scheduledEndTime,
+        location: updatedItem.location,
+        gmaps_url: updatedItem.gmapsUrl,
+        dress_code: updatedItem.dressCode,
+        notes: updatedItem.notes,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', dateId)
+      .then(({ error }) => {
+        if (error) console.error('Error syncing schedule to Supabase:', error.message);
+      })
+      .catch((err) => console.error('Network error syncing schedule:', err));
+  }
+
   return data;
 }
 
 // Tandai kencan selesai & abadikan ke Memory Vault
-export function completeDateWithMemory(dateId, { caption = '', photoUrl = '', driveFolder = '', capturedBy = 'user_sayang' }) {
+export function completeDateWithMemory(
+  dateId,
+  { caption = '', photoUrl = '', driveFolder = '', driveUrl = '', completedAt = '', capturedBy = 'user_sayang' }
+) {
   const data = getLoveLifeData();
+  let updatedItem = null;
+
   data.dates = data.dates.map((d) => {
     if (d.id === dateId) {
-      return {
+      updatedItem = {
         ...d,
         status: 'completed',
-        completedAt: d.scheduledDate || new Date().toISOString().split('T')[0],
+        completedAt: completedAt || d.scheduledDate || new Date().toISOString().split('T')[0],
         caption: caption || d.caption,
         photoUrl: photoUrl || d.photoUrl,
         driveFolder: driveFolder || d.driveFolder,
+        driveUrl: driveUrl || d.driveUrl || (driveFolder ? MAIN_GOOGLE_DRIVE_FOLDER : ''),
         capturedBy,
       };
+      return updatedItem;
     }
     return d;
   });
 
   saveLoveLifeData(data);
+
+  // Sinkronisasi ke Supabase
+  if (isSupabaseConfigured() && supabase && updatedItem) {
+    supabase
+      .from('date_plans')
+      .update({
+        status: 'completed',
+        completed_at: updatedItem.completedAt,
+        caption: updatedItem.caption,
+        photo_url: updatedItem.photoUrl,
+        drive_folder: updatedItem.driveFolder,
+        drive_url: updatedItem.driveUrl,
+        captured_by: updatedItem.capturedBy,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', dateId)
+      .then(({ error }) => {
+        if (error) console.error('Error syncing completed date to Supabase:', error.message);
+      })
+      .catch((err) => console.error('Network error syncing completed date:', err));
+  }
+
   return data;
 }
 
@@ -414,12 +662,23 @@ export function addDirectMemory({
     caption,
     photoUrl,
     capturedBy,
+    createdBy: capturedBy,
+    createdAt: new Date().toISOString(),
   };
+
   data.dates = [newMemory, ...data.dates];
   saveLoveLifeData(data);
 
-  // Sinkronisasi ke Supabase jika terhubung
+  // Sinkronisasi ke Supabase (tabel memories & date_plans)
   if (isSupabaseConfigured() && supabase) {
+    supabase
+      .from('date_plans')
+      .insert([mapDatePlanToDb(newMemory)])
+      .then(({ error }) => {
+        if (error) console.error('Error syncing direct memory to date_plans:', error.message);
+      })
+      .catch((err) => console.error('Network error syncing direct memory:', err));
+
     supabase
       .from('memories')
       .insert([
@@ -447,6 +706,19 @@ export function deleteDate(dateId) {
   const data = getLoveLifeData();
   data.dates = data.dates.filter((d) => d.id !== dateId);
   saveLoveLifeData(data);
+
+  // Sinkronisasi hapus ke Supabase
+  if (isSupabaseConfigured() && supabase) {
+    supabase
+      .from('date_plans')
+      .delete()
+      .eq('id', dateId)
+      .then(({ error }) => {
+        if (error) console.error('Error deleting date plan from Supabase:', error.message);
+      })
+      .catch((err) => console.error('Network error deleting date plan:', err));
+  }
+
   return data;
 }
 

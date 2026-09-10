@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GradientBackground from '../components/common/GradientBackground';
 import AppHeader from '../components/common/AppHeader';
 import DateCard from '../components/features/DateCard';
@@ -9,6 +9,8 @@ import MemoryCard from '../components/features/MemoryCard';
 import AddMemoryModal from '../components/features/AddMemoryModal';
 import {
   getLoveLifeData,
+  fetchLoveLifeData,
+  subscribeToLoveLifeRealtime,
   addDateIdea,
   scheduleDate,
   completeDateWithMemory,
@@ -30,6 +32,30 @@ import {
 export default function LoveLifeView({ onBack, user }) {
   const [data, setData] = useState(() => getLoveLifeData());
   const [activeTab, setActiveTab] = useState('dates'); // 'dates' | 'memories'
+
+  // Sinkronisasi data dari Supabase Cloud & Realtime listener
+  useEffect(() => {
+    let isMounted = true;
+
+    // Ambil data terbaru dari Supabase Cloud saat komponen dibuka
+    fetchLoveLifeData().then((cloudData) => {
+      if (isMounted && cloudData?.dates) {
+        setData(cloudData);
+      }
+    });
+
+    // Berlangganan perubahan data secara Realtime
+    const unsubscribe = subscribeToLoveLifeRealtime((refreshedData) => {
+      if (isMounted && refreshedData?.dates) {
+        setData(refreshedData);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
 
   // Filter States for Date Deck
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'wishlist' | 'scheduled' | 'completed'

@@ -76,18 +76,139 @@ CREATE TABLE IF NOT EXISTS public.memories (
 );
 
 
--- 6. TABEL: DATE_PLANS (PILAR 2: IDE & JADWAL KENCAN)
-CREATE TABLE IF NOT EXISTS public.date_plans (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+-- 6. TABEL: DATE_PLANS (PILAR 2: IDE, JADWAL & REKAP KENCAN GOOGLE DRIVE)
+-- Hapus tabel date_plans lama jika masih menggunakan tipe UUID agar bersih dan menggunakan tipe TEXT
+DROP TABLE IF EXISTS public.date_plans CASCADE;
+
+CREATE TABLE public.date_plans (
+    id TEXT PRIMARY KEY DEFAULT ('date_' || gen_random_uuid())::text,
     title TEXT NOT NULL,
-    description TEXT,
     location TEXT,
-    target_date TIMESTAMPTZ,
-    status TEXT NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'completed', 'wishlist')),
-    created_by TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    gmaps_url TEXT,
+    energy_key TEXT NOT NULL DEFAULT 'casual', -- 'cozy', 'casual', 'outdoor', 'romantic'
+    category TEXT DEFAULT 'Food & Drinks',
+    dress_code TEXT,
+    status TEXT NOT NULL DEFAULT 'wishlist' CHECK (status IN ('planned', 'scheduled', 'completed', 'wishlist')),
+    scheduled_date DATE,
+    scheduled_start_time TEXT DEFAULT '16:00',
+    scheduled_end_time TEXT DEFAULT '19:00',
+    completed_at DATE,
+    notes TEXT,
+    caption TEXT,
+    photo_url TEXT,
+    drive_folder TEXT,
+    drive_url TEXT,
+    captured_by TEXT REFERENCES public.users(id) ON DELETE SET NULL,
+    created_by TEXT REFERENCES public.users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Pastikan kolom baru tetap ditambahkan jika tabel sebelumnya sudah pernah dibuat
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS gmaps_url TEXT;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS energy_key TEXT DEFAULT 'casual';
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'Food & Drinks';
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS dress_code TEXT;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS scheduled_date DATE;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS scheduled_start_time TEXT DEFAULT '16:00';
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS scheduled_end_time TEXT DEFAULT '19:00';
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS completed_at DATE;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS caption TEXT;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS photo_url TEXT;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS drive_folder TEXT;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS drive_url TEXT;
+ALTER TABLE public.date_plans ADD COLUMN IF NOT EXISTS captured_by TEXT REFERENCES public.users(id) ON DELETE SET NULL;
+
+-- SEED DATA AWAL: 11 Kencan Nyata dari Google Drive (Selesai) + 4 Wishlist Kencan
+INSERT INTO public.date_plans (
+    id, title, location, gmaps_url, energy_key, category, status, completed_at, 
+    drive_folder, drive_url, notes, dress_code, caption, photo_url, captured_by, created_by
+)
+VALUES 
+    -- 1. Matcha & Flowers
+    ('date_1_matcha', 'Matcha Date', 'Matcha Bar', '', 'casual', 'Food & Drinks', 'completed', '2026-07-21', 
+     '1. Matcha & Flowers! :33', 'https://drive.google.com/drive/folders/1V5eJAV_QtEAod8TVty8p5yBGLk4ZIQFO', 
+     'Matcha & flowers date yang manis :33', 'Comfy Casual', 'Matcha enak dan bunga cantik buat kamu yang paling manis :33 🍵💐', '', 'user_izza', 'user_izza'),
+
+    -- 2. Basketball
+    ('date_2_basketball', 'Basketball', 'Barty', '', 'outdoor', 'Sports & Play', 'completed', '2026-07-21', 
+     '2. Basketball :O', 'https://drive.google.com/drive/folders/1Pv9L5L2SJSlTagj64riKqkfdjUh9m7_T', 
+     'Main basket seru bareng di Barty :O', 'Sporty / Active Wear', 'Keringetan bareng main basket di Barty, kamu jago banget nge-shoot bola! 🏀✨', '', 'user_izza', 'user_izza'),
+
+    -- 3. Study Date / Cafie
+    ('date_3_study', 'Study Date', 'Kopken', '', 'cozy', 'Productive / Cafe', 'completed', '2026-07-21', 
+     '3. :Cafie', 'https://drive.google.com/drive/folders/1M6TGKs4AMB3KGM7aC3QHM2BKKxqQWOI7', 
+     'Nugas & ngobrol santai berdua di Kopken', 'Comfy Casual', 'Nemenin kamu nugas sambil ngopi, suasana tenang dan selalu nyaman kalau bareng kamu ☕📖', '', 'user_sayang', 'user_sayang'),
+
+    -- 4. Gelato
+    ('date_4_gelato', 'Gelato', 'Gusto''s Gelato', '', 'casual', 'Food & Drinks', 'completed', '2026-07-21', 
+     '4. Geyato', 'https://drive.google.com/drive/folders/1D6MrUNgdmT4TN4vxUgUyCKuT0VqZRMt7', 
+     'Nyobain varian gelato favorit di Gusto Gelato', 'Casual Santai', 'Manisnya gelato Gusto ga ada apa-apanya dibanding senyum manis kamu hari itu 🍨❤️', '', 'user_sayang', 'user_sayang'),
+
+    -- 5. Mall Date
+    ('date_5_mall', 'Mall Date', 'Living World', '', 'casual', 'Shopping & Chill', 'completed', '2026-07-21', 
+     '5. Malu D:ong', 'https://drive.google.com/drive/folders/1c_KKcEvh_VL_m7RQXET8WdkfB6Pidc0n', 
+     'Jalan-jalan, belanja, & hunting kuliner di Living World', 'Smart Casual / Rapi Manis', 'Keliling Living World gandengan tangan sambil nyari makan dan ngobrol seru 🛍️🍽️', '', 'user_izza', 'user_izza'),
+
+    -- 6. Yendeem
+    ('date_6_yendeem', 'Yendeem', 'Yendeem', '', 'casual', 'Food & Drinks', 'completed', '2026-07-22', 
+     '6. Yendeem', 'https://drive.google.com/drive/folders/1VUWm9SnR2ywcGm9MCfpQkews63FTDQU3', 
+     'Kencan kuliner santai dan seru bareng di Yendeem', 'Comfy Casual', 'Momen kulineran santai dan hangat berdua di Yendeem 🥢🍲❤️', '', 'user_sayang', 'user_sayang'),
+
+    -- 7. PKB (Pekan Kebudayaan Bali)
+    ('date_7_pkb', 'PKB : Pekan Kebudayaan Bali', 'Art Center Denpasar', '', 'outdoor', 'Culture & Arts', 'completed', '2026-07-22', 
+     '7. Pekabeh', 'https://drive.google.com/drive/folders/1wwSDOvjYSkWZrsHrkrXoJ-_ZlACHbz_u', 
+     'Keliling pameran seni & festival budaya bareng', 'Batik / Semi Formal', 'Jalan santai liat karya seni & pertunjukan budaya di Pekan Kebudayaan Bali 🎭✨', '', 'user_izza', 'user_izza'),
+
+    -- 8. Trampoline Date (Aero X Space)
+    ('date_8_trampoline', 'Trampoline Date', 'Aero X Space', '', 'outdoor', 'Adventure & Play', 'completed', '2026-07-22', 
+     '9. Aero X Space', 'https://drive.google.com/drive/folders/1VRCjxLpnkyfCocE53SkddLKYyql9hcHX', 
+     'Lompat-lompat seru di Aero X Space', 'Sporty / Active Wear', 'Tertawa lepas lompat-lompat di trampolin Aero X Space, energi kita tumpah ruah! 🤸‍♀️⚡', '', 'user_sayang', 'user_sayang'),
+
+    -- 9. Jimbaran & Banyoo
+    ('date_9_jimbaran', 'Jimbaran & Banyoo', 'Pantai Jimbaran & Banyoo', '', 'romantic', 'Beach & Sunset', 'completed', '2026-07-22', 
+     '10. Jimbaran && Banyoo!!', 'https://drive.google.com/drive/folders/1BccOXee6NYJoxxHH3PPN_9QINObat_mF', 
+     'Menikmati sunset romantis di tepi pantai Jimbaran dan serunya Banyoo', 'Sunset / Beach Wear', 'Deburan ombak pantai Jimbaran, sunset jingga, dan momen magis di Banyoo berdua bersamamu 🌅🌊❤️', '', 'user_izza', 'user_izza'),
+
+    -- 10. Kencan Lewe
+    ('date_10_kencan_lewe', 'Kencan Lewe', 'Lewe', '', 'cozy', 'Night Ride / Cozy', 'completed', '2026-07-22', 
+     '11. Kencan Lewe :O', 'https://drive.google.com/drive/folders/1WAMCW3SdbcpfLurh7NulHSayg2hGJNst', 
+     'Kencan santai Lewe berdua :O', 'Comfy Casual', 'Kencan manis dan hangat berdua tanpa beban, penuh tawa dan kebahagiaan 🌙✨', '', 'user_sayang', 'user_sayang'),
+
+    -- 11. Konser Nadin & Baskara
+    ('date_11_concert', 'Concert Date : Nadin & Baskara', 'Kebun Raya Bedugul', '', 'romantic', 'Music & Concert', 'completed', '2026-07-26', 
+     '12. Konser!!', 'https://drive.google.com/drive/folders/1Afhqd6Z02kOOP9wsr8_FzJ0h_a7nOuc8', 
+     'Nonton penampilan Nadin Amizah & Hindia/Baskara di sejuknya alam Bedugul', 'Warm Outer & Earth Tone', 'Momen magis nyanyi bareng lagu Nadin & Baskara di tengah dingin dan kabut Bedugul, salah satu kencan terbaik kita 🌲🎶❤️', '', 'user_sayang', 'user_sayang'),
+
+    -- 4 Wishlist Awal
+    ('date_wish_1', 'Sunset Picnic di Pantai', 'Pantai Melasti / Pantai Nyang-Nyang', '', 'outdoor', 'Nature & Romantic', 'wishlist', NULL, 
+     '', '', 'Bawa tikar piknik, buah segar, minuman dingin, dan kamera polaroid!', 'Sunset / Beach Wear', '', '', NULL, 'user_izza'),
+
+    ('date_wish_2', 'Midnight Car Talk & Ice Cream Drive-thru', 'Keliling Kota & Drive-thru', '', 'cozy', 'Night Ride', 'wishlist', NULL, 
+     '', '', 'Beli es krim favorit, putar playlist Spotify kita, ngobrol deep talk sampai malam.', 'Comfy Casual / Santai', '', '', NULL, 'user_sayang'),
+
+    ('date_wish_3', 'Masak Pasta & Baking Cookies Bareng', 'Dapur Rumah', '', 'cozy', 'Cooking & Home', 'wishlist', NULL, 
+     '', '', 'Bikin creamy pasta carbonara & cookies cokelat hangat, sambil setel lagu jazz.', 'Kaos Santai & Celemek', '', '', NULL, 'user_sayang'),
+
+    ('date_wish_4', 'Romantic Rooftop Dinner & City Lights', 'Rooftop Resto', '', 'romantic', 'Fine Dining', 'wishlist', NULL, 
+     '', '', 'Dress up cantik & ganteng, makan malam romantis sambil liat gemerlap lampu kota.', 'Elegant / Dress-up Formal', '', '', NULL, 'user_izza')
+ON CONFLICT (id) DO UPDATE SET
+    title = EXCLUDED.title,
+    location = EXCLUDED.location,
+    gmaps_url = EXCLUDED.gmaps_url,
+    energy_key = EXCLUDED.energy_key,
+    category = EXCLUDED.category,
+    dress_code = EXCLUDED.dress_code,
+    status = EXCLUDED.status,
+    completed_at = EXCLUDED.completed_at,
+    drive_folder = EXCLUDED.drive_folder,
+    drive_url = EXCLUDED.drive_url,
+    notes = EXCLUDED.notes,
+    caption = EXCLUDED.caption,
+    photo_url = EXCLUDED.photo_url,
+    captured_by = EXCLUDED.captured_by,
+    updated_at = NOW();
 
 
 -- 7. TABEL: MISS_YOU_LOGS (PILAR 3: RIWAYAT SPAM RINDU)
@@ -234,6 +355,10 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'miss_you_logs') THEN
         ALTER PUBLICATION supabase_realtime ADD TABLE public.miss_you_logs;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'date_plans') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.date_plans;
     END IF;
 END $$;
 

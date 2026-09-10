@@ -17,6 +17,7 @@ export default function AddMemoryModal({
     initialDate?.completedAt || initialDate?.scheduledDate || new Date().toISOString().split('T')[0]
   );
   const [driveFolder, setDriveFolder] = useState(initialDate?.driveFolder || '');
+  const [driveUrl, setDriveUrl] = useState(initialDate?.driveUrl || '');
   const [caption, setCaption] = useState(initialDate?.caption || '');
   const [photoUrl, setPhotoUrl] = useState('');
   const [capturedBy, setCapturedBy] = useState(user?.id || 'user_sayang');
@@ -30,6 +31,7 @@ export default function AddMemoryModal({
       setLocation(found.location || '');
       setCompletedAt(found.completedAt || found.scheduledDate || new Date().toISOString().split('T')[0]);
       setDriveFolder(found.driveFolder || '');
+      setDriveUrl(found.driveUrl || '');
       setCaption(found.caption || '');
     }
   };
@@ -68,6 +70,7 @@ export default function AddMemoryModal({
       location,
       completedAt,
       driveFolder,
+      driveUrl: driveUrl.trim(),
       caption: caption.trim(),
       photoUrl,
       capturedBy,
@@ -191,19 +194,37 @@ export default function AddMemoryModal({
           )}
         </div>
 
-        {/* Folder Drive Name */}
-        <div>
-          <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
-            <FolderHeart className="w-3.5 h-3.5 text-pink-400" />
-            Nama Folder Google Drive (Opsional):
-          </label>
-          <input
-            type="text"
-            placeholder="Contoh: 1. Matcha & Flowers! :33"
-            value={driveFolder}
-            onChange={(e) => setDriveFolder(e.target.value)}
-            className="w-full px-3.5 py-2 rounded-xl bg-white/[0.04] border border-white/10 focus:border-pink-500/50 text-xs text-white placeholder-neutral-500 outline-none"
-          />
+        {/* Folder & Link Google Drive */}
+        <div className="space-y-2.5 p-3 rounded-xl bg-pink-500/5 border border-pink-500/20">
+          <div>
+            <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
+              <FolderHeart className="w-3.5 h-3.5 text-pink-400" />
+              Link Folder Google Drive (Dokumentasi Foto):
+            </label>
+            <input
+              type="url"
+              placeholder="https://drive.google.com/drive/folders/..."
+              value={driveUrl}
+              onChange={(e) => setDriveUrl(e.target.value)}
+              className="w-full px-3.5 py-2 rounded-xl bg-white/[0.04] border border-white/10 focus:border-pink-500/50 text-xs text-white placeholder-neutral-500 outline-none"
+            />
+            <p className="text-[10px] text-pink-300/70 mt-1 leading-normal">
+              💡 Salin link folder dokumentasi dari HP/Google Drive (pastikan akses: <em>&quot;Anyone with the link&quot;</em>)
+            </p>
+          </div>
+
+          <div>
+            <label className="text-[11px] font-medium text-neutral-400 mb-1 block">
+              Nama / Judul Folder di Drive (Opsional):
+            </label>
+            <input
+              type="text"
+              placeholder="Contoh: 1. Matcha & Flowers! :33"
+              value={driveFolder}
+              onChange={(e) => setDriveFolder(e.target.value)}
+              className="w-full px-3.5 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 focus:border-pink-500/50 text-xs text-white placeholder-neutral-500 outline-none"
+            />
+          </div>
         </div>
 
         {/* Caption */}

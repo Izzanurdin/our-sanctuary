@@ -11,7 +11,11 @@ import {
   Clock,
   Shirt,
 } from 'lucide-react';
-import { ENERGY_LEVELS, generateGoogleCalendarUrl } from '../../services/loveLifeService';
+import {
+  ENERGY_LEVELS,
+  generateGoogleCalendarUrl,
+  MAIN_GOOGLE_DRIVE_FOLDER,
+} from '../../services/loveLifeService';
 
 export default function DateCard({
   date,
@@ -187,13 +191,18 @@ export default function DateCard({
               </button>
             )}
 
-            {date.driveFolder && (
+            {(date.driveUrl || date.driveFolder) && (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (onViewDrive) onViewDrive(date);
+                  if (onViewDrive) {
+                    onViewDrive(date);
+                  } else {
+                    window.open(date.driveUrl || MAIN_GOOGLE_DRIVE_FOLDER, '_blank');
+                  }
                 }}
+                title={date.driveFolder ? `Buka folder ${date.driveFolder} di Google Drive` : 'Buka folder kencan di Google Drive'}
                 className="py-1 px-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-neutral-300 hover:text-white border border-white/10 transition-all flex items-center gap-1"
               >
                 <FolderHeart className="w-3 h-3 text-pink-400" />

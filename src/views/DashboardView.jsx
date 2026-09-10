@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GradientBackground from '../components/common/GradientBackground';
 import GlassCard from '../components/common/GlassCard';
 import AppHeader from '../components/common/AppHeader';
@@ -6,7 +6,7 @@ import UserAvatar from '../components/common/UserAvatar';
 import BaliClock from '../components/features/BaliClock';
 import { getRandomGreeting, PROFILES } from '../config/profiles';
 import { getDailyData, getCoupleHealthStatus } from '../services/checklistService';
-import { getLoveLifeData } from '../services/loveLifeService';
+import { getLoveLifeData, fetchLoveLifeData } from '../services/loveLifeService';
 import { getGardenFlowers } from '../services/gardenService';
 import {
   CheckSquare2,
@@ -22,8 +22,20 @@ import {
 export default function DashboardView({ user, onNavigate, onLogout }) {
   const [greeting, setGreeting] = useState(() => getRandomGreeting(user));
   const [dailyData] = useState(() => getDailyData());
-  const [loveLifeData] = useState(() => getLoveLifeData());
+  const [loveLifeData, setLoveLifeData] = useState(() => getLoveLifeData());
   const [gardenFlowers] = useState(() => getGardenFlowers());
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchLoveLifeData().then((cloudData) => {
+      if (isMounted && cloudData?.dates) {
+        setLoveLifeData(cloudData);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleRerollGreeting = () => {
     setGreeting(getRandomGreeting(user));
@@ -49,7 +61,7 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
     : `${myProgress.completedItems}/${myProgress.totalItems} Kamu • ${partnerProgress.completedItems}/${partnerProgress.totalItems} ${partnerName}`;
 
   const scheduledDates = loveLifeData?.dates?.filter((d) => d.status === 'scheduled') || [];
-  const completedDatesCount = loveLifeData?.dates?.filter((d) => d.status === 'completed')?.length || 8;
+  const completedDatesCount = loveLifeData?.dates?.filter((d) => d.status === 'completed')?.length || 0;
 
   const loveLifeBadge = scheduledDates.length > 0
     ? `🗓️ ${scheduledDates[0].title}`
