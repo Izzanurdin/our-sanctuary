@@ -19,7 +19,11 @@ import {
   getCooldownRemaining,
   setCooldownSeconds,
   getMissYouStats,
-  recordMissYouStat,
+  logMissYouSignalToCloud,
+  fetchMissYouStatsFromCloud,
+  subscribeToMissYouRealtime,
+  getAffectionTier,
+  playCelebrationFanfare,
 } from '../services/whatsapp';
 import { getRandomNickname, PROFILES } from '../config/profiles';
 
@@ -31,13 +35,51 @@ export default function MissYouView({ onBack, user }) {
   const [stats, setStats] = useState(getMissYouStats);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [statusBanner, setStatusBanner] = useState(null);
+  const [incomingSignal, setIncomingSignal] = useState(null);
   const [isSending, setIsSending] = useState(false);
 
   // Tentukan profil pasangan
   const partnerRole = user?.role === 'boyfriend' ? 'girlfriend' : 'boyfriend';
   const partnerProfile = PROFILES.find((p) => p.role === partnerRole);
   const partnerName = partnerProfile?.name || (user?.name === 'Izza' ? 'Cahayu' : 'Izza');
+  const partnerId = user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang';
   const nickname = getRandomNickname(partnerProfile);
+
+  // Ambil statistik cloud dan dengarkan sinyal rindu realtime
+  useEffect(() => {
+    let isMounted = true;
+
+    // 1. Ambil agregasi statistik dari Supabase
+    fetchMissYouStatsFromCloud().then((cloudStats) => {
+      if (isMounted && cloudStats) {
+        setStats(cloudStats);
+      }
+    });
+
+    // 2. Berlangganan sinyal rindu realtime dari pasangan
+    const channel = subscribeToMissYouRealtime((newLog) => {
+      if (!isMounted) return;
+
+      // Update statistik secara live
+      fetchMissYouStatsFromCloud().then((s) => s && setStats(s));
+
+      // Jika sinyal ini dikirim oleh pasangan untuk pengguna saat ini
+      if (newLog.sender_id !== user?.id) {
+        playCelebrationFanfare();
+        setIncomingSignal({
+          senderName: partnerName,
+          count: newLog.click_count || 1,
+          milestone: newLog.milestone_text || 'Sinyal Rindu',
+          time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        });
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      channel?.unsubscribe?.();
+    };
+  }, [user?.id, partnerName]);
 
   // Cek cooldown setiap detik
   useEffect(() => {
@@ -102,11 +144,17 @@ export default function MissYouView({ onBack, user }) {
       setCooldownSeconds(60);
       setCooldown(60);
 
-      // Simpan statistik rindu
-      const updatedStats = recordMissYouStat(finalCount);
-      if (updatedStats) {
-        setStats(updatedStats);
-      }
+      // Simpan statistik rindu lokal & sinkronisasi ke Supabase Cloud
+      const tier = getAffectionTier(finalCount);
+      logMissYouSignalToCloud({
+        senderId: user?.id || 'user_izza',
+        recipientId: partnerId,
+        clickCount: finalCount,
+        milestoneText: tier.label,
+        sentVia: res.method === 'fonnte' ? 'fonnte' : 'wame',
+      }).then(() => {
+        fetchMissYouStatsFromCloud().then((s) => s && setStats(s));
+      });
 
       if (res.method === 'fonnte') {
         setStatusBanner({
@@ -150,6 +198,32 @@ export default function MissYouView({ onBack, user }) {
       />
 
       <div className="my-auto w-full py-4 space-y-5">
+        {/* Realtime Incoming Love Signal Alert from Partner */}
+        {incomingSignal && (
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-pink-500/25 via-purple-500/20 to-rose-500/25 border border-pink-500/40 shadow-[0_0_20px_rgba(244,114,182,0.25)] text-xs flex items-center justify-between gap-3 animate-in zoom-in-95 duration-300">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-pink-500/30 text-pink-200">
+                <Flame className="w-5 h-5 text-pink-400 animate-bounce" />
+              </div>
+              <div>
+                <p className="font-semibold text-pink-100 text-xs">
+                  💖 Sinyal Rindu dari {incomingSignal.senderName}!
+                </p>
+                <p className="text-[11px] text-pink-200/80">
+                  {incomingSignal.senderName} baru saja mengirim {incomingSignal.count}x ketukan rindu ({incomingSignal.milestone}) pada jam {incomingSignal.time}.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIncomingSignal(null)}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-pink-200 text-xs shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         {/* Status Notification Banner */}
         {statusBanner && (
           <div

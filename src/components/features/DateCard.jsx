@@ -199,7 +199,10 @@ export default function DateCard({
                   if (onViewDrive) {
                     onViewDrive(date);
                   } else {
-                    window.open(date.driveUrl || MAIN_GOOGLE_DRIVE_FOLDER, '_blank');
+                    const safeUrl = (!date.driveUrl || date.driveUrl.includes('1xG4Z-xUO0c1g49u') || date.driveUrl.includes('AlspXi'))
+                      ? MAIN_GOOGLE_DRIVE_FOLDER
+                      : date.driveUrl;
+                    window.open(safeUrl, '_blank', 'noopener,noreferrer');
                   }
                 }}
                 title={date.driveFolder ? `Buka folder ${date.driveFolder} di Google Drive` : 'Buka folder kencan di Google Drive'}

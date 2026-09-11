@@ -5,6 +5,8 @@
  * serta penghitungan Health Streak dengan acuan waktu Bali (WITA / Asia/Makassar).
  */
 
+import { supabase, isSupabaseConfigured } from './supabaseClient';
+
 const STORAGE_KEY = 'ops_daily_data';
 
 // Dapatkan tanggal hari ini dalam format YYYY-MM-DD berdasarkan waktu Bali
@@ -151,6 +153,164 @@ export function saveDailyData(data) {
   }
 }
 
+/**
+ * Sinkronisasi status harian pengguna ke Supabase Cloud
+ */
+export async function syncDailyStatusToCloud(userId, data) {
+  if (!isSupabaseConfigured() || !supabase || !userId) return;
+
+  try {
+    const progress = getHealthProgress(userId, data);
+    const userChecklist = data[userId] || createInitialUserChecklist();
+    const currentDate = data.date || getBaliDateString();
+
+    const payload = {
+      user_id: userId,
+      date: currentDate,
+      energy_level: progress.percent,
+      status_message: JSON.stringify({
+        checklist: userChecklist,
+        tasks: data.tasks || [],
+        streak: data.streak || { count: 0, lastCompletedDate: null },
+      }),
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from('daily_statuses')
+      .upsert(payload, { onConflict: 'user_id,date' });
+
+    if (error) {
+      console.warn('Error syncing daily status to Supabase:', error.message);
+    }
+  } catch (err) {
+    console.error('Network error syncing daily status to Supabase:', err);
+  }
+}
+
+/**
+ * Ambil data checklist harian dari Supabase Cloud (dengan fallback localStorage)
+ */
+export async function fetchDailyDataFromCloud() {
+  const localData = getDailyData();
+  if (!isSupabaseConfigured() || !supabase) {
+    return localData;
+  }
+
+  try {
+    const currentDate = getBaliDateString();
+    const { data: rows, error } = await supabase
+      .from('daily_statuses')
+      .select('*')
+      .eq('date', currentDate);
+
+    if (error) {
+      console.warn('Supabase fetch daily_statuses error, using local fallback:', error.message);
+      return localData;
+    }
+
+    if (rows && rows.length > 0) {
+      const merged = { ...localData, date: currentDate };
+      let allCloudTasks = [...(localData.tasks || [])];
+
+      rows.forEach((row) => {
+        if (!row.user_id || !row.status_message) return;
+        try {
+          const parsed = JSON.parse(row.status_message);
+          if (parsed.checklist) {
+            merged[row.user_id] = parsed.checklist;
+          }
+          if (Array.isArray(parsed.tasks)) {
+            // Gabungkan tugas tanpa duplikasi id
+            const existingTaskIds = new Set(allCloudTasks.map((t) => t.id));
+            parsed.tasks.forEach((task) => {
+              if (!existingTaskIds.has(task.id)) {
+                allCloudTasks.push(task);
+                existingTaskIds.add(task.id);
+              } else {
+                // Perbarui status selesai tugas jika lebih baru
+                allCloudTasks = allCloudTasks.map((t) => (t.id === task.id ? task : t));
+              }
+            });
+          }
+          if (parsed.streak && parsed.streak.count > (merged.streak?.count || 0)) {
+            merged.streak = parsed.streak;
+          }
+        } catch (e) {
+          console.warn('Could not parse status_message from daily_statuses row:', e);
+        }
+      });
+
+      merged.tasks = allCloudTasks;
+      saveDailyData(merged);
+      return merged;
+    }
+  } catch (err) {
+    console.error('Error fetching daily statuses from Supabase:', err);
+  }
+
+  return localData;
+}
+
+/**
+ * Berlangganan (Subscribe) Realtime ke tabel daily_statuses Supabase
+ * Saat pasangan centang air / makanan di HP lain, tampilan terupdate seketika
+ */
+export function subscribeToDailyRealtime(onSync) {
+  if (!isSupabaseConfigured() || !supabase) {
+    return null;
+  }
+
+  try {
+    const channel = supabase
+      .channel('realtime:daily_statuses')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'daily_statuses' },
+        (payload) => {
+          const row = payload?.new;
+          if (!row || !row.user_id || !row.status_message) return;
+
+          try {
+            const parsed = JSON.parse(row.status_message);
+            const current = getDailyData();
+            const updated = { ...current };
+
+            if (parsed.checklist) {
+              updated[row.user_id] = parsed.checklist;
+            }
+            if (Array.isArray(parsed.tasks)) {
+              const existingIds = new Set(updated.tasks?.map((t) => t.id) || []);
+              let mergedTasks = [...(updated.tasks || [])];
+              parsed.tasks.forEach((t) => {
+                if (existingIds.has(t.id)) {
+                  mergedTasks = mergedTasks.map((old) => (old.id === t.id ? t : old));
+                } else {
+                  mergedTasks.push(t);
+                }
+              });
+              updated.tasks = mergedTasks;
+            }
+            if (parsed.streak) {
+              updated.streak = parsed.streak;
+            }
+
+            saveDailyData(updated);
+            if (onSync) onSync(updated);
+          } catch (e) {
+            console.warn('Error processing realtime daily status update:', e);
+          }
+        }
+      )
+      .subscribe();
+
+    return channel;
+  } catch (err) {
+    console.warn('Realtime daily_statuses subscription error:', err);
+    return null;
+  }
+}
+
 // Cek apakah target kesehatan harian (air + makan + jogging jika ada jadwal) terpenuhi 100%
 export function isUserHealthCompleted(userId, data) {
   const userChecklist = data?.[userId];
@@ -240,6 +400,7 @@ export function toggleWaterSlot(userId, slotIndex) {
   data[userId].water[slotIndex] = !currentStatus;
 
   saveDailyData(data);
+  syncDailyStatusToCloud(userId, data);
   return data;
 }
 
@@ -252,6 +413,7 @@ export function toggleMeal(userId, mealKey) {
   data[userId].meals[mealKey] = !currentStatus;
 
   saveDailyData(data);
+  syncDailyStatusToCloud(userId, data);
   return data;
 }
 
@@ -263,12 +425,14 @@ export function toggleJogging(userId) {
   data[userId].jogging = !data[userId].jogging;
 
   saveDailyData(data);
+  syncDailyStatusToCloud(userId, data);
   return data;
 }
 
 // Tambah tugas baru
 export function addTask({ title, category = 'Kuliah', deadline = '', notes = '', createdBy }) {
   const data = getDailyData();
+  const author = createdBy || 'user_sayang';
   const newTask = {
     id: `task_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     title,
@@ -276,29 +440,38 @@ export function addTask({ title, category = 'Kuliah', deadline = '', notes = '',
     deadline,
     notes,
     isCompleted: false,
-    createdBy: createdBy || 'user_sayang',
+    createdBy: author,
     createdAt: new Date().toISOString(),
   };
 
   data.tasks = [newTask, ...(data.tasks || [])];
   saveDailyData(data);
+  syncDailyStatusToCloud(author, data);
   return data;
 }
 
 // Toggle status tugas
-export function toggleTask(taskId) {
+export function toggleTask(taskId, currentUserId = 'user_sayang') {
   const data = getDailyData();
+  const targetTask = (data.tasks || []).find((t) => t.id === taskId);
+  const syncUser = targetTask?.createdBy || currentUserId;
+
   data.tasks = (data.tasks || []).map((t) =>
     t.id === taskId ? { ...t, isCompleted: !t.isCompleted } : t
   );
   saveDailyData(data);
+  syncDailyStatusToCloud(syncUser, data);
   return data;
 }
 
 // Hapus tugas
-export function deleteTask(taskId) {
+export function deleteTask(taskId, currentUserId = 'user_sayang') {
   const data = getDailyData();
+  const targetTask = (data.tasks || []).find((t) => t.id === taskId);
+  const syncUser = targetTask?.createdBy || currentUserId;
+
   data.tasks = (data.tasks || []).map((t) => t).filter((t) => t.id !== taskId);
   saveDailyData(data);
+  syncDailyStatusToCloud(syncUser, data);
   return data;
 }

@@ -15,6 +15,8 @@
  * - Cooldown & Love Stats tracker in localStorage
  */
 
+import { supabase, isSupabaseConfigured } from './supabaseClient';
+
 const GATEWAY_CONFIG_KEY = 'ops_gateway_config';
 const MISS_YOU_STATS_KEY = 'ops_miss_you_stats';
 const COOLDOWN_KEY = 'ops_miss_you_cooldown';
@@ -106,6 +108,128 @@ export function recordMissYouStat(tapCount) {
     return updated;
   } catch (err) {
     console.error('Error recording miss you stat:', err);
+    return null;
+  }
+}
+
+/**
+ * Catat sinyal rindu ke Supabase Cloud (tabel miss_you_logs)
+ */
+export async function logMissYouSignalToCloud({
+  senderId = 'user_izza',
+  recipientId = 'user_sayang',
+  clickCount = 1,
+  milestoneText = 'Percikan Rindu',
+  sentVia = 'wa_gateway',
+}) {
+  // Catat ke localStorage terlebih dahulu untuk update instan
+  recordMissYouStat(clickCount);
+
+  if (!isSupabaseConfigured() || !supabase) {
+    return null;
+  }
+
+  try {
+    const payload = {
+      sender_id: senderId,
+      recipient_id: recipientId,
+      click_count: clickCount,
+      milestone_text: milestoneText,
+      sent_via: sentVia,
+      sent_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from('miss_you_logs')
+      .insert([payload])
+      .select();
+
+    if (error) {
+      console.warn('Error saving miss_you_log to Supabase:', error.message);
+      return null;
+    }
+
+    return data?.[0] || null;
+  } catch (err) {
+    console.error('Network error logging miss you signal:', err);
+    return null;
+  }
+}
+
+/**
+ * Ambil agregasi statistik rindu dari Cloud Supabase
+ */
+export async function fetchMissYouStatsFromCloud() {
+  const localStats = getMissYouStats();
+  if (!isSupabaseConfigured() || !supabase) {
+    return localStats;
+  }
+
+  try {
+    const { data: logs, error } = await supabase
+      .from('miss_you_logs')
+      .select('*')
+      .order('sent_at', { ascending: false });
+
+    if (error) {
+      console.warn('Supabase fetch miss_you_logs error, using local fallback:', error.message);
+      return localStats;
+    }
+
+    if (logs) {
+      const totalSignalsSent = logs.length;
+      const totalTapsRecorded = logs.reduce((acc, r) => acc + (r.click_count || 1), 0);
+      const cloudHighest = logs.reduce((max, r) => Math.max(max, r.click_count || 1), 0);
+      const highestSpamRecord = Math.max(cloudHighest, localStats.highestSpamRecord || 0);
+      const lastSentTimestamp = logs[0]?.sent_at || localStats.lastSentTimestamp;
+
+      const merged = {
+        totalSignalsSent: Math.max(totalSignalsSent, localStats.totalSignalsSent || 0),
+        totalTapsRecorded: Math.max(totalTapsRecorded, localStats.totalTapsRecorded || 0),
+        highestSpamRecord,
+        lastSentTimestamp,
+        recentLogs: logs.slice(0, 5),
+      };
+
+      localStorage.setItem(MISS_YOU_STATS_KEY, JSON.stringify(merged));
+      return merged;
+    }
+  } catch (err) {
+    console.error('Error fetching miss you stats from Supabase:', err);
+  }
+
+  return localStats;
+}
+
+/**
+ * Berlangganan (Subscribe) Realtime ke event kiriman sinyal rindu pasangan
+ */
+export function subscribeToMissYouRealtime(onSignalReceived) {
+  if (!isSupabaseConfigured() || !supabase) {
+    return null;
+  }
+
+  try {
+    const channel = supabase
+      .channel('realtime:miss_you_logs')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'miss_you_logs' },
+        (payload) => {
+          if (payload?.new) {
+            // Perbarui cache lokal
+            fetchMissYouStatsFromCloud();
+            if (onSignalReceived) {
+              onSignalReceived(payload.new);
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return channel;
+  } catch (err) {
+    console.warn('Realtime miss_you_logs subscription error:', err);
     return null;
   }
 }

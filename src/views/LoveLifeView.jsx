@@ -17,6 +17,7 @@ import {
   deleteDate,
   ENERGY_LEVELS,
   MAIN_GOOGLE_DRIVE_FOLDER,
+  INITIAL_DATES,
 } from '../services/loveLifeService';
 import {
   CalendarHeart,
@@ -119,8 +120,24 @@ export default function LoveLifeView({ onBack, user }) {
     setData({ ...updated });
   };
 
-  const handleOpenDriveFolder = (driveUrl) => {
-    window.open(driveUrl || MAIN_GOOGLE_DRIVE_FOLDER, '_blank');
+  const handleOpenDriveFolder = (driveUrlOrDate) => {
+    let url = MAIN_GOOGLE_DRIVE_FOLDER;
+    if (typeof driveUrlOrDate === 'object' && driveUrlOrDate !== null) {
+      const rawUrl = driveUrlOrDate.driveUrl || '';
+      if (rawUrl && !rawUrl.includes('1xG4Z-xUO0c1g49u') && !rawUrl.includes('AlspXi')) {
+        url = rawUrl;
+      } else {
+        const found = INITIAL_DATES.find(
+          (d) => d.id === driveUrlOrDate.id || (d.driveFolder && d.driveFolder === driveUrlOrDate.driveFolder)
+        );
+        url = found?.driveUrl || MAIN_GOOGLE_DRIVE_FOLDER;
+      }
+    } else if (typeof driveUrlOrDate === 'string' && driveUrlOrDate) {
+      if (!driveUrlOrDate.includes('1xG4Z-xUO0c1g49u') && !driveUrlOrDate.includes('AlspXi')) {
+        url = driveUrlOrDate;
+      }
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   // Filtered Dates
@@ -299,7 +316,7 @@ export default function LoveLifeView({ onBack, user }) {
                     onSchedule={handleOpenScheduleModal}
                     onComplete={handleCompleteDate}
                     onDelete={handleDeleteDate}
-                    onViewDrive={() => handleOpenDriveFolder(date.driveUrl)}
+                    onViewDrive={() => handleOpenDriveFolder(date)}
                   />
                 ))
               ) : (
@@ -358,7 +375,7 @@ export default function LoveLifeView({ onBack, user }) {
                     key={memory.id}
                     memory={memory}
                     onDelete={handleDeleteDate}
-                    onViewDrive={() => handleOpenDriveFolder(memory.driveUrl)}
+                    onViewDrive={() => handleOpenDriveFolder(memory)}
                   />
                 ))
               ) : (

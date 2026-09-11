@@ -64,7 +64,7 @@ export const DRESS_CODE_PRESETS = [
 ];
 
 // Data awal default (11 Kencan Nyata dari Google Drive bertanda SELESAI + 4 Wishlist Kencan)
-const INITIAL_DATES = [
+export const INITIAL_DATES = [
   {
     id: 'date_1_matcha',
     title: 'Matcha Date',
@@ -395,17 +395,54 @@ export function getLoveLifeData() {
       return initial;
     }
     const parsed = JSON.parse(raw);
+    let hasChanged = false;
+
     if (!parsed.dates || parsed.dates.length === 0) {
       parsed.dates = INITIAL_DATES;
-      saveLoveLifeData(parsed);
-    } else if (parsed.dates.length < 15) {
-      // Migrasikan otomatis cache lama yang baru memiliki 8 atau 12 item
+      hasChanged = true;
+    } else {
+      // 1. Tambahkan item awal yang belum ada di cache
       const existingIds = new Set(parsed.dates.map((d) => d.id));
       const missing = INITIAL_DATES.filter((d) => !existingIds.has(d.id));
       if (missing.length > 0) {
         parsed.dates = [...parsed.dates, ...missing];
-        saveLoveLifeData(parsed);
+        hasChanged = true;
       }
+
+      // 2. Self-healing: Perbaiki otomatis URL Google Drive yang usang/typo (Error 404)
+      const initialDatesMap = new Map(INITIAL_DATES.map((d) => [d.id, d]));
+      parsed.dates = parsed.dates.map((date) => {
+        const initial = initialDatesMap.get(date.id);
+        const isBrokenUrl =
+          !date.driveUrl ||
+          date.driveUrl.includes('1xG4Z-xUO0c1g49u') ||
+          date.driveUrl.includes('AlspXi');
+
+        // Jika URL rusak atau item bawaan masih mengarah ke folder umum, perbarui ke URL spesifik
+        if (initial && (isBrokenUrl || (initial.driveUrl && date.driveUrl === MAIN_GOOGLE_DRIVE_FOLDER))) {
+          hasChanged = true;
+          return {
+            ...date,
+            driveUrl: initial.driveUrl || MAIN_GOOGLE_DRIVE_FOLDER,
+            driveFolder: date.driveFolder || initial.driveFolder,
+          };
+        }
+
+        // Jika kencan kustom memiliki link 404 lama, perbarui ke MAIN_GOOGLE_DRIVE_FOLDER yang valid
+        if (isBrokenUrl) {
+          hasChanged = true;
+          return {
+            ...date,
+            driveUrl: MAIN_GOOGLE_DRIVE_FOLDER,
+          };
+        }
+
+        return date;
+      });
+    }
+
+    if (hasChanged) {
+      saveLoveLifeData(parsed);
     }
     return parsed;
   } catch (err) {

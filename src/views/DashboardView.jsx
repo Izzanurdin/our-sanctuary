@@ -5,7 +5,7 @@ import AppHeader from '../components/common/AppHeader';
 import UserAvatar from '../components/common/UserAvatar';
 import BaliClock from '../components/features/BaliClock';
 import { getRandomGreeting, PROFILES } from '../config/profiles';
-import { getDailyData, getCoupleHealthStatus } from '../services/checklistService';
+import { getDailyData, getCoupleHealthStatus, fetchDailyDataFromCloud } from '../services/checklistService';
 import { getLoveLifeData, fetchLoveLifeData } from '../services/loveLifeService';
 import { getGardenFlowers } from '../services/gardenService';
 import {
@@ -21,7 +21,7 @@ import {
 
 export default function DashboardView({ user, onNavigate, onLogout }) {
   const [greeting, setGreeting] = useState(() => getRandomGreeting(user));
-  const [dailyData] = useState(() => getDailyData());
+  const [dailyData, setDailyData] = useState(() => getDailyData());
   const [loveLifeData, setLoveLifeData] = useState(() => getLoveLifeData());
   const [gardenFlowers] = useState(() => getGardenFlowers());
 
@@ -30,6 +30,11 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
     fetchLoveLifeData().then((cloudData) => {
       if (isMounted && cloudData?.dates) {
         setLoveLifeData(cloudData);
+      }
+    });
+    fetchDailyDataFromCloud().then((cloudDaily) => {
+      if (isMounted && cloudDaily) {
+        setDailyData(cloudDaily);
       }
     });
     return () => {

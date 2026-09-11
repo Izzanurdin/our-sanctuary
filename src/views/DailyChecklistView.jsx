@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GradientBackground from '../components/common/GradientBackground';
 import AppHeader from '../components/common/AppHeader';
 import GlassCard from '../components/common/GlassCard';
@@ -11,6 +11,8 @@ import HealthStreakBanner from '../components/features/HealthStreakBanner';
 import PartnerReminderModal from '../components/features/PartnerReminderModal';
 import {
   getDailyData,
+  fetchDailyDataFromCloud,
+  subscribeToDailyRealtime,
   toggleWaterSlot,
   toggleMeal,
   toggleJogging,
@@ -29,6 +31,30 @@ export default function DailyChecklistView({ onBack, user }) {
   const [taskFilter, setTaskFilter] = useState('active'); // 'all' | 'active' | 'completed'
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [isReminderOpen, setIsReminderOpen] = useState(false);
+
+  // Sinkronisasi data Cloud Supabase & Realtime Listener
+  useEffect(() => {
+    let isMounted = true;
+
+    // 1. Ambil data terbaru dari Supabase Cloud
+    fetchDailyDataFromCloud().then((cloudData) => {
+      if (isMounted && cloudData) {
+        setData({ ...cloudData });
+      }
+    });
+
+    // 2. Berlangganan Realtime: Centang air/makan dari pasangan langsung terupdate live
+    const channel = subscribeToDailyRealtime((updatedData) => {
+      if (isMounted && updatedData) {
+        setData({ ...updatedData });
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      channel?.unsubscribe?.();
+    };
+  }, []);
 
   const isMyChecklist = selectedUserId === user?.id;
   const partnerId = user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang';
@@ -75,12 +101,12 @@ export default function DailyChecklistView({ onBack, user }) {
   };
 
   const handleToggleTask = (taskId) => {
-    const updated = toggleTask(taskId);
+    const updated = toggleTask(taskId, user?.id || selectedUserId);
     setData({ ...updated });
   };
 
   const handleDeleteTask = (taskId) => {
-    const updated = deleteTask(taskId);
+    const updated = deleteTask(taskId, user?.id || selectedUserId);
     setData({ ...updated });
   };
 
@@ -112,9 +138,15 @@ export default function DailyChecklistView({ onBack, user }) {
         subtitle="Rutinitas & Target Kesehatan Kita"
         onBack={onBack}
         rightAction={
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-xs text-pink-300">
-            <Calendar className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-medium font-mono">{getBaliDateString()}</span>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Realtime</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-xs text-pink-300">
+              <Calendar className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-medium font-mono">{getBaliDateString()}</span>
+            </div>
           </div>
         }
       />

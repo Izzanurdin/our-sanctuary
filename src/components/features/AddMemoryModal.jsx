@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ModalWrapper from '../common/ModalWrapper';
-import { Camera, Heart, Image, FolderHeart, Calendar, MapPin, Sparkles, ExternalLink } from 'lucide-react';
+import { Camera, Heart, Image, FolderHeart, Calendar, MapPin, Sparkles, ExternalLink, Loader2 } from 'lucide-react';
+import { uploadMemoryPhoto } from '../../services/supabaseClient';
 
 export default function AddMemoryModal({
   isOpen,
@@ -20,6 +21,7 @@ export default function AddMemoryModal({
   const [driveUrl, setDriveUrl] = useState(initialDate?.driveUrl || '');
   const [caption, setCaption] = useState(initialDate?.caption || '');
   const [photoUrl, setPhotoUrl] = useState('');
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [capturedBy, setCapturedBy] = useState(user?.id || 'user_sayang');
 
   const handleDateSelectChange = (e) => {
@@ -46,15 +48,35 @@ export default function AddMemoryModal({
       const img = new window.Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800;
+        const MAX_WIDTH = 1000;
         const scale = Math.min(1, MAX_WIDTH / img.width);
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
 
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.82);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+        // Tampilkan preview instan secara lokal
         setPhotoUrl(compressedBase64);
+
+        // Coba unggah file asli ke Supabase Cloud Storage
+        setIsUploadingPhoto(true);
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            try {
+              const cloudUrl = await uploadMemoryPhoto(blob, file.name);
+              if (cloudUrl) {
+                setPhotoUrl(cloudUrl);
+              }
+            } catch (err) {
+              console.warn('Storage upload error, using local base64 fallback:', err);
+            } finally {
+              setIsUploadingPhoto(false);
+            }
+          } else {
+            setIsUploadingPhoto(false);
+          }
+        }, 'image/jpeg', 0.85);
       };
       img.src = event.target?.result;
     };
@@ -167,10 +189,16 @@ export default function AddMemoryModal({
                 alt="Preview"
                 className="w-full h-full object-cover"
               />
+              {isUploadingPhoto && (
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center gap-2 text-xs text-pink-200">
+                  <Loader2 className="w-4 h-4 animate-spin text-pink-400" />
+                  <span>Mengunggah ke Cloud Storage...</span>
+                </div>
+              )}
               <button
                 type="button"
                 onClick={() => setPhotoUrl('')}
-                className="absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-black/60 hover:bg-black/80 text-xs text-rose-300 backdrop-blur-md transition-all"
+                className="absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-black/60 hover:bg-black/80 text-xs text-rose-300 backdrop-blur-md transition-all z-10"
               >
                 Ganti Foto
               </button>
