@@ -3,9 +3,7 @@ import GradientBackground from '../components/common/GradientBackground';
 import AppHeader from '../components/common/AppHeader';
 import GlassCard from '../components/common/GlassCard';
 import GlowingHeartButton from '../components/features/GlowingHeartButton';
-import GatewaySettingsModal from '../components/features/GatewaySettingsModal';
 import {
-  Settings,
   Dices,
   Flame,
   CheckCircle2,
@@ -16,8 +14,6 @@ import {
 import {
   MOOD_OPTIONS,
   generateMissYouMessage,
-  getGatewayConfig,
-  sendWhatsAppMessage,
   getCooldownRemaining,
   setCooldownSeconds,
   getMissYouStats,
@@ -42,11 +38,11 @@ export default function MissYouView({ onBack, user }) {
   const [messageSeed, setMessageSeed] = useState(0);
   const [cooldown, setCooldown] = useState(getCooldownRemaining);
   const [stats, setStats] = useState(getMissYouStats);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [statusBanner, setStatusBanner] = useState(null);
   const [incomingSignal, setIncomingSignal] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState(() => getNotificationPermission());
+
 
 
   // Tentukan profil pasangan
@@ -156,70 +152,35 @@ export default function MissYouView({ onBack, user }) {
     setMessageSeed((prev) => prev + 1);
   };
 
-  // Handler pengiriman sinyal rindu
+  // Handler pengiriman sinyal rindu murni via Web Push & Supabase Realtime
   const handleSendMissYou = async (finalCount) => {
     setIsSending(true);
     setStatusBanner(null);
 
-    const config = getGatewayConfig();
-    const targetPhone =
-      partnerRole === 'girlfriend'
-        ? config.phoneCahayu || ''
-        : config.phoneIzza || '';
-
-    // Hitung final message untuk dikirim
-    const messageToSend = generateMissYouMessage({
-      moodId: activeMood,
-      partnerName,
-      nickname,
-      loveCount: finalCount,
-      seed: messageSeed,
-    });
+    const tier = getAffectionTier(finalCount);
 
     try {
-      if (!targetPhone) {
-        // Jika nomor belum diatur, buka prompt setting
-        setStatusBanner({
-          type: 'warning',
-          text: `Nomor WhatsApp ${partnerName} belum diisi di Pengaturan Gateway! Silakan klik ikon gear di pojok kanan atas 💕`,
-        });
-        setIsSettingsOpen(true);
-        setIsSending(false);
-        return;
-      }
-
-      const res = await sendWhatsAppMessage({
-        targetPhone,
-        message: messageToSend,
-      });
-
       // Simpan cooldown 60 detik
       setCooldownSeconds(60);
       setCooldown(60);
 
       // Simpan statistik rindu lokal & sinkronisasi ke Supabase Cloud
-      const tier = getAffectionTier(finalCount);
-      logMissYouSignalToCloud({
+      // Ini otomatis memicu Web Notification pop-up & getaran di HP pasangan via Realtime
+      await logMissYouSignalToCloud({
         senderId: user?.id || 'user_izza',
         recipientId: partnerId,
         clickCount: finalCount,
         milestoneText: tier.label,
-        sentVia: res.method === 'fonnte' ? 'fonnte' : 'wame',
-      }).then(() => {
-        fetchMissYouStatsFromCloud().then((s) => s && setStats(s));
+        sentVia: 'web_push',
       });
 
-      if (res.method === 'fonnte') {
-        setStatusBanner({
-          type: 'success',
-          text: `Sinyal rindu ${finalCount}x berhasil meluncur otomatis via Fonnte Gateway ke WhatsApp ${partnerName}! 🟢`,
-        });
-      } else {
-        setStatusBanner({
-          type: 'info',
-          text: `Membuka WhatsApp ke nomor ${partnerName} dengan draf ${finalCount}x rindu! 🟡`,
-        });
-      }
+      // Segarkan statistik live
+      fetchMissYouStatsFromCloud().then((s) => s && setStats(s));
+
+      setStatusBanner({
+        type: 'success',
+        text: `💖 Sinyal rindu ${finalCount}x (${tier.label}) berhasil meluncur langsung ke HP ${partnerName}! Layar HP ${partnerName} akan bergetar seketika ✨`,
+      });
     } catch (err) {
       setStatusBanner({
         type: 'error',
@@ -238,44 +199,33 @@ export default function MissYouView({ onBack, user }) {
         subtitle="Kanal Afeksi & Rindu Instan"
         onBack={onBack}
         rightAction={
-          <div className="flex items-center gap-2">
-            {isNotificationSupported() && (
-              <button
-                type="button"
-                onClick={notificationPermission === 'granted' ? handleTestNotification : handleEnableNotification}
-                title={notificationPermission === 'granted' ? 'Notifikasi HP Aktif (Klik untuk Tes Getar)' : 'Klik untuk Aktifkan Notifikasi HP'}
-                className={`p-2 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 ${
-                  notificationPermission === 'granted'
-                    ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                    : 'bg-pink-500/15 hover:bg-pink-500/25 text-pink-200 border-pink-500/40 animate-pulse'
-                }`}
-              >
-                {notificationPermission === 'granted' ? (
-                  <>
-                    <Bell className="w-4 h-4 text-emerald-400" />
-                    <span className="hidden sm:inline text-[11px]">Notif On</span>
-                  </>
-                ) : (
-                  <>
-                    <BellRing className="w-4 h-4 text-pink-300" />
-                    <span className="hidden sm:inline text-[11px]">Aktifkan Notif</span>
-                  </>
-                )}
-              </button>
-            )}
-
+          isNotificationSupported() ? (
             <button
               type="button"
-              onClick={() => setIsSettingsOpen(true)}
-              aria-label="Pengaturan Gateway"
-              className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] active:scale-95 text-pink-300 border border-white/10 transition-all flex items-center gap-1.5"
+              onClick={notificationPermission === 'granted' ? handleTestNotification : handleEnableNotification}
+              title={notificationPermission === 'granted' ? 'Notifikasi HP Aktif (Klik untuk Tes Getar)' : 'Klik untuk Aktifkan Notifikasi HP'}
+              className={`p-2 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 ${
+                notificationPermission === 'granted'
+                  ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                  : 'bg-pink-500/15 hover:bg-pink-500/25 text-pink-200 border-pink-500/40 animate-pulse'
+              }`}
             >
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline text-[11px] font-medium">Gateway</span>
+              {notificationPermission === 'granted' ? (
+                <>
+                  <Bell className="w-4 h-4 text-emerald-400" />
+                  <span className="hidden sm:inline text-[11px]">Notif On</span>
+                </>
+              ) : (
+                <>
+                  <BellRing className="w-4 h-4 text-pink-300" />
+                  <span className="hidden sm:inline text-[11px]">Aktifkan Notif</span>
+                </>
+              )}
             </button>
-          </div>
+          ) : null
         }
       />
+
 
       <div className="my-auto w-full py-4 space-y-5">
         {/* Permission Banner if notifications are not yet enabled */}
@@ -401,7 +351,7 @@ export default function MissYouView({ onBack, user }) {
             <GlassCard className="p-4 space-y-3 border-pink-500/20">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold text-pink-200 flex items-center gap-1">
-                  <span>Draf Pesan WhatsApp:</span>
+                  <span>Ungkapan Rindu & Cinta:</span>
                   {loveCount > 0 && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-pink-500/20 border border-amber-500/40 text-[10px] text-amber-300 font-bold animate-pulse">
                       <Flame className="w-2.5 h-2.5" />
@@ -477,13 +427,7 @@ export default function MissYouView({ onBack, user }) {
           &copy; 2026
         </p>
       </footer>
-
-      {/* Gateway Settings Modal */}
-      <GatewaySettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        currentUser={user}
-      />
     </GradientBackground>
   );
 }
+
