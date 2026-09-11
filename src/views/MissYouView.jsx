@@ -10,6 +10,8 @@ import {
   Flame,
   CheckCircle2,
   AlertCircle,
+  Bell,
+  BellRing,
 } from 'lucide-react';
 import {
   MOOD_OPTIONS,
@@ -25,6 +27,13 @@ import {
   getAffectionTier,
   playCelebrationFanfare,
 } from '../services/whatsapp';
+import {
+  showWebNotification,
+  getNotificationPermission,
+  requestNotificationPermission,
+  isNotificationSupported,
+  testNotification,
+} from '../services/notificationService';
 import { getRandomNickname, PROFILES } from '../config/profiles';
 
 export default function MissYouView({ onBack, user }) {
@@ -37,6 +46,8 @@ export default function MissYouView({ onBack, user }) {
   const [statusBanner, setStatusBanner] = useState(null);
   const [incomingSignal, setIncomingSignal] = useState(null);
   const [isSending, setIsSending] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState(() => getNotificationPermission());
+
 
   // Tentukan profil pasangan
   const partnerRole = user?.role === 'boyfriend' ? 'girlfriend' : 'boyfriend';
@@ -66,6 +77,15 @@ export default function MissYouView({ onBack, user }) {
       // Jika sinyal ini dikirim oleh pasangan untuk pengguna saat ini
       if (newLog.sender_id !== user?.id) {
         playCelebrationFanfare();
+
+        // Tampilkan notifikasi pop-up HP / PC native
+        showWebNotification({
+          title: `💖 Sinyal Rindu dari ${partnerName}!`,
+          body: `${partnerName} baru saja mengirim ${newLog.click_count || 1}x ketukan rindu (${newLog.milestone_text || 'Rindu Berat'})! 💕`,
+          icon: '/favicon.svg',
+          tag: 'miss-you-signal',
+        });
+
         setIncomingSignal({
           senderName: partnerName,
           count: newLog.click_count || 1,
@@ -80,6 +100,39 @@ export default function MissYouView({ onBack, user }) {
       channel?.unsubscribe?.();
     };
   }, [user?.id, partnerName]);
+
+  // Handler izin & tes notifikasi HP
+  const handleEnableNotification = async () => {
+    const granted = await requestNotificationPermission();
+    const current = getNotificationPermission();
+    setNotificationPermission(current);
+
+    if (granted) {
+      testNotification();
+      setStatusBanner({
+        type: 'success',
+        text: '✨ Notifikasi HP berhasil diaktifkan! Cek getaran dan notifikasi tes yang baru saja muncul di layarmu.',
+      });
+    } else {
+      setStatusBanner({
+        type: 'warning',
+        text: 'Izin notifikasi belum diaktifkan. Silakan izinkan di setelan browser atau ikon gembok di address bar.',
+      });
+    }
+  };
+
+  const handleTestNotification = async () => {
+    const success = await testNotification();
+    if (success) {
+      setStatusBanner({
+        type: 'success',
+        text: 'Tes notifikasi terkirim! HP kamu bergetar dan notifikasi pop-up muncul 🎉',
+      });
+    } else {
+      handleEnableNotification();
+    }
+  };
+
 
   // Cek cooldown setiap detik
   useEffect(() => {
@@ -185,19 +238,70 @@ export default function MissYouView({ onBack, user }) {
         subtitle="Kanal Afeksi & Rindu Instan"
         onBack={onBack}
         rightAction={
-          <button
-            type="button"
-            onClick={() => setIsSettingsOpen(true)}
-            aria-label="Pengaturan Gateway"
-            className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] active:scale-95 text-pink-300 border border-white/10 transition-all flex items-center gap-1.5"
-          >
-            <Settings className="w-4 h-4" />
-            <span className="hidden sm:inline text-[11px] font-medium">Gateway</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {isNotificationSupported() && (
+              <button
+                type="button"
+                onClick={notificationPermission === 'granted' ? handleTestNotification : handleEnableNotification}
+                title={notificationPermission === 'granted' ? 'Notifikasi HP Aktif (Klik untuk Tes Getar)' : 'Klik untuk Aktifkan Notifikasi HP'}
+                className={`p-2 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 ${
+                  notificationPermission === 'granted'
+                    ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                    : 'bg-pink-500/15 hover:bg-pink-500/25 text-pink-200 border-pink-500/40 animate-pulse'
+                }`}
+              >
+                {notificationPermission === 'granted' ? (
+                  <>
+                    <Bell className="w-4 h-4 text-emerald-400" />
+                    <span className="hidden sm:inline text-[11px]">Notif On</span>
+                  </>
+                ) : (
+                  <>
+                    <BellRing className="w-4 h-4 text-pink-300" />
+                    <span className="hidden sm:inline text-[11px]">Aktifkan Notif</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setIsSettingsOpen(true)}
+              aria-label="Pengaturan Gateway"
+              className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] active:scale-95 text-pink-300 border border-white/10 transition-all flex items-center gap-1.5"
+            >
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline text-[11px] font-medium">Gateway</span>
+            </button>
+          </div>
         }
       />
 
       <div className="my-auto w-full py-4 space-y-5">
+        {/* Permission Banner if notifications are not yet enabled */}
+        {isNotificationSupported() && notificationPermission !== 'granted' && (
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-rose-500/20 border border-pink-500/30 shadow-lg shadow-pink-500/10 flex items-center justify-between gap-3 animate-in fade-in duration-300">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-pink-500/30 text-pink-200 shrink-0">
+                <BellRing className="w-4 h-4 text-pink-300 animate-bounce" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-pink-100">Aktifkan Notifikasi HP Langsung</p>
+                <p className="text-[11px] text-pink-200/80 leading-tight">
+                  HP kamu akan bergetar & memunculkan pop-up saat {partnerName} mengirim sinyal rindu!
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleEnableNotification}
+              className="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 active:scale-95 text-white text-xs font-semibold shadow-md shadow-pink-500/25 transition-all shrink-0"
+            >
+              Aktifkan
+            </button>
+          </div>
+        )}
+
         {/* Realtime Incoming Love Signal Alert from Partner */}
         {incomingSignal && (
           <div className="p-3.5 rounded-2xl bg-gradient-to-r from-pink-500/25 via-purple-500/20 to-rose-500/25 border border-pink-500/40 shadow-[0_0_20px_rgba(244,114,182,0.25)] text-xs flex items-center justify-between gap-3 animate-in zoom-in-95 duration-300">

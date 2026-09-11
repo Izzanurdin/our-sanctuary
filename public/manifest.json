@@ -1,0 +1,17 @@
+{
+  "name": "Our Sanctuary",
+  "short_name": "OurSanctuary",
+  "description": "Private sanctuary for Izza & Cahayu ❤️",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#110c14",
+  "theme_color": "#e11d48",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import ModalWrapper from '../common/ModalWrapper';
-import { Copy, Check, Sparkles, MessageCircleHeart } from 'lucide-react';
+import { Copy, Check, Sparkles, MessageCircleHeart, BellRing } from 'lucide-react';
 import { getRandomNickname } from '../../config/profiles';
 import { getGatewayConfig, sendWhatsAppMessage } from '../../services/whatsapp';
+import { sendPartnerReminderToCloud } from '../../services/notificationService';
 
 export default function PartnerReminderModal({
   isOpen,
   onClose,
   partner,
   partnerProgress,
+  user,
 }) {
   const [copied, setCopied] = useState(false);
   const [phone, setPhone] = useState(() => {
@@ -30,12 +32,48 @@ export default function PartnerReminderModal({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Kirim Pop-up Notifikasi & Getaran langsung ke HP Pasangan via Web Push
+  const handleSendWebPush = async () => {
+    setIsSending(true);
+    try {
+      const senderName = user?.name || (user?.role === 'boyfriend' ? 'Izza' : 'Cahayu');
+      const senderId = user?.id || (partner?.role === 'girlfriend' ? 'user_izza' : 'user_sayang');
+      const recipientId = partner?.id || (user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang');
+
+      await sendPartnerReminderToCloud({
+        senderName,
+        senderId,
+        recipientId,
+        message: defaultMessage,
+        reminderType: 'health_checklist',
+      });
+
+      setSentToast(`🔔 Notifikasi getar & pop-up berhasil meluncur ke HP ${partner?.name || 'Pasangan'}!`);
+      setTimeout(() => {
+        onClose();
+      }, 1800);
+    } catch (err) {
+      setSentToast(`Gagal mengirim notifikasi: ${err.message}`);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   const handleSendWA = async () => {
     const targetPhone = phone.replace(/[^0-9]/g, '');
 
+    // Juga kirim broadcast notifikasi HP di latar belakang jika memungkinkan
+    sendPartnerReminderToCloud({
+      senderName: user?.name || (user?.role === 'boyfriend' ? 'Izza' : 'Cahayu'),
+      senderId: user?.id || (partner?.role === 'girlfriend' ? 'user_izza' : 'user_sayang'),
+      recipientId: partner?.id || (user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang'),
+      message: defaultMessage,
+      reminderType: 'health_checklist',
+    }).catch(() => {});
+
     if (!targetPhone) {
       handleCopy();
-      setSentToast('Nomor WA belum diisi, pesan sudah disalin ke clipboard! Siap dipaste di chat ya sayang 💕');
+      setSentToast('Nomor WA belum diisi, notifikasi HP dikirim & pesan disalin ke clipboard! 💕');
       setTimeout(() => setSentToast(''), 3000);
       return;
     }
@@ -48,7 +86,7 @@ export default function PartnerReminderModal({
       });
 
       if (res.method === 'fonnte') {
-        setSentToast('Pesan pengingat terkirim otomatis di latar belakang! 🟢');
+        setSentToast('Pengingat meluncur ke HP & WhatsApp via Fonnte Gateway! 🟢');
         setTimeout(() => {
           onClose();
         }, 1500);
@@ -64,6 +102,7 @@ export default function PartnerReminderModal({
       setIsSending(false);
     }
   };
+
 
   return (
     <ModalWrapper
@@ -119,25 +158,37 @@ export default function PartnerReminderModal({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+        <div className="space-y-2 pt-2 border-t border-white/10">
           <button
             type="button"
-            onClick={handleCopy}
-            className="py-2.5 px-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 text-neutral-300 text-xs font-medium transition-all flex items-center gap-1.5"
+            onClick={handleSendWebPush}
+            disabled={isSending}
+            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 hover:from-pink-400 hover:to-rose-400 text-white text-xs font-semibold shadow-lg shadow-pink-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-            {copied ? 'Tersalin' : 'Salin Pesan'}
+            <BellRing className="w-4 h-4 animate-bounce" />
+            <span>Kirim Notifikasi Langsung ke HP (Web Push)</span>
           </button>
 
-          <button
-            type="button"
-            onClick={handleSendWA}
-            disabled={isSending}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-semibold shadow-lg shadow-emerald-500/25 active:scale-95 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
-          >
-            <MessageCircleHeart className="w-4 h-4" />
-            {isSending ? 'Mengirim...' : 'Kirim via WhatsApp'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="py-2.5 px-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 text-neutral-300 text-xs font-medium transition-all flex items-center gap-1.5"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copied ? 'Tersalin' : 'Salin'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSendWA}
+              disabled={isSending}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-semibold shadow-lg shadow-emerald-500/25 active:scale-95 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
+              <MessageCircleHeart className="w-4 h-4" />
+              <span>Kirim via WhatsApp</span>
+            </button>
+          </div>
         </div>
       </div>
     </ModalWrapper>

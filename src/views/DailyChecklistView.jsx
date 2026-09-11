@@ -22,7 +22,14 @@ import {
   getCoupleHealthStatus,
   getBaliDateString,
 } from '../services/checklistService';
-import { Plus, ListTodo, Calendar, UserCheck, Bell } from 'lucide-react';
+import {
+  subscribeToPartnerReminders,
+  getNotificationPermission,
+  requestNotificationPermission,
+  isNotificationSupported,
+  testNotification,
+} from '../services/notificationService';
+import { Plus, ListTodo, Calendar, UserCheck, Bell, BellRing } from 'lucide-react';
 import { PROFILES } from '../config/profiles';
 
 export default function DailyChecklistView({ onBack, user }) {
@@ -31,6 +38,11 @@ export default function DailyChecklistView({ onBack, user }) {
   const [taskFilter, setTaskFilter] = useState('active'); // 'all' | 'active' | 'completed'
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [isReminderOpen, setIsReminderOpen] = useState(false);
+  const [incomingReminder, setIncomingReminder] = useState(null);
+  const [notifPerm, setNotifPerm] = useState(() => getNotificationPermission());
+
+  const partnerId = user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang';
+  const partnerName = user?.id === 'user_sayang' ? 'Izza' : 'Cahayu';
 
   // Sinkronisasi data Cloud Supabase & Realtime Listener
   useEffect(() => {
@@ -50,15 +62,34 @@ export default function DailyChecklistView({ onBack, user }) {
       }
     });
 
+    // 3. Berlangganan Pengingat Sehat Realtime dari Pasangan
+    const reminderChannel = subscribeToPartnerReminders(user?.id, (payload) => {
+      if (isMounted) {
+        setIncomingReminder({
+          senderName: payload.senderName || partnerName,
+          message: payload.message,
+          time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        });
+      }
+    });
+
     return () => {
       isMounted = false;
       channel?.unsubscribe?.();
+      reminderChannel?.unsubscribe?.();
     };
-  }, []);
+  }, [user?.id, partnerName]);
+
+  const handleEnableNotification = async () => {
+    const granted = await requestNotificationPermission();
+    setNotifPerm(getNotificationPermission());
+    if (granted) {
+      testNotification();
+    }
+  };
 
   const isMyChecklist = selectedUserId === user?.id;
-  const partnerId = user?.id === 'user_sayang' ? 'user_izza' : 'user_sayang';
-  const partnerName = user?.id === 'user_sayang' ? 'Izza' : 'Cahayu';
+
   const activeProfile = PROFILES.find((p) => p.id === selectedUserId) || user;
   const partnerProfile = PROFILES.find((p) => p.id === partnerId) || { name: partnerName };
   const myProfile = PROFILES.find((p) => p.id === user?.id) || user;
@@ -139,6 +170,21 @@ export default function DailyChecklistView({ onBack, user }) {
         onBack={onBack}
         rightAction={
           <div className="flex items-center gap-2">
+            {isNotificationSupported() && (
+              <button
+                type="button"
+                onClick={notifPerm === 'granted' ? testNotification : handleEnableNotification}
+                title={notifPerm === 'granted' ? 'Notifikasi HP Aktif (Klik untuk Tes Getar)' : 'Klik untuk Aktifkan Notifikasi HP'}
+                className={`p-1.5 rounded-xl border text-[11px] font-medium transition-all flex items-center gap-1 ${
+                  notifPerm === 'granted'
+                    ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                    : 'bg-pink-500/15 hover:bg-pink-500/25 text-pink-200 border-pink-500/40 animate-pulse'
+                }`}
+              >
+                <Bell className="w-3.5 h-3.5 text-pink-300" />
+                <span className="hidden sm:inline">{notifPerm === 'granted' ? 'Notif On' : 'Aktifkan'}</span>
+              </button>
+            )}
             <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-300">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>Realtime</span>
@@ -152,6 +198,56 @@ export default function DailyChecklistView({ onBack, user }) {
       />
 
       <div className="space-y-4 pb-6">
+        {/* Incoming Partner Health Reminder Banner */}
+        {incomingReminder && (
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/25 via-teal-500/20 to-blue-500/25 border border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.25)] text-xs flex items-center justify-between gap-3 animate-in zoom-in-95 duration-300">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-emerald-500/30 text-emerald-200">
+                <BellRing className="w-5 h-5 text-emerald-400 animate-bounce" />
+              </div>
+              <div>
+                <p className="font-semibold text-emerald-100 text-xs">
+                  ⏰ Pengingat Sehat dari {incomingReminder.senderName}!
+                </p>
+                <p className="text-[11px] text-emerald-200/90 leading-relaxed">
+                  &ldquo;{incomingReminder.message}&rdquo; ({incomingReminder.time})
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIncomingReminder(null)}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-emerald-200 text-xs shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* Permission Banner if notifications are not yet enabled */}
+        {isNotificationSupported() && notifPerm !== 'granted' && (
+          <div className="p-3 rounded-2xl bg-gradient-to-r from-pink-500/15 via-purple-500/15 to-emerald-500/15 border border-pink-500/30 flex items-center justify-between gap-3 animate-in fade-in duration-300">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-pink-500/20 text-pink-300 shrink-0">
+                <Bell className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-pink-100">Aktifkan Notifikasi Pengingat</p>
+                <p className="text-[11px] text-pink-200/70 leading-tight">
+                  HP akan bergetar saat {partnerName} mengingatkan kamu minum air atau makan!
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleEnableNotification}
+              className="py-1 px-3 rounded-xl bg-pink-500 hover:bg-pink-400 active:scale-95 text-white text-xs font-semibold shadow-md shadow-pink-500/20 transition-all shrink-0"
+            >
+              Izinkan
+            </button>
+          </div>
+        )}
+
         {/* Profile Switcher Tabs (Decision #2: Personal per profile) */}
         <div className="flex items-center p-1 rounded-2xl bg-white/[0.04] border border-white/10">
           <button
@@ -352,6 +448,7 @@ export default function DailyChecklistView({ onBack, user }) {
         onClose={() => setIsReminderOpen(false)}
         partner={partnerProfile}
         partnerProgress={partnerProgress}
+        user={user}
       />
     </GradientBackground>
   );
