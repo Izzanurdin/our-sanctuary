@@ -73,9 +73,10 @@ export default function LoveLifeView({ onBack, user }) {
   const allDates = data.dates || [];
 
   // Handlers
-  const handleAddDate = (newDateData) => {
-    const updated = addDateIdea(newDateData);
+  const handleAddDate = async (newDateData) => {
+    const updated = await addDateIdea(newDateData);
     setData({ ...updated });
+    return updated;
   };
 
   const handleOpenScheduleModal = (date) => {

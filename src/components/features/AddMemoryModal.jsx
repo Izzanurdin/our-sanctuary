@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ModalWrapper from '../common/ModalWrapper';
-import { Camera, Heart, Image, FolderHeart, Calendar, MapPin, Sparkles } from 'lucide-react';
+import { Camera, Heart, Image, FolderHeart, Calendar, MapPin, Sparkles, ExternalLink } from 'lucide-react';
 
 export default function AddMemoryModal({
   isOpen,
@@ -196,6 +196,23 @@ export default function AddMemoryModal({
 
         {/* Folder & Link Google Drive */}
         <div className="space-y-2.5 p-3 rounded-xl bg-pink-500/5 border border-pink-500/20">
+          {driveUrl && (
+            <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-pink-500/15 border border-pink-500/30">
+              <div className="flex items-center gap-1.5 min-w-0 text-xs text-pink-200">
+                <FolderHeart className="w-4 h-4 text-pink-400 flex-shrink-0" />
+                <span className="truncate font-medium">Folder Drive Siap: {driveFolder || 'Folder Kencan'}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.open(driveUrl, '_blank')}
+                className="py-1 px-2.5 rounded-lg bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-[11px] font-semibold text-white flex items-center gap-1 shadow-sm active:scale-95 transition-all flex-shrink-0"
+              >
+                <span>Buka & Upload Foto</span>
+                <ExternalLink className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+
           <div>
             <label className="flex items-center gap-1 text-xs font-medium text-pink-200 mb-1">
               <FolderHeart className="w-3.5 h-3.5 text-pink-400" />
@@ -209,7 +226,7 @@ export default function AddMemoryModal({
               className="w-full px-3.5 py-2 rounded-xl bg-white/[0.04] border border-white/10 focus:border-pink-500/50 text-xs text-white placeholder-neutral-500 outline-none"
             />
             <p className="text-[10px] text-pink-300/70 mt-1 leading-normal">
-              💡 Salin link folder dokumentasi dari HP/Google Drive (pastikan akses: <em>&quot;Anyone with the link&quot;</em>)
+              💡 Link folder kencan ini sudah otomatis terhubung ke Google Drive kalian berdua.
             </p>
           </div>
 

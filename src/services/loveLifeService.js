@@ -12,6 +12,8 @@ const STORAGE_KEY = 'ops_lovelife_data';
 export const MAIN_GOOGLE_DRIVE_FOLDER =
   'https://drive.google.com/drive/folders/1xG4Z-xUO0z1g49oTqUmMhSYPtAfapXii?usp=drive_link';
 
+export const GDRIVE_WEBHOOK_URL = import.meta.env.VITE_GDRIVE_WEBHOOK_URL?.trim();
+
 // Pilihan Preset Energy Levels
 export const ENERGY_LEVELS = [
   {
@@ -483,8 +485,37 @@ export function subscribeToLoveLifeRealtime(onSync) {
   }
 }
 
-// Tambah ide kencan baru ke wishlist
-export function addDateIdea({
+// Membuat subfolder baru di Google Drive melalui Webhook Google Apps Script
+export async function createGoogleDriveFolder(folderName) {
+  if (!GDRIVE_WEBHOOK_URL) {
+    console.warn('VITE_GDRIVE_WEBHOOK_URL belum disetel di .env');
+    return null;
+  }
+
+  try {
+    const response = await fetch(GDRIVE_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ folderName }),
+    });
+    const result = await response.json();
+    if (result.success) {
+      return {
+        id: result.folderId,
+        url: result.folderUrl,
+        name: result.folderName,
+      };
+    }
+    console.warn('Google Apps Script response unhandled:', result);
+    return null;
+  } catch (err) {
+    console.error('Error creating Google Drive folder via Webhook:', err);
+    return null;
+  }
+}
+
+// Tambah ide kencan baru ke wishlist (Otomatis buat folder di Google Drive jika webhook aktif)
+export async function addDateIdea({
   title,
   location = '',
   gmapsUrl = '',
@@ -495,6 +526,31 @@ export function addDateIdea({
   createdBy = 'user_izza',
 }) {
   const data = getLoveLifeData();
+
+  // Hitung nomor urut folder berikutnya secara otomatis (1, 2, ... 12 -> 13)
+  let nextNumber = 13;
+  try {
+    const existingNumbers = (data.dates || [])
+      .map((d) => {
+        const match = (d.driveFolder || d.title || '').match(/^(\d+)\./);
+        return match ? parseInt(match[1], 10) : 0;
+      })
+      .filter((n) => !isNaN(n) && n > 0);
+    if (existingNumbers.length > 0) {
+      nextNumber = Math.max(...existingNumbers) + 1;
+    }
+  } catch (e) {
+    console.warn('Could not parse next folder number, using fallback:', e);
+  }
+
+  const suggestedFolderName = `${nextNumber}. ${title}`;
+
+  // Buat folder Google Drive secara otomatis via Webhook jika URL tersedia
+  let driveInfo = null;
+  if (GDRIVE_WEBHOOK_URL) {
+    driveInfo = await createGoogleDriveFolder(suggestedFolderName);
+  }
+
   const newDate = {
     id: `date_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     title,
@@ -512,8 +568,8 @@ export function addDateIdea({
     scheduledEndTime: '19:00',
     caption: '',
     photoUrl: '',
-    driveFolder: '',
-    driveUrl: '',
+    driveFolder: driveInfo ? driveInfo.name : suggestedFolderName,
+    driveUrl: driveInfo ? driveInfo.url : MAIN_GOOGLE_DRIVE_FOLDER,
     completedAt: '',
     capturedBy: '',
   };

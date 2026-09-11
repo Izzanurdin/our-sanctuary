@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ModalWrapper from '../common/ModalWrapper';
-import { Sparkles, MapPin, Tag } from 'lucide-react';
+import { Sparkles, MapPin, Tag, FolderHeart } from 'lucide-react';
 import { ENERGY_LEVELS, DRESS_CODE_PRESETS } from '../../services/loveLifeService';
 
 export default function AddDateModal({ isOpen, onClose, onAddDate, user }) {
@@ -11,6 +11,7 @@ export default function AddDateModal({ isOpen, onClose, onAddDate, user }) {
   const [category, setCategory] = useState('Food & Drinks');
   const [dressCode, setDressCode] = useState('');
   const [notes, setNotes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const CATEGORIES = [
     'Food & Drinks',
@@ -23,30 +24,37 @@ export default function AddDateModal({ isOpen, onClose, onAddDate, user }) {
     'Other',
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim() || isSubmitting) return;
 
-    onAddDate({
-      title: title.trim(),
-      location: location.trim(),
-      gmapsUrl: gmapsUrl.trim(),
-      energyKey,
-      category,
-      dressCode: dressCode.trim(),
-      notes: notes.trim(),
-      createdBy: user?.id || 'user_izza',
-    });
+    setIsSubmitting(true);
+    try {
+      await onAddDate({
+        title: title.trim(),
+        location: location.trim(),
+        gmapsUrl: gmapsUrl.trim(),
+        energyKey,
+        category,
+        dressCode: dressCode.trim(),
+        notes: notes.trim(),
+        createdBy: user?.id || 'user_izza',
+      });
 
-    // Reset form
-    setTitle('');
-    setLocation('');
-    setGmapsUrl('');
-    setEnergyKey('casual');
-    setCategory('Food & Drinks');
-    setDressCode('');
-    setNotes('');
-    onClose();
+      // Reset form
+      setTitle('');
+      setLocation('');
+      setGmapsUrl('');
+      setEnergyKey('casual');
+      setCategory('Food & Drinks');
+      setDressCode('');
+      setNotes('');
+      onClose();
+    } catch (err) {
+      console.error('Error submitting date idea:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -167,22 +175,39 @@ export default function AddDateModal({ isOpen, onClose, onAddDate, user }) {
           />
         </div>
 
+        {/* Google Drive Automation Info Banner */}
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-pink-500/10 border border-pink-500/20 text-xs text-pink-200">
+          <FolderHeart className="w-4 h-4 text-pink-400 flex-shrink-0" />
+          <span>Folder Google Drive untuk kencan ini akan otomatis dibuatkan di folder bersama kalian! 📸</span>
+        </div>
+
         {/* Action Buttons */}
         <div className="pt-2 border-t border-white/10 flex items-center gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-medium text-neutral-300 transition-all"
+            disabled={isSubmitting}
+            className="py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-medium text-neutral-300 transition-all disabled:opacity-50"
           >
             Batal
           </button>
 
           <button
             type="submit"
-            className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white text-xs font-semibold shadow-lg shadow-pink-500/25 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+            disabled={isSubmitting}
+            className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white text-xs font-semibold shadow-lg shadow-pink-500/25 active:scale-95 transition-all flex items-center justify-center gap-1.5 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <Sparkles className="w-4 h-4 text-pink-200" />
-            Simpan ke Wishlist Kencan ❤️
+            {isSubmitting ? (
+              <>
+                <span className="inline-block animate-spin mr-1">⏳</span>
+                <span>Membuat Folder Drive & Menyimpan...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 text-pink-200" />
+                Simpan ke Wishlist Kencan ❤️
+              </>
+            )}
           </button>
         </div>
       </form>
