@@ -123,13 +123,51 @@ export async function showWebNotification({
 }
 
 let reminderChannel = null;
+const reminderCallbacks = new Set();
+let registeredRecipientId = null;
 
-function getReminderChannel() {
-  if (!reminderChannel && supabase) {
+function ensureReminderChannel(currentUserId) {
+  if (!supabase) return null;
+
+  if (currentUserId) {
+    registeredRecipientId = currentUserId;
+  }
+
+  if (!reminderChannel) {
     reminderChannel = supabase.channel('realtime:partner_reminders', {
       config: { broadcast: { self: false } },
     });
+
+    reminderChannel
+      .on('broadcast', { event: 'reminder' }, (response) => {
+        const payload = response?.payload;
+        if (!payload) return;
+
+        // Hanya proses jika pesan ditujukan untuk pengguna saat ini
+        if (!registeredRecipientId || payload.recipientId === registeredRecipientId) {
+          showWebNotification({
+            title: `⏰ Pengingat Sehat dari ${payload.senderName}!`,
+            body: payload.message,
+            icon: '/favicon.svg',
+            tag: 'health-reminder',
+          });
+
+          reminderCallbacks.forEach((cb) => {
+            try {
+              cb(payload);
+            } catch (err) {
+              console.error('Error executing reminder callback:', err);
+            }
+          });
+        }
+      })
+      .subscribe((status, err) => {
+        if (err) {
+          console.debug('Partner reminder subscription status:', status, err);
+        }
+      });
   }
+
   return reminderChannel;
 }
 
@@ -147,42 +185,37 @@ export async function sendPartnerReminderToCloud({
     return false;
   }
 
+  const payload = {
+    senderName,
+    senderId,
+    recipientId,
+    message,
+    reminderType,
+    timestamp: new Date().toISOString(),
+  };
+
   try {
-    const channel = getReminderChannel();
-    const payload = {
-      senderName,
-      senderId,
-      recipientId,
-      message,
-      reminderType,
-      timestamp: new Date().toISOString(),
-    };
+    const channel = ensureReminderChannel(senderId);
+    if (!channel) return false;
 
-    if (channel.state === 'joined') {
-      const res = await channel.send({
-        type: 'broadcast',
-        event: 'reminder',
-        payload,
-      });
-      return res === 'ok';
-    }
-
-    return new Promise((resolve) => {
-      channel.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          const res = await channel.send({
-            type: 'broadcast',
-            event: 'reminder',
-            payload,
-          });
-          resolve(res === 'ok');
-        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-          resolve(false);
-        }
-      });
+    // Supabase RealtimeChannel.send() otomatis mengirim via WebSocket atau fallback ke REST API
+    const res = await channel.send({
+      type: 'broadcast',
+      event: 'reminder',
+      payload,
     });
+
+    return res === 'ok';
   } catch (err) {
     console.error('Error sending partner reminder broadcast:', err);
+    try {
+      if (reminderChannel && typeof reminderChannel.httpSend === 'function') {
+        const httpRes = await reminderChannel.httpSend('reminder', payload);
+        return httpRes?.status === 'ok' || true;
+      }
+    } catch {
+      // ignore
+    }
     return false;
   }
 }
@@ -196,34 +229,19 @@ export function subscribeToPartnerReminders(currentUserId, onReminderReceived) {
   }
 
   try {
-    const channel = getReminderChannel();
-
-    channel.on('broadcast', { event: 'reminder' }, (response) => {
-      const payload = response?.payload;
-      if (!payload) return;
-
-      // Hanya proses jika pesan ditujukan untuk pengguna saat ini
-      if (payload.recipientId === currentUserId) {
-        // 1. Tampilkan notifikasi pop-up HP
-        showWebNotification({
-          title: `⏰ Pengingat Sehat dari ${payload.senderName}!`,
-          body: payload.message,
-          icon: '/favicon.svg',
-          tag: 'health-reminder',
-        });
-
-        // 2. Kirim ke callback UI
-        if (onReminderReceived) {
-          onReminderReceived(payload);
-        }
-      }
-    });
-
-    if (channel.state !== 'joined') {
-      channel.subscribe();
+    if (onReminderReceived) {
+      reminderCallbacks.add(onReminderReceived);
     }
 
-    return channel;
+    ensureReminderChannel(currentUserId);
+
+    return {
+      unsubscribe: () => {
+        if (onReminderReceived) {
+          reminderCallbacks.delete(onReminderReceived);
+        }
+      },
+    };
   } catch (err) {
     console.warn('Error subscribing to partner reminders:', err);
     return null;
