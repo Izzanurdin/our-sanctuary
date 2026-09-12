@@ -58,8 +58,8 @@ export default function LoveLifeView({ onBack, user }) {
     };
   }, []);
 
-  // Filter States for Date Deck
-  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'wishlist' | 'scheduled' | 'completed'
+  // Filter States for Date Deck: Default to 'wishlist' agar pengguna langsung disapa ide baru!
+  const [statusFilter, setStatusFilter] = useState('wishlist'); // 'wishlist' | 'scheduled' | 'completed' | 'all'
   const [energyFilter, setEnergyFilter] = useState('all');
 
   // Modals state
@@ -179,113 +179,159 @@ export default function LoveLifeView({ onBack, user }) {
         }
       />
 
-      <div className="space-y-4 pb-8">
+      <div className="max-w-5xl mx-auto space-y-4 pb-12 px-1">
         {/* Main 2 Sub-Tabs (Date Deck vs Memory Vault) */}
-        <div className="flex items-center p-1 rounded-2xl bg-white/[0.04] border border-white/10">
+        <div className="flex items-center p-1 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-sm">
           <button
             type="button"
             onClick={() => setActiveTab('dates')}
-            className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
               activeTab === 'dates'
                 ? 'bg-gradient-to-r from-pink-500/30 to-rose-500/30 text-pink-100 border border-pink-500/40 shadow-[0_0_15px_rgba(244,114,182,0.25)]'
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
             <CalendarHeart className="w-4 h-4 text-pink-400" />
-            Date Deck ({allDates.length})
+            <span>Date Deck</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-pink-200 font-mono">
+              {allDates.length}
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('memories')}
-            className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
               activeTab === 'memories'
                 ? 'bg-gradient-to-r from-pink-500/30 to-rose-500/30 text-pink-100 border border-pink-500/40 shadow-[0_0_15px_rgba(244,114,182,0.25)]'
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
             <Image className="w-4 h-4 text-rose-400" />
-            Memory Vault ({completedCount})
+            <span>Memory Vault</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-rose-200 font-mono">
+              {completedCount}
+            </span>
           </button>
         </div>
 
         {/* 1. DATE DECK VIEW */}
         {activeTab === 'dates' && (
-          <div className="space-y-3.5 animate-in fade-in duration-200">
-            {/* Action Bar (Shuffler & Add Date) */}
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setIsShufflerOpen(true)}
-                className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600/30 via-pink-600/30 to-rose-600/30 hover:from-purple-600/40 hover:to-rose-600/40 border border-pink-500/40 text-xs font-semibold text-pink-100 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(244,114,182,0.15)]"
-              >
-                <Shuffle className="w-4 h-4 text-pink-300 animate-soft-pulse" />
-                Acak Kencan 🎲
-              </button>
+          <div className="space-y-4 animate-in fade-in duration-200">
+            {/* Action Bar (Header Actions: Shuffler & Add Date) */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-white/[0.03] border border-white/5 backdrop-blur-sm">
+              <div className="flex items-center gap-2 px-1">
+                <Sparkles className="w-4 h-4 text-pink-400 flex-shrink-0 animate-soft-pulse" />
+                <p className="text-xs text-neutral-300">
+                  {statusFilter === 'wishlist' && (
+                    <span>
+                      Ada <strong className="text-pink-300 font-semibold">{wishlistCount} ide kencan</strong> yang siap dicoba!
+                    </span>
+                  )}
+                  {statusFilter === 'scheduled' && (
+                    <span>
+                      <strong className="text-pink-300 font-semibold">{scheduledCount} kencan</strong> sudah terjadwal.
+                    </span>
+                  )}
+                  {statusFilter === 'completed' && (
+                    <span>
+                      <strong className="text-emerald-300 font-semibold">{completedCount} kencan indah</strong> telah dilalui bersama.
+                    </span>
+                  )}
+                  {statusFilter === 'all' && (
+                    <span>
+                      Menampilkan semua <strong className="text-pink-200 font-semibold">{allDates.length} kencan</strong>.
+                    </span>
+                  )}
+                </p>
+              </div>
 
-              <button
-                type="button"
-                onClick={() => setIsAddDateOpen(true)}
-                className="py-2.5 px-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-pink-500/30 text-xs font-medium text-pink-200 active:scale-95 transition-all flex items-center justify-center gap-1.5"
-              >
-                <Plus className="w-4 h-4 text-pink-400" />
-                Tambah Ide
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsShufflerOpen(true)}
+                  className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl bg-gradient-to-r from-purple-600/30 via-pink-600/30 to-rose-600/30 hover:from-purple-600/40 hover:to-rose-600/40 border border-pink-500/40 text-xs font-semibold text-pink-100 active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(244,114,182,0.15)]"
+                >
+                  <Shuffle className="w-3.5 h-3.5 text-pink-300" />
+                  <span>Acak Kencan 🎲</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsAddDateOpen(true)}
+                  className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-xs font-medium text-pink-200 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5 text-pink-400" />
+                  <span>Tambah Ide</span>
+                </button>
+              </div>
             </div>
 
-            {/* Status Filter Tabs (Touch-friendly & Comfortable) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 rounded-2xl bg-white/[0.04] border border-white/10 text-xs">
-              <button
-                type="button"
-                onClick={() => setStatusFilter('all')}
-                className={`py-2 px-2 rounded-xl font-semibold text-center transition-all ${
-                  statusFilter === 'all'
-                    ? 'bg-white/15 text-pink-100 shadow-sm border border-white/20'
-                    : 'text-neutral-400 hover:text-neutral-200'
-                }`}
-              >
-                Semua ({allDates.length})
-              </button>
-
+            {/* Status Filter Tabs (Wishlist First, Clean Segmented Control) */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs">
               <button
                 type="button"
                 onClick={() => setStatusFilter('wishlist')}
-                className={`py-2 px-2 rounded-xl font-semibold text-center transition-all ${
+                className={`py-2 px-2.5 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1.5 ${
                   statusFilter === 'wishlist'
-                    ? 'bg-pink-500/25 text-pink-100 border border-pink-500/40 shadow-sm'
+                    ? 'bg-pink-500/30 text-pink-100 border border-pink-500/50 shadow-[0_0_12px_rgba(244,114,182,0.2)]'
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                Wishlist ({wishlistCount})
+                <span>💡 Wishlist</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
+                  {wishlistCount}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setStatusFilter('scheduled')}
-                className={`py-2 px-2 rounded-xl font-semibold text-center transition-all ${
+                className={`py-2 px-2.5 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1.5 ${
                   statusFilter === 'scheduled'
-                    ? 'bg-pink-500/25 text-pink-100 border border-pink-500/40 shadow-sm'
+                    ? 'bg-pink-500/30 text-pink-100 border border-pink-500/50 shadow-[0_0_12px_rgba(244,114,182,0.2)]'
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                Terjadwal ({scheduledCount})
+                <span>🗓️ Terjadwal</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
+                  {scheduledCount}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setStatusFilter('completed')}
-                className={`py-2 px-2 rounded-xl font-semibold text-center transition-all ${
+                className={`py-2 px-2.5 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1.5 ${
                   statusFilter === 'completed'
-                    ? 'bg-emerald-500/25 text-emerald-200 border border-emerald-500/40 shadow-sm'
+                    ? 'bg-emerald-500/25 text-emerald-200 border border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                Selesai ({completedCount})
+                <span>✨ Selesai</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
+                  {completedCount}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStatusFilter('all')}
+                className={`py-2 px-2.5 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1.5 ${
+                  statusFilter === 'all'
+                    ? 'bg-white/15 text-pink-100 border border-white/20 shadow-sm'
+                    : 'text-neutral-400 hover:text-neutral-200'
+                }`}
+              >
+                <span>Semua</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
+                  {allDates.length}
+                </span>
               </button>
             </div>
 
             {/* Energy Level Filter Pills (Spacious, Touch-Friendly, No Ugly Scrollbar) */}
-            <div className="flex items-center gap-2.5 overflow-x-auto py-1 px-0.5 no-scrollbar">
+            <div className="flex items-center gap-2 overflow-x-auto py-1 px-0.5 no-scrollbar">
               {ENERGY_LEVELS.map((energy) => {
                 const isSelected = energyFilter === energy.id;
                 return (
@@ -293,10 +339,10 @@ export default function LoveLifeView({ onBack, user }) {
                     key={energy.id}
                     type="button"
                     onClick={() => setEnergyFilter(energy.id)}
-                    className={`text-xs font-semibold py-2 px-3.5 sm:px-4 rounded-xl border whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 shadow-sm ${
+                    className={`text-xs font-semibold py-1.5 px-3 sm:px-3.5 rounded-xl border whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 shadow-sm ${
                       isSelected
                         ? 'bg-pink-500/30 border-pink-400 text-pink-100 shadow-[0_0_12px_rgba(244,114,182,0.3)]'
-                        : 'bg-white/[0.04] border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.07]'
+                        : 'bg-white/[0.03] border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.06]'
                     }`}
                   >
                     <span>{energy.icon}</span>
@@ -307,7 +353,7 @@ export default function LoveLifeView({ onBack, user }) {
             </div>
 
             {/* Dates Grid / List (1 Col on Mobile, 2 Cols on PC) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredDates.length > 0 ? (
                 filteredDates.map((date) => (
                   <DateCard
@@ -320,8 +366,38 @@ export default function LoveLifeView({ onBack, user }) {
                   />
                 ))
               ) : (
-                <div className="col-span-full py-10 text-center text-xs text-neutral-500 bg-white/[0.02] rounded-2xl border border-white/5 p-4">
-                  Tidak ada ide kencan pada filter ini.
+                <div className="col-span-full py-12 px-4 text-center rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-300 flex items-center justify-center mx-auto text-xl">
+                    💌
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-neutral-300">
+                      Tidak ada ide kencan pada filter ini
+                    </p>
+                    <p className="text-xs text-neutral-400">
+                      {statusFilter === 'wishlist'
+                        ? 'Kamu bisa menambahkan ide kencan kustom baru atau reset filter mood.'
+                        : 'Coba pilih filter status atau mood lain.'}
+                    </p>
+                  </div>
+                  <div className="pt-1 flex items-center justify-center gap-2">
+                    {energyFilter !== 'all' && (
+                      <button
+                        type="button"
+                        onClick={() => setEnergyFilter('all')}
+                        className="py-1.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-xs text-neutral-300 transition-all"
+                      >
+                        Reset Mood Filter
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setIsAddDateOpen(true)}
+                      className="py-1.5 px-3 rounded-xl bg-pink-500/25 hover:bg-pink-500/35 border border-pink-500/40 text-xs font-semibold text-pink-200 transition-all"
+                    >
+                      + Tambah Ide Baru
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
