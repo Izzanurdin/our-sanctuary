@@ -7,6 +7,7 @@ import SecretWhisperModal from '../components/features/garden/SecretWhisperModal
 import SavePictureModal from '../components/features/garden/SavePictureModal';
 import ResetGardenModal from '../components/features/garden/ResetGardenModal';
 import FlowerBasketModal from '../components/features/garden/FlowerBasketModal';
+import FlowerPickerModal from '../components/features/garden/FlowerPickerModal';
 import {
   getGardenFlowers,
   addGardenFlower,
@@ -20,6 +21,7 @@ import {
   playSecretFoundSound,
   isGardenAudioEnabled,
   setGardenAudioEnabled,
+  FLOWER_TYPES,
 } from '../services/gardenService';
 import {
   ChevronLeft,
@@ -48,6 +50,23 @@ export default function GardenView({ onBack, user }) {
   const [hintVisible, setHintVisible] = useState(true);
   const [isCapturing, setIsCapturing] = useState(false);
   const [windAngle, setWindAngle] = useState(0);
+
+  // State Pemilihan Jenis Bunga Abadi (Frangipani, Silk Blossom, Realistic Lily)
+  const [selectedFlowerType, setSelectedFlowerType] = useState('lily');
+  const [isFlowerPickerOpen, setIsFlowerPickerOpen] = useState(false);
+  const [seedNotification, setSeedNotification] = useState(null);
+
+  const activeFlowerMeta =
+    FLOWER_TYPES.find((f) => f.id === selectedFlowerType) || FLOWER_TYPES[2];
+
+  const handleSelectFlowerType = (typeId) => {
+    setSelectedFlowerType(typeId);
+    const meta = FLOWER_TYPES.find((f) => f.id === typeId);
+    if (meta) {
+      setSeedNotification(`${meta.icon} Benih ${meta.name} siap ditanam! Ketuk di mana saja di taman ✨`);
+      setTimeout(() => setSeedNotification(null), 4500);
+    }
+  };
 
   const refreshBasket = useCallback(() => {
     setBasketItems(getFlowerBasket());
@@ -135,12 +154,13 @@ export default function GardenView({ onBack, user }) {
 
       if (tooClose) return;
 
-      const randomProfileIndex = Math.floor(Math.random() * 10);
-      const randomScale = parseFloat((Math.random() * 0.4 + 0.7).toFixed(2));
+      const maxProfiles = selectedFlowerType === 'lily' ? 10 : 5;
+      const randomProfileIndex = Math.floor(Math.random() * maxProfiles);
+      const randomScale = parseFloat((Math.random() * 0.35 + 0.75).toFixed(2));
 
       const newFlower = {
-        id: `lily_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-        type: 'lily',
+        id: `${selectedFlowerType}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+        type: selectedFlowerType,
         xPercent: parseFloat(xPercent.toFixed(2)),
         yPercent: parseFloat(yPercent.toFixed(2)),
         scale: randomScale,
@@ -158,7 +178,7 @@ export default function GardenView({ onBack, user }) {
       setFlowers(updated);
       playBloomChime();
     },
-    [user]
+    [user, selectedFlowerType]
   );
 
   // Handle pointer down (mulai deteksi tap atau long-press)
@@ -275,13 +295,14 @@ export default function GardenView({ onBack, user }) {
   const handlePlantSecret = (message) => {
     if (!targetCoords) return;
 
+    const profileIdx = selectedFlowerType === 'lily' ? 8 : 0; // Golden profile untuk Lily, atau index 0
     const newFlower = {
-      id: `lily_secret_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-      type: 'lily',
+      id: `${selectedFlowerType}_secret_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      type: selectedFlowerType,
       xPercent: targetCoords.xPercent,
       yPercent: targetCoords.yPercent,
-      scale: 1.0,
-      profileIndex: 8, // Golden Ray
+      scale: 1.05,
+      profileIndex: profileIdx,
       secretMessage: message,
       plantedBy: {
         id: user?.id || 'user_sayang',
@@ -436,10 +457,23 @@ export default function GardenView({ onBack, user }) {
       {/* Floating Bottom Action Dock (Sembunyi saat potret) */}
       {!isCapturing && (
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 pointer-events-auto max-w-sm w-full px-4">
+          {/* Tombol Pemilih Benih Bunga */}
+          <button
+            type="button"
+            onClick={() => setIsFlowerPickerOpen(true)}
+            title={`Pilih Jenis Benih Bunga (Aktif: ${activeFlowerMeta.name})`}
+            className="p-2.5 rounded-full bg-black/45 hover:bg-pink-500/25 border border-pink-400/40 text-pink-200 backdrop-blur-md active:scale-95 transition-all shadow-[0_0_15px_rgba(244,114,182,0.25)] flex items-center justify-center gap-1.5"
+          >
+            <span className="text-base leading-none">{activeFlowerMeta.icon}</span>
+            <span className="hidden sm:inline text-xs font-semibold text-pink-100 pr-1">
+              Benih
+            </span>
+          </button>
+
           <button
             type="button"
             onClick={handleCaptureGarden}
-            className="flex-1 py-2.5 px-4 rounded-full bg-gradient-to-r from-pink-500/30 via-rose-500/30 to-purple-600/30 hover:from-pink-500/40 hover:to-purple-600/40 border border-pink-400/40 backdrop-blur-md text-white text-xs font-cinzel font-semibold shadow-[0_4px_20px_rgba(244,114,182,0.3)] active:scale-95 transition-all flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 px-3 rounded-full bg-gradient-to-r from-pink-500/30 via-rose-500/30 to-purple-600/30 hover:from-pink-500/40 hover:to-purple-600/40 border border-pink-400/40 backdrop-blur-md text-white text-xs font-cinzel font-semibold shadow-[0_4px_20px_rgba(244,114,182,0.3)] active:scale-95 transition-all flex items-center justify-center gap-1.5"
           >
             <Camera className="w-4 h-4 text-pink-300" />
             <span>SAVE PICTURE</span>
@@ -509,6 +543,23 @@ export default function GardenView({ onBack, user }) {
         basketItems={basketItems}
         onBasketUpdated={refreshBasket}
       />
+
+      {/* MODAL 6: Flower Picker Modal (Pemilihan Benih Bunga Abadi) */}
+      <FlowerPickerModal
+        isOpen={isFlowerPickerOpen}
+        onClose={() => setIsFlowerPickerOpen(false)}
+        selectedType={selectedFlowerType}
+        onSelectType={handleSelectFlowerType}
+      />
+
+      {/* Floating Active Seed Notification Banner */}
+      {seedNotification && !isCapturing && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-in fade-in slide-in-from-top-3 duration-300 whitespace-nowrap">
+          <div className="px-4 py-2 rounded-full bg-black/75 border border-pink-400/60 backdrop-blur-md text-pink-100 text-xs font-medium shadow-[0_4px_25px_rgba(244,114,182,0.35)] flex items-center gap-2">
+            <span>{seedNotification}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

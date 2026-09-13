@@ -137,3 +137,67 @@ h1, h2, h3, .font-cinzel {
   transform-origin: 50% 92%;
   will-change: transform;
 }
+
+/* Animasi Melayang & Berputar Halus untuk Modal Pemilih Bunga */
+@keyframes flower-float-rotate-1 {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-8px) rotate(110deg);
+  }
+  60% {
+    transform: translateY(4px) rotate(220deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg);
+  }
+}
+
+@keyframes flower-float-rotate-2 {
+  0% {
+    transform: translateY(0px) rotate(360deg);
+  }
+  35% {
+    transform: translateY(6px) rotate(230deg);
+  }
+  70% {
+    transform: translateY(-7px) rotate(100deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+@keyframes flower-float-rotate-3 {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  40% {
+    transform: translateY(-9px) rotate(135deg);
+  }
+  75% {
+    transform: translateY(5px) rotate(260deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg);
+  }
+}
+
+.animate-flower-spin-1 {
+  animation: flower-float-rotate-1 22s ease-in-out infinite;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.animate-flower-spin-2 {
+  animation: flower-float-rotate-2 26s ease-in-out infinite;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.animate-flower-spin-3 {
+  animation: flower-float-rotate-3 24s ease-in-out infinite;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
