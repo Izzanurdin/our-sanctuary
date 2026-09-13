@@ -1,5 +1,6 @@
 import GlassCard from '../common/GlassCard';
 import { Droplets, CheckCircle2, Circle } from 'lucide-react';
+import { getRandomNickname } from '../../config/profiles';
 
 const WATER_SLOTS = [
   { id: 0, time: '08:30', title: 'Pagi Hari', amount: '500 ml', target: '500 ml' },
@@ -12,11 +13,13 @@ export default function WaterTracker({
   water = [false, false, false, false],
   onToggleSlot,
   readOnly = false,
+  profile,
   className = '',
 }) {
   const completedCount = water.filter(Boolean).length;
   const currentMl = completedCount * 500;
   const percentage = Math.round((currentMl / 2000) * 100);
+  const nickname = getRandomNickname(profile);
 
   return (
     <GlassCard className={`space-y-4 border-cyan-500/20 bg-gradient-to-b from-white/[0.04] to-transparent ${className}`}>
@@ -28,13 +31,13 @@ export default function WaterTracker({
           </div>
           <div>
             <h3 className="text-sm font-semibold text-pink-100 flex items-center gap-2">
-              Water Tracker
+              Mimik
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono">
                 Target 2.000 ml
               </span>
             </h3>
             <p className="text-xs text-neutral-400 mt-0.5">
-              4 pos minum harian untuk menjaga hidrasi
+              Jangan lupa mimik ya <span className="text-cyan-300 font-medium">{nickname}</span> ❤️
             </p>
           </div>
         </div>

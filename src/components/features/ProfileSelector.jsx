@@ -6,7 +6,7 @@ export default function ProfileSelector({ onSelectProfile, className = '' }) {
       {/* Netflix Title Header */}
       <div className="text-center mb-8 sm:mb-12">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-white tracking-tight font-sans">
-          Who's there?
+          Siapa yang datang?
         </h1>
         <p className="text-xs sm:text-sm text-neutral-400 mt-2.5 font-normal">
           Pilih profil untuk masuk ke Our Sanctuary

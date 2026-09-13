@@ -17,11 +17,11 @@ export const PROFILES = [
     id: 'user_sayang',
     name: 'Cahayu',
     role: 'girlfriend',
-    tag: 'Girlfriend ❤️',
-    // Pilihan panggilan nama yang diacak (Hello Cahayu {nickname}...)
+    tag: 'Pacar Tersayang ❤️',
+    // Pilihan panggilan nama yang diacak (Halo Cahayu {nickname}...)
     nicknames: ['Cantikku', 'Manisku', 'Cintaku', 'Bidadariku', 'Sayangku'],
-    // Pilihan kata sayang di ujung sapaan (...how's your day my {loveName}?)
-    loveNames: ['sunshine', 'love', 'sweetheart', 'everything', 'cutie pie'],
+    // Pilihan kata sayang di ujung sapaan (...gimana harimu hari ini, {loveName}?)
+    loveNames: ['sayangku', 'cintaku', 'manisku', 'semestaku', 'bidadariku'],
     get greeting() {
       return getRandomGreeting(this);
     },
@@ -36,11 +36,11 @@ export const PROFILES = [
     id: 'user_izza',
     name: 'Izza',
     role: 'boyfriend',
-    tag: 'Boyfriend 💫',
-    // Pilihan panggilan nama yang diacak (Hello Izza {nickname}...)
+    tag: 'Pacar Tersayang 💫',
+    // Pilihan panggilan nama yang diacak (Halo Izza {nickname}...)
     nicknames: ['Gantengku', 'Cintaku', 'Manisku', 'Sayangku'],
-    // Pilihan kata sayang di ujung sapaan (...how's your day my {loveName}?)
-    loveNames: ['sunshine', 'love', 'schatzi', 'world', 'universe'],
+    // Pilihan kata sayang di ujung sapaan (...gimana harimu hari ini, {loveName}?)
+    loveNames: ['sayangku', 'cintaku', 'manisku', 'semestaku', 'pangeranku'],
     get greeting() {
       return getRandomGreeting(this);
     },
@@ -55,23 +55,23 @@ export const PROFILES = [
 
 /**
  * Fungsi pembantu untuk mengacak sapaan romantis:
- * Format: "Hello {name} {nickname}, how's your day my {loveName}?"
+ * Format: "Halo {name} {nickname}, gimana harimu hari ini, {loveName}?"
  */
 export function getRandomGreeting(profile) {
-  if (!profile) return "Hello Sayang, let's get into it";
+  if (!profile) return "Halo Sayang, mari kita jalani hari ini bersama";
 
   // Ambil data referensi dari PROFILES jika ada agar daftar panggilan lengkap
   const source = PROFILES.find((p) => p.id === profile.id) || profile;
   const nicknames = source.nicknames || ['Sayangku'];
-  const loveNames = source.loveNames || ['love'];
+  const loveNames = source.loveNames || ['sayangku'];
 
   const nickname = pickRandom(nicknames);
   const loveName = pickRandom(loveNames);
 
   const nickPart = nickname ? ` ${nickname}` : '';
-  const lovePart = loveName ? ` my ${loveName}` : '';
+  const lovePart = loveName ? `, ${loveName}` : '';
 
-  return `Hello ${source.name}${nickPart}, how's your day${lovePart}?`;
+  return `Halo ${source.name}${nickPart}, gimana harimu hari ini${lovePart}?`;
 }
 
 /**

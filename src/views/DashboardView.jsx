@@ -75,8 +75,8 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
   const navItems = [
     {
       id: 'daily',
-      title: 'Daily Checklist',
-      subtitle: 'Target 2L Air, Jadwal Makan & Tugas Kuliah',
+      title: 'Checklist Harian',
+      subtitle: 'Target 2L Mimik, Jadwal Mamam & Tugas Bersama',
       icon: CheckSquare2,
       badge: checklistBadge,
       accentColor: 'text-pink-300',
@@ -85,8 +85,8 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
     },
     {
       id: 'lovelife',
-      title: 'Love Life',
-      subtitle: 'Date Deck, Shuffler Kencan & Memory Vault',
+      title: 'Kisah Cinta',
+      subtitle: 'Kartu Kencan, Pengacak Ide & Galeri Kenangan',
       icon: CalendarHeart,
       badge: loveLifeBadge,
       accentColor: 'text-rose-300',
@@ -95,8 +95,8 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
     },
     {
       id: 'missyou',
-      title: 'I Miss You',
-      subtitle: 'Kirim Tombol Rindu Instan ke WhatsApp',
+      title: 'Aku Kangen Kamu',
+      subtitle: 'Kirim Sinyal Rindu Instan ke HP Pasangan',
       icon: Heart,
       badge: 'Afeksi Instan',
       accentColor: 'text-pink-400',
@@ -106,7 +106,7 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
     },
     {
       id: 'garden',
-      title: 'Unwithering Garden',
+      title: 'Taman Bunga Abadi',
       subtitle: 'Taman Bunga Abadi, Bisikan Rahasia & Kunang-kunang',
       icon: Flower2,
       badge: `${gardenFlowers?.length || 0} Bunga Mekar 🌸`,
@@ -121,7 +121,7 @@ export default function DashboardView({ user, onNavigate, onLogout }) {
       {/* Top Bar with User Info & Logout */}
       <AppHeader
         title="Our Sanctuary"
-        subtitle="Digital Love Journal & Daily Tracker"
+        subtitle="Jurnal Cinta Digital & Rutinitas Sehat Berdua"
         rightAction={
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-white/[0.06] border border-white/10 text-xs text-pink-200">

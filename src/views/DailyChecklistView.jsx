@@ -165,8 +165,8 @@ export default function DailyChecklistView({ onBack, user }) {
     <GradientBackground>
       {/* App Header */}
       <AppHeader
-        title="Daily Checklist"
-        subtitle="Rutinitas & Target Kesehatan Kita"
+        title="Checklist Harian"
+        subtitle="Rutinitas Sehat & Target Kita Berdua"
         onBack={onBack}
         rightAction={
           <div className="flex items-center gap-2">
@@ -314,6 +314,7 @@ export default function DailyChecklistView({ onBack, user }) {
               water={currentChecklist.water}
               onToggleSlot={handleToggleWater}
               readOnly={!isMyChecklist}
+              profile={activeProfile}
             />
 
             {/* 3. Meal Tracker (3x Sehari) */}

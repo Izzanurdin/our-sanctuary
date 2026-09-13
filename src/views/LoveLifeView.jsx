@@ -162,8 +162,8 @@ export default function LoveLifeView({ onBack, user }) {
     <GradientBackground>
       {/* Top Header */}
       <AppHeader
-        title="Love Life Engine"
-        subtitle="Date Deck, Shuffler & Memory Vault"
+        title="Kisah Cinta Kita"
+        subtitle="Kartu Kencan, Pengacak Ide & Galeri Kenangan"
         onBack={onBack}
         rightAction={
           <button
@@ -180,7 +180,7 @@ export default function LoveLifeView({ onBack, user }) {
       />
 
       <div className="max-w-5xl mx-auto space-y-4 pb-12 px-1">
-        {/* Main 2 Sub-Tabs (Date Deck vs Memory Vault) */}
+        {/* Main 2 Sub-Tabs (Kartu Kencan vs Galeri Kenangan) */}
         <div className="flex items-center p-1 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-sm">
           <button
             type="button"
@@ -192,7 +192,7 @@ export default function LoveLifeView({ onBack, user }) {
             }`}
           >
             <CalendarHeart className="w-4 h-4 text-pink-400" />
-            <span>Date Deck</span>
+            <span>Kartu Kencan</span>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-pink-200 font-mono">
               {allDates.length}
             </span>
@@ -208,7 +208,7 @@ export default function LoveLifeView({ onBack, user }) {
             }`}
           >
             <Image className="w-4 h-4 text-rose-400" />
-            <span>Memory Vault</span>
+            <span>Galeri Kenangan</span>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-rose-200 font-mono">
               {completedCount}
             </span>
@@ -278,7 +278,7 @@ export default function LoveLifeView({ onBack, user }) {
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                <span>💡 Wishlist</span>
+                <span>💡 Ide Kencan</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
                   {wishlistCount}
                 </span>

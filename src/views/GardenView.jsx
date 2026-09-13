@@ -404,7 +404,7 @@ export default function GardenView({ onBack, user }) {
 
           <div className="text-center">
             <h1 className="text-xs sm:text-sm font-bold text-pink-100 font-cinzel tracking-widest drop-shadow-[0_0_12px_rgba(244,114,182,0.6)]">
-              GARDEN OF UNWITHERING FLOWERS
+              TAMAN BUNGA ABADI
             </h1>
             <span className="hidden sm:inline-block text-[10px] text-pink-300/80 font-playfair italic">
               Bunga abadi kita yang tak akan pernah layu

@@ -83,10 +83,10 @@ export default function LoginView({ onLoginSuccess }) {
                 <div className="mt-3.5 p-4 rounded-2xl bg-black/60 border border-pink-500/30 shadow-[0_8px_24px_rgba(244,114,182,0.18)] text-center max-w-xs animate-in fade-in zoom-in-95 duration-200 backdrop-blur-md">
                   <div className="flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-wider text-pink-300 font-semibold mb-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-pink-400" />
-                    <span>Secret Question</span>
+                    <span>Pertanyaan Rahasia</span>
                   </div>
                   <p className="text-sm font-medium text-pink-100 italic">
-                    "When's our official date?"
+                    "Kapan tanggal resmi jadian kita?"
                   </p>
                 </div>
               )}

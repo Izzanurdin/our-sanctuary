@@ -52,13 +52,13 @@ export default function MealTracker({
           </div>
           <div>
             <h3 className="text-sm font-semibold text-pink-100 flex items-center gap-2">
-              Pola Makan Sehat
+              Mamam
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono">
                 3x Sehari
               </span>
             </h3>
             <p className="text-xs text-neutral-400 mt-0.5">
-              Jangan lupa makan tepat waktu ya <span className="text-amber-300 font-medium">{nickname}</span> ❤️
+              Jangan lupa disuapin yampie nya ya <span className="text-amber-300 font-medium">{nickname}</span> ❤️
             </p>
           </div>
         </div>
