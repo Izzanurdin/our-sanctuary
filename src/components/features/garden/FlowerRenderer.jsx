@@ -5,6 +5,8 @@ import {
   LILY_PROFILES,
   FRANGIPANI_PROFILES,
   BLOSSOM_PROFILES,
+  ROSE_PROFILES,
+  PEONY_PROFILES,
 } from '../../../services/gardenService';
 
 // ============================================================================
@@ -342,7 +344,175 @@ const SilkBlossomSVG = ({ profile, outerGradId, innerGradId }) => {
 };
 
 // ============================================================================
-// 5. MASTER FLOWER WRAPPER (Mendukung Ketiga Jenis Bunga Secara Terpadu)
+// 5. KOMPONEN BUNGA MAWAR BELUDRU (ROSE - Kelopak Spiral Berdimensi)
+// ============================================================================
+const RoseSVG = ({ profile, gradId, coreId }) => {
+  return (
+    <svg
+      viewBox="0 0 120 120"
+      className="w-24 h-24 sm:w-28 sm:h-28 overflow-visible animate-bloom"
+      style={{
+        filter: `drop-shadow(0 0 16px ${profile.glow}) drop-shadow(0 0 32px ${profile.outerGlow})`,
+        transition: 'filter 0.4s ease',
+      }}
+    >
+      <defs>
+        <radialGradient id={gradId} cx="45%" cy="40%" r="65%">
+          <stop offset="0%" stopColor={profile.petalHighlight || '#fda4af'} />
+          <stop offset="40%" stopColor={profile.petalTip || '#f43f5e'} />
+          <stop offset="75%" stopColor={profile.petalMid || '#be123c'} />
+          <stop offset="100%" stopColor={profile.petalBase || '#500724'} />
+        </radialGradient>
+        <radialGradient id={coreId} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={profile.core || '#4c0519'} />
+          <stop offset="70%" stopColor={profile.petalBase || '#500724'} />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+      </defs>
+
+      <g transform="translate(60, 60)">
+        {/* Tier 1: 5 Kelopak Mawar Luar Merekah Lebar */}
+        {[0, 72, 144, 216, 288].map((angle, idx) => (
+          <path
+            key={`rose-outer-${idx}`}
+            d="M 0,0 C -24,-18 -32,-46 -10,-55 C 8,-58 32,-42 16,-18 Z"
+            fill={`url(#${gradId})`}
+            stroke={profile.petalHighlight || 'rgba(255,255,255,0.3)'}
+            strokeWidth="0.7"
+            transform={`rotate(${angle + 10})`}
+            style={{ filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.3))' }}
+          />
+        ))}
+
+        {/* Tier 2: 5 Kelopak Mawar Tengah Menangkup */}
+        {[36, 108, 180, 252, 324].map((angle, idx) => (
+          <path
+            key={`rose-mid-${idx}`}
+            d="M 0,0 C -18,-14 -24,-36 -6,-44 C 8,-46 24,-34 10,-12 Z"
+            fill={`url(#${gradId})`}
+            stroke="rgba(255,255,255,0.25)"
+            strokeWidth="0.6"
+            transform={`rotate(${angle})`}
+          />
+        ))}
+
+        {/* Tier 3: Kelopak Lingkar Dalam Berputar Merapat */}
+        {[0, 60, 120, 180, 240, 300].map((angle, idx) => (
+          <path
+            key={`rose-inner-${idx}`}
+            d="M 0,0 C -12,-8 -16,-24 -3,-30 C 6,-32 16,-22 6,-8 Z"
+            fill={`url(#${gradId})`}
+            transform={`rotate(${angle + 18})`}
+          />
+        ))}
+
+        {/* Spiral Kuncup Tengah Mawar (Heart of the Rose) */}
+        <circle cx="0" cy="0" r="14" fill={`url(#${coreId})`} />
+        <path
+          d="M -6,0 C -8,-8 0,-12 6,-8 C 10,-4 8,4 2,8 C -4,10 -8,4 -6,0 Z"
+          fill={profile.petalHighlight || '#fda4af'}
+          opacity="0.85"
+        />
+        <circle cx="0" cy="0" r="4.5" fill={profile.core || '#4c0519'} />
+      </g>
+    </svg>
+  );
+};
+
+// ============================================================================
+// 6. KOMPONEN BUNGA PEONY MEGAH (PEONY - Ruffled Voluminous Petals)
+// ============================================================================
+const PeonySVG = ({ profile, outerGradId, innerGradId }) => {
+  return (
+    <svg
+      viewBox="0 0 120 120"
+      className="w-24 h-24 sm:w-28 sm:h-28 overflow-visible animate-bloom"
+      style={{
+        filter: `drop-shadow(0 0 18px ${profile.glow}) drop-shadow(0 0 34px ${profile.outerGlow})`,
+        transition: 'filter 0.4s ease',
+      }}
+    >
+      <defs>
+        <radialGradient id={outerGradId} cx="50%" cy="50%" r="55%">
+          <stop offset="0%" stopColor={profile.inner || '#fff1f2'} />
+          <stop offset="65%" stopColor={profile.mid || '#f472b6'} />
+          <stop offset="100%" stopColor={profile.outer || '#fda4af'} />
+        </radialGradient>
+        <radialGradient id={innerGradId} cx="45%" cy="45%" r="50%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="50%" stopColor={profile.inner || '#fff1f2'} stopOpacity="0.85" />
+          <stop offset="100%" stopColor={profile.mid || '#f472b6'} stopOpacity="0.7" />
+        </radialGradient>
+      </defs>
+
+      <g transform="translate(60, 60)">
+        {/* Layer Luar: 10 Kelopak Rimbun Berlekuk Bergelombang */}
+        {[0, 36, 72, 108, 144, 180, 216, 252, 288, 324].map((angle, idx) => (
+          <path
+            key={`peony-outer-${idx}`}
+            d="M 0,0 C -22,-14 -32,-38 -12,-52 C 4,-58 26,-46 16,-20 Z"
+            fill={`url(#${outerGradId})`}
+            stroke="rgba(255,255,255,0.4)"
+            strokeWidth="0.7"
+            transform={`rotate(${angle})`}
+            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.18))' }}
+          />
+        ))}
+
+        {/* Layer Tengah: 8 Kelopak Ruffled Bertumpuk */}
+        {[18, 63, 108, 153, 198, 243, 288, 333].map((angle, idx) => (
+          <path
+            key={`peony-mid-${idx}`}
+            d="M 0,0 C -18,-12 -26,-32 -8,-40 C 8,-44 20,-32 10,-14 Z"
+            fill={`url(#${innerGradId})`}
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="0.8"
+            transform={`rotate(${angle})`}
+          />
+        ))}
+
+        {/* Layer Inti: Kelopak Bergelombang Mengelilingi Benang Sari Emas */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, idx) => (
+          <path
+            key={`peony-inner-${idx}`}
+            d="M 0,0 C -10,-8 -14,-22 -3,-26 C 6,-28 14,-20 6,-8 Z"
+            fill={`url(#${innerGradId})`}
+            transform={`rotate(${angle + 10})`}
+          />
+        ))}
+
+        {/* Benang Sari Emas Peony yang Mewah */}
+        {Array.from({ length: 18 }).map((_, idx) => {
+          const rad = (idx * 20 * Math.PI) / 180;
+          return (
+            <g key={`peony-stamen-${idx}`}>
+              <line
+                x1="0"
+                y1="0"
+                x2={Math.cos(rad) * 11}
+                y2={Math.sin(rad) * 11}
+                stroke={profile.stamen || '#fde047'}
+                strokeWidth="1.2"
+              />
+              <circle
+                cx={Math.cos(rad) * 12.5}
+                cy={Math.sin(rad) * 12.5}
+                r="1.3"
+                fill="#facc15"
+              />
+            </g>
+          );
+        })}
+
+        {/* Pusat Mahkota Bunga */}
+        <circle cx="0" cy="0" r="4" fill={profile.core || '#be185d'} />
+      </g>
+    </svg>
+  );
+};
+
+// ============================================================================
+// 7. MASTER FLOWER WRAPPER (Mendukung 5 Jenis Bunga Secara Terpadu)
 // ============================================================================
 const MasterPlantedFlower = memo(({ flower, onSelectSecret, windAngle = 0, index = 0 }) => {
   const gradId1 = useId();
@@ -381,10 +551,20 @@ const MasterPlantedFlower = memo(({ flower, onSelectSecret, windAngle = 0, index
   const hoverTilt = isHovered ? (seed % 2 === 0 ? 1.2 : -1.2) : 0;
   const totalWindAngle = windAngle * 0.65 + hoverTilt;
 
-  // Render spesifik sesuai jenis bunga
+  // Render spesifik sesuai jenis bunga (Rose, Peony, Frangipani, Blossom, Lily)
   const flowerType = flower.type || 'lily';
 
   const renderFlowerSVG = () => {
+    if (flowerType === 'rose') {
+      const profile = ROSE_PROFILES[flower.profileIndex % ROSE_PROFILES.length] || ROSE_PROFILES[0];
+      return <RoseSVG profile={profile} gradId={gradId1} coreId={gradId2} />;
+    }
+
+    if (flowerType === 'peony') {
+      const profile = PEONY_PROFILES[flower.profileIndex % PEONY_PROFILES.length] || PEONY_PROFILES[0];
+      return <PeonySVG profile={profile} outerGradId={gradId1} innerGradId={gradId2} />;
+    }
+
     if (flowerType === 'frangipani') {
       const profile = FRANGIPANI_PROFILES[flower.profileIndex % FRANGIPANI_PROFILES.length] || FRANGIPANI_PROFILES[0];
       return <FrangipaniSVG profile={profile} gradId={gradId1} coreId={gradId2} />;

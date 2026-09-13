@@ -22,6 +22,7 @@ import {
   isGardenAudioEnabled,
   setGardenAudioEnabled,
   FLOWER_TYPES,
+  getFlowerProfiles,
 } from '../services/gardenService';
 import {
   ChevronLeft,
@@ -154,8 +155,8 @@ export default function GardenView({ onBack, user }) {
 
       if (tooClose) return;
 
-      const maxProfiles = selectedFlowerType === 'lily' ? 10 : 5;
-      const randomProfileIndex = Math.floor(Math.random() * maxProfiles);
+      const profiles = getFlowerProfiles(selectedFlowerType);
+      const randomProfileIndex = Math.floor(Math.random() * profiles.length);
       const randomScale = parseFloat((Math.random() * 0.35 + 0.75).toFixed(2));
 
       const newFlower = {

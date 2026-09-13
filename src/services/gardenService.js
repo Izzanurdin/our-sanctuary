@@ -53,8 +53,24 @@ export const PERMANENT_GERBERAS = [
   { id: 'perm_gerbera_right', profileIndex: 2, xPercent: 85, yPercent: 82 },
 ];
 
-// Koleksi 3 Pilihan Jenis Bunga Abadi
+// Koleksi 5 Pilihan Jenis Bunga Abadi
 export const FLOWER_TYPES = [
+  {
+    id: 'rose',
+    name: 'Bunga Mawar Beludru',
+    botanicalName: 'Velvet Eternal Rose',
+    icon: '🌹',
+    quote: 'Cinta sejati yang merekah abadi',
+    description: 'Kelopak mawar beludru bertingkat anggun, lambang gairah dan ketulusan kasih suci.',
+  },
+  {
+    id: 'peony',
+    name: 'Bunga Peony Megah',
+    botanicalName: 'Imperial Royal Peony',
+    icon: '🌺',
+    quote: 'Kemakmuran & kebahagiaan hati',
+    description: 'Kelopak rimbun bergelombang mewah yang mekar merekah penuh kehangatan rasa.',
+  },
   {
     id: 'frangipani',
     name: 'Bunga Kamboja Emas',
@@ -80,6 +96,115 @@ export const FLOWER_TYPES = [
     description: 'Bunga lily megah dengan lekukan kelopak alami, bintik frekles anggun, dan benang sari hidup.',
   },
 ];
+
+// Profil Warna Mawar Beludru Abadi (Rose)
+export const ROSE_PROFILES = [
+  {
+    name: 'Classic Crimson Velvet',
+    petalBase: '#500724',
+    petalMid: '#be123c',
+    petalTip: '#f43f5e',
+    petalHighlight: '#fda4af',
+    core: '#4c0519',
+    glow: 'rgba(244, 63, 94, 0.85)',
+    outerGlow: 'rgba(190, 18, 60, 0.3)',
+  },
+  {
+    name: 'Champagne Peach Rose',
+    petalBase: '#7c2d12',
+    petalMid: '#ea580c',
+    petalTip: '#fdba74',
+    petalHighlight: '#ffedd5',
+    core: '#431407',
+    glow: 'rgba(251, 146, 60, 0.85)',
+    outerGlow: 'rgba(254, 215, 170, 0.25)',
+  },
+  {
+    name: 'Midnight Black Baccara',
+    petalBase: '#1c1917',
+    petalMid: '#450a0a',
+    petalTip: '#881337',
+    petalHighlight: '#be123c',
+    core: '#09090b',
+    glow: 'rgba(136, 19, 55, 0.9)',
+    outerGlow: 'rgba(69, 10, 10, 0.35)',
+  },
+  {
+    name: 'Blush Pink Pastel',
+    petalBase: '#9f1239',
+    petalMid: '#f43f5e',
+    petalTip: '#fecdd3',
+    petalHighlight: '#fff1f2',
+    core: '#881337',
+    glow: 'rgba(251, 113, 133, 0.85)',
+    outerGlow: 'rgba(254, 205, 211, 0.25)',
+  },
+  {
+    name: 'Golden Sunlight Rose',
+    petalBase: '#854d0e',
+    petalMid: '#eab308',
+    petalTip: '#fde047',
+    petalHighlight: '#fef9c3',
+    core: '#713f12',
+    glow: 'rgba(250, 204, 21, 0.85)',
+    outerGlow: 'rgba(234, 179, 8, 0.3)',
+  },
+];
+
+// Profil Warna Peony Megah (Peony)
+export const PEONY_PROFILES = [
+  {
+    name: 'Romantic Blush Peony',
+    inner: '#fff1f2',
+    mid: '#f472b6',
+    outer: '#fda4af',
+    core: '#be185d',
+    stamen: '#fde047',
+    glow: 'rgba(244, 114, 182, 0.85)',
+    outerGlow: 'rgba(253, 164, 175, 0.25)',
+  },
+  {
+    name: 'Coral Charm Peony',
+    inner: '#fff7ed',
+    mid: '#fb7185',
+    outer: '#fb923c',
+    core: '#9f1239',
+    stamen: '#facc15',
+    glow: 'rgba(251, 113, 133, 0.85)',
+    outerGlow: 'rgba(251, 146, 60, 0.25)',
+  },
+  {
+    name: 'Snow White Royal Peony',
+    inner: '#ffffff',
+    mid: '#f8fafc',
+    outer: '#f1f5f9',
+    core: '#ca8a04',
+    stamen: '#fef08a',
+    glow: 'rgba(255, 255, 255, 0.85)',
+    outerGlow: 'rgba(241, 245, 249, 0.3)',
+  },
+  {
+    name: 'Deep Burgundy Peony',
+    inner: '#3b0764',
+    mid: '#701a75',
+    outer: '#a21caf',
+    core: '#2e1065',
+    stamen: '#f59e0b',
+    glow: 'rgba(162, 28, 175, 0.85)',
+    outerGlow: 'rgba(112, 26, 117, 0.35)',
+  },
+  {
+    name: 'Lavender Dream Peony',
+    inner: '#faf5ff',
+    mid: '#c084fc',
+    outer: '#e9d5ff',
+    core: '#6b21a8',
+    stamen: '#fde047',
+    glow: 'rgba(192, 132, 252, 0.8)',
+    outerGlow: 'rgba(233, 213, 255, 0.25)',
+  },
+];
+
 
 // Profil Warna Kamboja (Frangipani)
 export const FRANGIPANI_PROFILES = [
@@ -313,6 +438,24 @@ export const LILY_PROFILES = [
   },
 ];
 
+/**
+ * Mengambil daftar profil warna sesuai tipe bunga
+ */
+export function getFlowerProfiles(flowerType) {
+  switch (flowerType) {
+    case 'rose':
+      return ROSE_PROFILES;
+    case 'peony':
+      return PEONY_PROFILES;
+    case 'frangipani':
+      return FRANGIPANI_PROFILES;
+    case 'blossom':
+      return BLOSSOM_PROFILES;
+    case 'lily':
+    default:
+      return LILY_PROFILES;
+  }
+}
 
 // Bunga sambutan awal yang romantis
 const INITIAL_STARTER_FLOWERS = [
