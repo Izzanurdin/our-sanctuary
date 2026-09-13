@@ -201,6 +201,9 @@ export async function fetchMissYouStatsFromCloud() {
   return localStats;
 }
 
+let missYouChannel = null;
+const missYouCallbacks = new Set();
+
 /**
  * Berlangganan (Subscribe) Realtime ke event kiriman sinyal rindu pasangan
  */
@@ -209,27 +212,51 @@ export function subscribeToMissYouRealtime(onSignalReceived) {
     return null;
   }
 
+  if (onSignalReceived) {
+    missYouCallbacks.add(onSignalReceived);
+  }
+
   try {
-    const channel = supabase
-      .channel('realtime:miss_you_logs')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'miss_you_logs' },
-        (payload) => {
-          if (payload?.new) {
-            // Perbarui cache lokal
-            fetchMissYouStatsFromCloud();
-            if (onSignalReceived) {
-              onSignalReceived(payload.new);
+    if (!missYouChannel) {
+      missYouChannel = supabase
+        .channel('realtime:miss_you_logs')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'miss_you_logs' },
+          (payload) => {
+            if (payload?.new) {
+              // Perbarui cache lokal
+              fetchMissYouStatsFromCloud();
+              missYouCallbacks.forEach((cb) => {
+                try {
+                  cb(payload.new);
+                } catch (err) {
+                  console.error('Error executing miss_you callback:', err);
+                }
+              });
             }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe((status, err) => {
+          if (err) {
+            console.warn('Realtime miss_you_logs subscription error:', err);
+          }
+        });
+    }
 
-    return channel;
+    return {
+      unsubscribe: () => {
+        if (onSignalReceived) {
+          missYouCallbacks.delete(onSignalReceived);
+        }
+        if (missYouCallbacks.size === 0 && missYouChannel) {
+          supabase.removeChannel(missYouChannel);
+          missYouChannel = null;
+        }
+      },
+    };
   } catch (err) {
-    console.warn('Realtime miss_you_logs subscription error:', err);
+    console.warn('Realtime miss_you_logs subscription setup error:', err);
     return null;
   }
 }
