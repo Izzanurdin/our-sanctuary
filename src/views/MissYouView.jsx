@@ -376,7 +376,7 @@ export default function MissYouView({ onBack, user }) {
               <p className="text-[10px] text-neutral-400 text-right">
                 Penerima:{' '}
                 <span className="text-pink-300 font-semibold">{partnerName}</span>{' '}
-                ({partnerRole === 'girlfriend' ? 'Girlfriend ❤️' : 'Boyfriend 💫'})
+                ({partnerProfile?.tag || (partnerRole === 'girlfriend' ? 'Pacar Tersayang ❤️' : 'Pacar Tersayang 💫')})
               </p>
             </GlassCard>
 

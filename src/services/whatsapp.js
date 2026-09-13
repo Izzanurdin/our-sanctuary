@@ -32,16 +32,16 @@ export const MOOD_OPTIONS = [
   },
   {
     id: 'peluk',
-    label: 'Pengen Peluk Erat',
-    shortLabel: 'Pengen Peluk',
+    label: 'Pengen Peyuk Erat',
+    shortLabel: 'Pengen Peyuk',
     emoji: '🫂',
     accentColor: 'purple',
     badgeClass: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
   },
   {
     id: 'kepikiran',
-    label: 'Lagi Kepikiran Kamu',
-    shortLabel: 'Kepikiran Kamu',
+    label: 'Lagi Kepikiran Sayang',
+    shortLabel: 'Kepikiran Sayang',
     emoji: '✨',
     accentColor: 'amber',
     badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
@@ -330,21 +330,25 @@ export function generateMissYouMessage({
   // Variasi jika ditekan 1x (normal tap)
   const singleTapTemplates = {
     kangen: [
-      `Hai ${nameLabel}! ❤️ Aku cuma mau bilang kalau saat ini aku lagi kangen banget sama kamu. Semoga harimu menyenangkan ya! 🥰`,
-      `Haloo ${nameLabel}! Hatiku tiba-tiba rindu banget sama senyumanmu. Sehat-sehat di sana yaa sayang! 💕`,
-      `Hai sayangku ${nameLabel}... Lagi apa sekarang? Aku di sini kepikiran kamu terus dan kangen berat! 🥺❤️`,
+      `Hai ${nameLabel}! ❤️ Aku cuma mau bilang kalau saat ini aku lagi kangen banget sama sayang. Semoga hari sayang menyenangkan ya! 🥰`,
+      `Haloo ${nameLabel}! Hatiku tiba-tiba rindu banget sama senyuman sayang. Jaga kesehatan yaa sayangku! 💕`,
+      `Hai ${nameLabel}... Lagi apa sekarang? Aku di sini kepikiran sayang terus dan kangen berat! 🥺❤️`,
+      `Rindu berat sama ${nameLabel}! Detik demi detik rasanya pengen cepet ketemu sayang terus 🥰❤️`,
     ],
     peluk: [
-      `Hai ${nameLabel}... Hari ini rasanya pengen banget meluk kamu erat-erat 🫂 Hangatnya kamu selalu jadi tempat ternyaman buat aku. See you soon ya! ❤️`,
-      `Kirim pelukan virtual paling erat buat ${nameLabel} tersayang! 🫂💕 Semoga pelukan ini bisa bikin kamu ngerasa nyaman dan disayang selalu.`,
+      `Hai ${nameLabel}... Hari ini rasanya pengen banget meyuk sayang erat-erat 🫂 Hangatnya sayang selalu jadi tempat ternyaman buat aku. Sampai ketemu nanti ya sayangku! ❤️`,
+      `Kirim peyukan virtual paling erat buat ${nameLabel} tersayang! 🫂💕 Semoga peyukan ini bisa bikin sayang ngerasa nyaman dan disayang selalu.`,
+      `Kangen dipeyuk dan meyuk ${nameLabel}... Pengen peyuk sayang erat-erat sekarang juga! 🫂✨`,
     ],
     kepikiran: [
-      `Lagi di tengah aktivitas, tapi isi kepalaku isinya cuma kamu, ${nameLabel}! ✨ Semoga semua urusanmu hari ini lancar ya cintaku!`,
-      `Bintang-bintang di langit kalah terang sama senyummu di ingatanku hari ini, ${nameLabel} ✨ Kepikiran kamu terus nih! 🥰`,
+      `Lagi di tengah aktivitas, tapi kepalaku isinya cuma sayang, ${nameLabel}! ✨ Semoga semua urusan sayang hari ini lancar ya sayangku!`,
+      `Bintang-bintang di langit kalah terang sama senyuman sayang di ingatanku hari ini, ${nameLabel} ✨ Kepikiran sayang terus nih! 🥰`,
+      `Lagi fokus apapun hari ini, bayangan manis ${nameLabel} selalu mampir di ingatan... Kepalaku isinya cuma mikirin sayangku! 💕✨`,
     ],
     manis: [
-      `Cuma mau ngingetin ${nameLabel}: kamu itu anugerah terindah yang selalu aku syukuri setiap hari. Love you so much! 💌❤️`,
-      `Pesan cinta kilat buat ${nameLabel}: Terima kasih ya sudah jadi pasangan terbaik dan selalu bikin aku bahagia! 💌✨`,
+      `Cuma mau ngingetin ${nameLabel}: sayang itu anugerah terindah yang selalu aku syukuri setiap hari. Sayang banget sama sayangku! 💌❤️`,
+      `Pesan cinta kilat buat ${nameLabel}: Terima kasih ya sudah jadi pasangan terbaik dan selalu bikin hari-hariku bahagia! Sayang selalu ya sayangku! 💌✨`,
+      `Buat ${nameLabel} tercinta: Cintaku ke sayang selalu bertambah setiap harinya. Makasih udah hadir di hidupku ya sayangku! 💖💌`,
     ],
   };
 
@@ -352,21 +356,21 @@ export function generateMissYouMessage({
   if (loveCount > 1) {
     if (loveCount >= 100) {
       return `[${mood.emoji} ${mood.label}]\n` +
-        `"I Love You 3000 my dear ${nameLabel}! ❤️"\n\n` +
+        `"Cinta Sayang 3000 kali lipat, ${nameLabel}! ❤️"\n\n` +
         `Barusan aku spam tombol rindu di Our Sanctuary sebanyak ${loveCount}x TAPS (100% OVERCHARGED! 🌌👑) tanpa henti!\n` +
-        `Sinyal rinduku sudah sampai level kosmik khusus buat kamu, tolong peluk aku secepatnya ya sayang! 🥰✨\n\n` +
+        `Sinyal rinduku sudah sampai level kosmik khusus buat sayang, tolong peyuk aku secepatnya ya sayangku! 🥰✨\n\n` +
         `— Dikirim dengan penuh cinta dari Our Sanctuary`;
     }
 
     const spamTemplates = [
       `[${mood.emoji} ${mood.label}]\n` +
-        `"I miss you ${loveCount} times hari ini, ${nameLabel}! 🥰"\n\n` +
-        `Barusan aku memompa tombol rindu di Our Sanctuary sebanyak ${loveCount}x khusus buat kamu! Tolong luangkan waktu peluk aku ya! 🥺💖\n\n` +
+        `"Rindu sayang ${loveCount} kali lipat hari ini, ${nameLabel}! 🥰"\n\n` +
+        `Barusan aku memompa tombol rindu di Our Sanctuary sebanyak ${loveCount}x khusus buat sayang! Tolong luangkan waktu peyuk aku ya sayangku! 🥺💖\n\n` +
         `— Dikirim dengan penuh cinta dari Our Sanctuary`,
 
       `[${mood.emoji} ${mood.label}]\n` +
-        `"Tingkat Rinduku ke Kamu: ${loveCount}x Taps! 💕"\n\n` +
-        `Hai ${nameLabel}, jariku nggak bisa berhenti mencet tombol rindu tadi (total ${loveCount}x ketukan!). Itu bukti kalau aku bener-bener kangen berat sama kamu sekarang! ❤️\n\n` +
+        `"Tingkat Rinduku ke Sayang: ${loveCount}x Taps! 💕"\n\n` +
+        `Hai ${nameLabel}, jariku nggak bisa berhenti mencet tombol rindu tadi (total ${loveCount}x ketukan!). Itu bukti kalau aku bener-bener kangen berat sama sayang sekarang! ❤️\n\n` +
         `— Dikirim dengan penuh cinta dari Our Sanctuary`,
     ];
 
