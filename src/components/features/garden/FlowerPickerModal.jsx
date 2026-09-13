@@ -8,7 +8,7 @@ function FrangipaniPreview() {
   const gradId = useId();
   const coreId = useId();
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24 sm:w-28 sm:h-28 overflow-visible drop-shadow-[0_0_18px_rgba(255,215,0,0.6)]">
+    <svg viewBox="0 0 100 100" className="w-28 h-28 sm:w-32 sm:h-32 lg:w-36 lg:h-36 overflow-visible drop-shadow-[0_0_22px_rgba(255,215,0,0.65)]">
       <defs>
         <radialGradient id={gradId} cx="40%" cy="30%" r="70%">
           <stop offset="0%" stopColor="#ffffff" />
@@ -46,7 +46,7 @@ function SilkBlossomPreview() {
   const gradId = useId();
   const outerGradId = useId();
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24 sm:w-28 sm:h-28 overflow-visible drop-shadow-[0_0_20px_rgba(244,63,94,0.65)]">
+    <svg viewBox="0 0 100 100" className="w-28 h-28 sm:w-32 sm:h-32 lg:w-36 lg:h-36 overflow-visible drop-shadow-[0_0_24px_rgba(244,63,94,0.7)]">
       <defs>
         <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#ffe4e6" stopOpacity="0.95" />
@@ -109,7 +109,7 @@ function SilkBlossomPreview() {
 function RealisticLilyPreview() {
   const gradId = useId();
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24 sm:w-28 sm:h-28 overflow-visible drop-shadow-[0_0_22px_rgba(255,255,255,0.7)]">
+    <svg viewBox="0 0 100 100" className="w-28 h-28 sm:w-32 sm:h-32 lg:w-36 lg:h-36 overflow-visible drop-shadow-[0_0_24px_rgba(255,255,255,0.75)]">
       <defs>
         <radialGradient id={gradId} cx="50%" cy="100%" r="100%">
           <stop offset="0%" stopColor="#a8e6cf" />
@@ -175,21 +175,26 @@ export default function FlowerPickerModal({
   };
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Pilih Benih Bunga Abadi 🌸">
-      <div className="space-y-4 py-2 select-none">
+    <ModalWrapper
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Pilih Benih Bunga Abadi 🌸"
+      maxWidth="max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-5xl"
+    >
+      <div className="space-y-4 sm:space-y-6 py-1 sm:py-2 select-none">
         {/* Subtitle Deskripsi Puitis */}
-        <div className="text-center space-y-1 pb-1">
-          <p className="text-xs text-neutral-300 font-playfair italic">
+        <div className="text-center space-y-1.5 pb-1 max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-neutral-200 font-playfair italic">
             &ldquo;Tiap bunga membawa doa dan pesona cinta yang tak akan pernah layu...&rdquo;
           </p>
-          <span className="inline-flex items-center gap-1 text-[11px] text-pink-300/80">
-            <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
+          <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-pink-300/90 font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
             Dekatkan kursor untuk melihat nama & mekar
           </span>
         </div>
 
-        {/* 3 Panggung Bunga Melayang (3 Columns) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-2">
+        {/* 3 Panggung Bunga Melayang (Responsive: 1 Col di HP, 3 Cols Longgar di PC) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 pt-1">
           {FLOWER_TYPES.map((type, idx) => {
             const isSelected = selectedType === type.id;
             const spinClass =
@@ -203,24 +208,24 @@ export default function FlowerPickerModal({
               <div
                 key={type.id}
                 onClick={() => handleSelect(type.id)}
-                className={`group relative rounded-2xl p-4 border transition-all duration-500 cursor-pointer overflow-hidden flex flex-col items-center text-center ${
+                className={`group relative rounded-3xl p-5 sm:p-6 lg:p-7 border transition-all duration-500 cursor-pointer overflow-hidden flex flex-col justify-between items-center text-center ${
                   isSelected
-                    ? 'bg-gradient-to-b from-pink-500/20 via-purple-500/10 to-white/[0.04] border-pink-400/60 shadow-[0_0_30px_rgba(244,114,182,0.3)] ring-1 ring-pink-400/40'
-                    : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/10 hover:border-pink-400/40 hover:shadow-[0_0_25px_rgba(244,114,182,0.2)]'
+                    ? 'bg-gradient-to-b from-pink-500/25 via-purple-500/15 to-white/[0.05] border-pink-400/70 shadow-[0_0_35px_rgba(244,114,182,0.35)] ring-2 ring-pink-400/40'
+                    : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/10 hover:border-pink-400/50 hover:shadow-[0_0_30px_rgba(244,114,182,0.25)]'
                 }`}
               >
                 {/* Badge Aktif */}
                 {isSelected && (
-                  <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center shadow-md text-xs">
-                    <Check className="w-3.5 h-3.5" />
+                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 rounded-full bg-pink-500 text-white flex items-center justify-center shadow-lg text-xs animate-in zoom-in-50 duration-200">
+                    <Check className="w-4 h-4 stroke-[2.5]" />
                   </div>
                 )}
 
                 {/* Aura Glow di Belakang Bunga */}
-                <div className="absolute top-12 left-1/2 -translate-x-1/2 w-28 h-28 rounded-full bg-gradient-to-tr from-pink-500/20 to-amber-500/20 blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-40 transition-all duration-700 pointer-events-none" />
+                <div className="absolute top-16 left-1/2 -translate-x-1/2 w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-gradient-to-tr from-pink-500/25 to-amber-500/25 blur-3xl group-hover:scale-150 group-hover:opacity-100 opacity-40 transition-all duration-700 pointer-events-none" />
 
                 {/* Wadah Bunga: Terayun & Berputar, Mengembang saat Hover */}
-                <div className="h-32 w-32 flex items-center justify-center relative my-2">
+                <div className="h-36 w-36 sm:h-44 sm:w-44 lg:h-48 lg:w-48 flex items-center justify-center relative my-2 sm:my-3">
                   <div className={`transition-transform duration-700 ease-out group-hover:scale-125 ${spinClass}`}>
                     {type.id === 'frangipani' && <FrangipaniPreview />}
                     {type.id === 'blossom' && <SilkBlossomPreview />}
@@ -228,31 +233,36 @@ export default function FlowerPickerModal({
                   </div>
                 </div>
 
-                {/* Nama & Filosofi Bunga (Animasi Memudar Lembut) */}
-                <div className="space-y-1.5 pt-2 relative z-10 w-full">
-                  <div className="flex items-center justify-center gap-1.5">
-                    <span className="text-base">{type.icon}</span>
-                    <h4 className="!font-sans font-bold text-sm text-white group-hover:text-pink-200 transition-colors">
-                      {type.name}
-                    </h4>
+                {/* Nama & Filosofi Bunga */}
+                <div className="space-y-2 pt-2 relative z-10 w-full flex-1 flex flex-col justify-center">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                      <span className="text-lg">{type.icon}</span>
+                      <h4 className="!font-sans font-bold text-sm sm:text-base lg:text-lg text-white group-hover:text-pink-200 transition-colors whitespace-nowrap">
+                        {type.name}
+                      </h4>
+                    </div>
+                    <span className="text-[10px] text-pink-300/70 font-mono tracking-wider block">
+                      {type.botanicalName}
+                    </span>
                   </div>
 
-                  <p className="text-[11px] text-amber-200/90 font-playfair italic font-medium">
+                  <p className="text-xs sm:text-[13px] text-amber-200 font-playfair italic font-semibold">
                     &ldquo;{type.quote}&rdquo;
                   </p>
 
-                  <p className="text-[11px] text-neutral-400 leading-relaxed line-clamp-2 px-1">
+                  <p className="text-[11px] sm:text-xs text-neutral-300/85 leading-relaxed px-1 max-w-xs mx-auto">
                     {type.description}
                   </p>
                 </div>
 
-                {/* Tombol Pilih Cepat di Mobile */}
+                {/* Tombol Pilih */}
                 <button
                   type="button"
-                  className={`mt-3 w-full py-1.5 px-3 rounded-xl text-xs font-semibold transition-all ${
+                  className={`mt-4 w-full py-2 sm:py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold tracking-wide transition-all ${
                     isSelected
-                      ? 'bg-pink-500 text-white shadow-md'
-                      : 'bg-white/10 group-hover:bg-pink-500/30 text-neutral-300 group-hover:text-pink-100 border border-white/10'
+                      ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-md'
+                      : 'bg-white/10 group-hover:bg-pink-500/30 text-neutral-200 group-hover:text-white border border-white/10 group-hover:border-pink-400/40'
                   }`}
                 >
                   {isSelected ? 'Benih Aktif ✓' : 'Pilih Benih Ini'}
@@ -263,8 +273,8 @@ export default function FlowerPickerModal({
         </div>
 
         {/* Info Tambahan di Footer Modal */}
-        <p className="text-center text-[10px] text-neutral-400 pt-1">
-          💡 Setelah memilih, ketuk di mana saja di taman malam untuk menanam bunga ini.
+        <p className="text-center text-[11px] text-neutral-400 pt-1">
+          💡 Setelah memilih, modal akan otomatis tertutup dan kamu bisa langsung mengetuk di taman untuk menanam bunga ini.
         </p>
       </div>
     </ModalWrapper>

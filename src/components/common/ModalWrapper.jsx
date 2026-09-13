@@ -8,6 +8,7 @@ export default function ModalWrapper({
   title,
   children,
   className = '',
+  maxWidth = 'max-w-md',
 }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -37,7 +38,7 @@ export default function ModalWrapper({
       onClick={onClose}
     >
       <div
-        className={`w-full max-w-md transform transition-all duration-300 scale-100 ${className}`}
+        className={`w-full ${maxWidth} transform transition-all duration-300 scale-100 ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         <GlassCard className="relative border-pink-500/30 bg-[#120a11]/95 shadow-[0_16px_48px_rgba(0,0,0,0.7)] p-5 sm:p-6 max-h-[90vh] flex flex-col">
