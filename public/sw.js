@@ -35,8 +35,8 @@ self.addEventListener('push', (event) => {
     const title = data.title || 'Our Sanctuary ❤️';
     const options = {
       body: data.body || 'Ada pesan baru untukmu!',
-      icon: data.icon || '/favicon.svg',
-      badge: '/favicon.svg',
+      icon: data.icon || '/icon-192.png',
+      badge: '/icon-192.png',
       vibrate: [200, 100, 200],
       tag: data.tag || 'our-sanctuary-alert',
       renotify: true,

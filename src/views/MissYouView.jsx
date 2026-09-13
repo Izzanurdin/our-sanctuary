@@ -78,7 +78,7 @@ export default function MissYouView({ onBack, user }) {
         showWebNotification({
           title: `💖 Sinyal Rindu dari ${partnerName}!`,
           body: `${partnerName} baru saja mengirim ${newLog.click_count || 1}x ketukan rindu (${newLog.milestone_text || 'Rindu Berat'})! 💕`,
-          icon: '/favicon.svg',
+          icon: '/icon-192.png',
           tag: 'miss-you-signal',
         });
 

@@ -75,8 +75,8 @@ export async function requestNotificationPermission() {
 export async function showWebNotification({
   title,
   body,
-  icon = '/favicon.svg',
-  badge = '/favicon.svg',
+  icon = '/icon-192.png',
+  badge = '/icon-192.png',
   vibrate = [200, 100, 200],
   tag = 'our-sanctuary',
   data = {},
@@ -148,7 +148,7 @@ function ensureReminderChannel(currentUserId) {
           showWebNotification({
             title: `⏰ Pengingat Sehat dari ${payload.senderName}!`,
             body: payload.message,
-            icon: '/favicon.svg',
+            icon: '/icon-192.png',
             tag: 'health-reminder',
           });
 
@@ -255,7 +255,7 @@ export async function testNotification() {
   return showWebNotification({
     title: '🔔 Tes Notifikasi Our Sanctuary',
     body: 'Notifikasi & getaran HP kamu berfungsi dengan sempurna! Sinyal rindu & pengingat sehat siap meluncur! ✨',
-    icon: '/favicon.svg',
+    icon: '/icon-192.png',
     tag: 'test-notification',
   });
 }
