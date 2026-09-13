@@ -25,11 +25,11 @@ export default function JoggingTracker({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-pink-100">
-                Jogging 30–45 Menit
+              <h3 className="text-sm font-semibold text-pink-100 whitespace-nowrap">
+                Jogging
               </h3>
               <span
-                className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                className={`text-[10px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
                   isScheduled
                     ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
                     : 'bg-white/10 text-neutral-400'
@@ -39,7 +39,7 @@ export default function JoggingTracker({
               </span>
             </div>
             <p className="text-xs text-neutral-400 mt-0.5">
-              Rutin tiap Selasa, Kamis, dan Minggu
+              30–45 menit • Rutin Selasa, Kamis, dan Minggu
             </p>
           </div>
         </div>
