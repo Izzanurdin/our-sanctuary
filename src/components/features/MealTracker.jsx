@@ -45,28 +45,28 @@ export default function MealTracker({
   return (
     <GlassCard className={`space-y-3.5 border-amber-500/20 bg-gradient-to-b from-white/[0.04] to-transparent ${className}`}>
       {/* Header Info */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="p-2.5 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] shrink-0">
             <Utensils className="w-5 h-5" />
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-pink-100 flex items-center gap-2">
-              Mamam
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono">
+          <div className="min-w-0">
+            <h3 className="text-sm font-semibold text-pink-100 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <span>Mamam</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono whitespace-nowrap">
                 3x Sehari
               </span>
             </h3>
-            <p className="text-xs text-neutral-400 mt-0.5">
+            <p className="text-xs text-neutral-400 mt-0.5 truncate">
               Jangan lupa disuapin yampie nya ya <span className="text-amber-300 font-medium">{nickname}</span> ❤️
             </p>
           </div>
         </div>
 
         {/* Counter Badge */}
-        <div className="text-right">
-          <span className="font-mono text-base font-bold text-amber-300">
-            {completedCount} <span className="text-xs font-normal text-neutral-400">/ 3 Selesai</span>
+        <div className="text-right shrink-0 whitespace-nowrap pl-1">
+          <span className="font-mono text-sm sm:text-base font-bold text-amber-300 whitespace-nowrap">
+            {completedCount} <span className="text-[11px] sm:text-xs font-normal text-neutral-400 whitespace-nowrap">/ 3 Selesai</span>
           </span>
         </div>
       </div>

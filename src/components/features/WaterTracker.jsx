@@ -24,30 +24,30 @@ export default function WaterTracker({
   return (
     <GlassCard className={`space-y-4 border-cyan-500/20 bg-gradient-to-b from-white/[0.04] to-transparent ${className}`}>
       {/* Header Info */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.2)] shrink-0">
             <Droplets className="w-5 h-5 animate-pulse" />
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-pink-100 flex items-center gap-2">
-              Mimik
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono">
+          <div className="min-w-0">
+            <h3 className="text-sm font-semibold text-pink-100 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <span>Mimik</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono whitespace-nowrap">
                 Target 2.000 ml
               </span>
             </h3>
-            <p className="text-xs text-neutral-400 mt-0.5">
+            <p className="text-xs text-neutral-400 mt-0.5 truncate">
               Jangan lupa mimik ya <span className="text-cyan-300 font-medium">{nickname}</span> ❤️
             </p>
           </div>
         </div>
 
         {/* Progress Percentage Badge */}
-        <div className="text-right">
-          <span className="font-mono text-base font-bold text-cyan-300">
-            {currentMl} <span className="text-xs font-normal text-neutral-400">/ 2.000 ml</span>
+        <div className="text-right shrink-0 whitespace-nowrap pl-1">
+          <span className="font-mono text-sm sm:text-base font-bold text-cyan-300 whitespace-nowrap">
+            {currentMl} <span className="text-[11px] sm:text-xs font-normal text-neutral-400 whitespace-nowrap">/ 2.000 ml</span>
           </span>
-          <p className="text-[11px] text-cyan-200/80 font-medium">
+          <p className="text-[10px] sm:text-[11px] text-cyan-200/80 font-medium whitespace-nowrap">
             {percentage}% Tercapai
           </p>
         </div>

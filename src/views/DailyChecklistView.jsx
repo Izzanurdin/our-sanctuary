@@ -166,16 +166,16 @@ export default function DailyChecklistView({ onBack, user }) {
       {/* App Header */}
       <AppHeader
         title="Checklist Harian"
-        subtitle="Rutinitas Sehat & Target Kita Berdua"
+        subtitle="Target Sehat Berdua"
         onBack={onBack}
         rightAction={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {isNotificationSupported() && (
               <button
                 type="button"
                 onClick={notifPerm === 'granted' ? testNotification : handleEnableNotification}
                 title={notifPerm === 'granted' ? 'Notifikasi HP Aktif (Klik untuk Tes Getar)' : 'Klik untuk Aktifkan Notifikasi HP'}
-                className={`p-1.5 rounded-xl border text-[11px] font-medium transition-all flex items-center gap-1 ${
+                className={`p-1.5 rounded-xl border text-[11px] font-medium transition-all flex items-center gap-1 shrink-0 ${
                   notifPerm === 'granted'
                     ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                     : 'bg-pink-500/15 hover:bg-pink-500/25 text-pink-200 border-pink-500/40 animate-pulse'
@@ -185,13 +185,13 @@ export default function DailyChecklistView({ onBack, user }) {
                 <span className="hidden sm:inline">{notifPerm === 'granted' ? 'Notif On' : 'Aktifkan'}</span>
               </button>
             )}
-            <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-300">
+            <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-300 shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>Realtime</span>
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-xs text-pink-300">
-              <Calendar className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-medium font-mono">{getBaliDateString()}</span>
+            <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-xs text-pink-300 shrink-0 whitespace-nowrap">
+              <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-pink-400 shrink-0" />
+              <span className="text-[10px] sm:text-[11px] font-medium font-mono whitespace-nowrap">{getBaliDateString()}</span>
             </div>
           </div>
         }
@@ -277,20 +277,11 @@ export default function DailyChecklistView({ onBack, user }) {
 
         {/* Read-Only Notice if viewing partner */}
         {!isMyChecklist && (
-          <div className="py-2.5 px-3.5 rounded-xl bg-pink-500/10 border border-pink-500/20 text-xs text-pink-200 flex items-center justify-between gap-2">
-            <div>
-              👀 Kamu sedang melihat progres hidup sehat <span className="font-semibold text-pink-100">{partnerName}</span>.
-            </div>
-            {!partnerProgress.isFullyCompleted && (
-              <button
-                type="button"
-                onClick={() => setIsReminderOpen(true)}
-                className="py-1 px-2.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/40 text-[11px] font-semibold text-pink-100 flex items-center gap-1 active:scale-95 transition-all flex-shrink-0 shadow-sm"
-              >
-                <Bell className="w-3 h-3 text-pink-300" />
-                Ingatkan
-              </button>
-            )}
+          <div className="py-2 px-3 rounded-xl bg-pink-500/10 border border-pink-500/20 text-xs text-pink-200 flex items-center gap-2">
+            <span className="shrink-0">👀</span>
+            <p className="text-[11.5px] text-pink-200/90 leading-snug">
+              Kamu sedang melihat progres hidup sehat <strong className="font-semibold text-pink-100">{partnerName}</strong>.
+            </p>
           </div>
         )}
 
