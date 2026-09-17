@@ -77,15 +77,33 @@ export default function SavePictureModal({
 
         {/* Input Caption Polaroid */}
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1">
+          <label
+            htmlFor="garden-picture-caption-input"
+            className="block text-xs font-medium text-pink-200 mb-1 cursor-pointer select-text"
+          >
             Catatan Kenangan (Untuk Polaroid di Memory Vault):
           </label>
           <input
+            id="garden-picture-caption-input"
             type="text"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
             placeholder="Tulis pesan manis untuk foto ini..."
-            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 focus:border-pink-500/50 text-xs text-white placeholder-neutral-500 outline-none font-playfair italic"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 focus:border-pink-500/50 text-base sm:text-xs text-white placeholder-neutral-500 outline-none font-playfair italic select-text cursor-text relative z-10"
+            style={{
+              WebkitUserSelect: 'text',
+              userSelect: 'text',
+              touchAction: 'manipulation',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            onPointerDown={(e) => {
+              e.stopPropagation();
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+            }}
           />
         </div>
 

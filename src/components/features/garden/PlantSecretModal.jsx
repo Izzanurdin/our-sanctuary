@@ -36,17 +36,34 @@ export default function PlantSecretModal({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-pink-200 mb-1.5">
+          <label
+            htmlFor="plant-secret-message-input"
+            className="block text-xs font-medium text-pink-200 mb-1.5 cursor-pointer select-text"
+          >
             Bisikan Rahasiamu (Maks. 40 karakter):
           </label>
           <input
+            id="plant-secret-message-input"
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             maxLength={40}
             placeholder="Bisikkan sesuatu yang manis..."
-            autoFocus
-            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 focus:border-amber-400/50 text-xs text-white placeholder-neutral-500 outline-none transition-all font-playfair italic"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 focus:border-amber-400/50 text-base sm:text-xs text-white placeholder-neutral-500 outline-none transition-all font-playfair italic select-text cursor-text relative z-10"
+            style={{
+              WebkitUserSelect: 'text',
+              userSelect: 'text',
+              touchAction: 'manipulation',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            onPointerDown={(e) => {
+              e.stopPropagation();
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+            }}
           />
           <div className="flex justify-between items-center text-[10px] text-neutral-400 mt-1 px-1">
             <span>Contoh: "Hatiku selalu mekar untukmu"</span>

@@ -69,6 +69,14 @@ export default function GardenView({ onBack, user }) {
     }
   };
 
+  const isAnyModalOpen =
+    isPlantSecretOpen ||
+    Boolean(activeSecretFlower) ||
+    isSavePictureOpen ||
+    isResetModalOpen ||
+    isBasketOpen ||
+    isFlowerPickerOpen;
+
   const refreshBasket = useCallback(() => {
     setBasketItems(getFlowerBasket());
   }, []);
@@ -184,10 +192,15 @@ export default function GardenView({ onBack, user }) {
 
   // Handle pointer down (mulai deteksi tap atau long-press)
   const handlePointerDown = (e) => {
-    // Abaikan jika klik tombol UI, modal, atau bunga yang sudah ada di taman
+    // Abaikan jika modal sedang terbuka, atau klik tombol UI / input / modal / bunga
     if (
+      isAnyModalOpen ||
       e.target.closest('button') ||
+      e.target.closest('input') ||
+      e.target.closest('textarea') ||
+      e.target.closest('select') ||
       e.target.closest('.modal-content') ||
+      e.target.closest('[role="dialog"]') ||
       e.target.closest('[data-flower="true"]')
     ) {
       isPressingRef.current = false;
@@ -219,6 +232,8 @@ export default function GardenView({ onBack, user }) {
 
   // Handle pointer move (usapan angin & jejak bintang)
   const handlePointerMove = (e) => {
+    if (isAnyModalOpen) return;
+
     const moveDist = Math.hypot(
       e.clientX - startPosRef.current.x,
       e.clientY - startPosRef.current.y
@@ -269,10 +284,15 @@ export default function GardenView({ onBack, user }) {
 
   // Handle pointer up (selesai sentuhan)
   const handlePointerUp = (e) => {
-    // Abaikan jika interaksi selesai di tombol UI, modal, atau bunga yang sudah ada
+    // Abaikan jika modal sedang terbuka, atau interaksi selesai di tombol UI, input, modal, atau bunga
     if (
+      isAnyModalOpen ||
       e.target.closest('button') ||
+      e.target.closest('input') ||
+      e.target.closest('textarea') ||
+      e.target.closest('select') ||
       e.target.closest('.modal-content') ||
+      e.target.closest('[role="dialog"]') ||
       e.target.closest('[data-flower="true"]')
     ) {
       if (pressTimerRef.current) {

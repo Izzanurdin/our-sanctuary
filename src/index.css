@@ -6,6 +6,16 @@ body {
   @apply bg-background text-white min-h-screen overflow-x-hidden font-sans;
 }
 
+/* Fix iOS Safari unable to focus inputs when parent has user-select: none */
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default;
+}
+
 h1, h2, h3, .font-cinzel {
   font-family: 'Cinzel', serif;
 }
