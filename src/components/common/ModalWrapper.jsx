@@ -49,9 +49,9 @@ export default function ModalWrapper({
       >
         <GlassCard className="relative border-pink-500/30 bg-[#120a11]/95 shadow-[0_16px_48px_rgba(0,0,0,0.7)] p-5 sm:p-6 max-h-[90vh] flex flex-col select-text">
           {/* Header */}
-          <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/10 shrink-0">
+          <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/10 shrink-0 min-w-0">
             {title && (
-              <h2 className="text-base font-semibold tracking-wide text-pink-100 font-cinzel">
+              <h2 className="text-sm sm:text-base font-semibold tracking-wide text-pink-100 font-cinzel truncate min-w-0 pr-2">
                 {title}
               </h2>
             )}
@@ -59,7 +59,7 @@ export default function ModalWrapper({
               type="button"
               onClick={onClose}
               aria-label="Tutup dialog"
-              className="flex items-center justify-center w-8 h-8 -mr-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] active:scale-90 border border-white/10 text-pink-300 hover:text-pink-100 transition-all duration-200"
+              className="flex items-center justify-center w-8 h-8 -mr-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] active:scale-90 border border-white/10 text-pink-300 hover:text-pink-100 transition-all duration-200 shrink-0"
             >
               <X className="w-4 h-4" />
             </button>

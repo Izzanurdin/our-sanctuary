@@ -51,6 +51,7 @@ h1, h2, h3, .font-cinzel {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Animasi Aurora & Bunga Mekar Unwithering Garden */

@@ -430,7 +430,15 @@ export function toggleJogging(userId) {
 }
 
 // Tambah tugas baru
-export function addTask({ title, category = 'Kuliah', deadline = '', notes = '', createdBy }) {
+export function addTask({
+  title,
+  category = 'Kuliah',
+  deadline = '',
+  deadlineDate = '',
+  deadlineTime = '',
+  notes = '',
+  createdBy,
+}) {
   const data = getDailyData();
   const author = createdBy || 'user_sayang';
   const newTask = {
@@ -438,6 +446,8 @@ export function addTask({ title, category = 'Kuliah', deadline = '', notes = '',
     title,
     category,
     deadline,
+    deadlineDate,
+    deadlineTime,
     notes,
     isCompleted: false,
     createdBy: author,
@@ -447,6 +457,27 @@ export function addTask({ title, category = 'Kuliah', deadline = '', notes = '',
   data.tasks = [newTask, ...(data.tasks || [])];
   saveDailyData(data);
   syncDailyStatusToCloud(author, data);
+  return data;
+}
+
+// Edit / Perbarui tugas yang sudah ada
+export function updateTask(taskId, updatedFields, currentUserId = 'user_sayang') {
+  const data = getDailyData();
+  const targetTask = (data.tasks || []).find((t) => t.id === taskId);
+  const syncUser = updatedFields.createdBy || targetTask?.createdBy || currentUserId;
+
+  data.tasks = (data.tasks || []).map((t) =>
+    t.id === taskId
+      ? {
+          ...t,
+          ...updatedFields,
+          updatedAt: new Date().toISOString(),
+        }
+      : t
+  );
+
+  saveDailyData(data);
+  syncDailyStatusToCloud(syncUser, data);
   return data;
 }
 
@@ -475,3 +506,4 @@ export function deleteTask(taskId, currentUserId = 'user_sayang') {
   syncDailyStatusToCloud(syncUser, data);
   return data;
 }
+

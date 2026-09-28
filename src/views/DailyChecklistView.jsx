@@ -17,6 +17,7 @@ import {
   toggleMeal,
   toggleJogging,
   addTask,
+  updateTask,
   toggleTask,
   deleteTask,
   getCoupleHealthStatus,
@@ -29,14 +30,16 @@ import {
   isNotificationSupported,
   testNotification,
 } from '../services/notificationService';
-import { Plus, ListTodo, Calendar, UserCheck, Bell, BellRing } from 'lucide-react';
+import { Plus, ListTodo, Calendar, UserCheck, Bell, BellRing, User, Heart, Users } from 'lucide-react';
 import { PROFILES } from '../config/profiles';
 
 export default function DailyChecklistView({ onBack, user }) {
   const [data, setData] = useState(() => getDailyData());
   const [selectedUserId, setSelectedUserId] = useState(user?.id || 'user_sayang');
+  const [taskOwnerFilter, setTaskOwnerFilter] = useState('my'); // 'my' | 'partner' | 'all'
   const [taskFilter, setTaskFilter] = useState('active'); // 'all' | 'active' | 'completed'
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
   const [isReminderOpen, setIsReminderOpen] = useState(false);
   const [incomingReminder, setIncomingReminder] = useState(null);
   const [notifPerm, setNotifPerm] = useState(() => getNotificationPermission());
@@ -124,11 +127,28 @@ export default function DailyChecklistView({ onBack, user }) {
   };
 
   const handleAddTask = (taskData) => {
+    const defaultOwner = taskOwnerFilter === 'partner' ? partnerId : (user?.id || 'user_izza');
     const updated = addTask({
       ...taskData,
-      createdBy: selectedUserId,
+      createdBy: taskData.createdBy || defaultOwner,
     });
     setData({ ...updated });
+  };
+
+  const handleEditTask = (updatedFields) => {
+    if (!editingTask) return;
+    const updated = updateTask(editingTask.id, updatedFields, user?.id || selectedUserId);
+    setData({ ...updated });
+    setEditingTask(null);
+  };
+
+  const handleStartEditTask = (task) => {
+    setEditingTask(task);
+  };
+
+  const handleCloseModal = () => {
+    setIsAddTaskOpen(false);
+    setEditingTask(null);
   };
 
   const handleToggleTask = (taskId) => {
@@ -141,16 +161,28 @@ export default function DailyChecklistView({ onBack, user }) {
     setData({ ...updated });
   };
 
-  // Filter Tasks
+  // Filter Tasks by Owner & Status
   const allTasks = data.tasks || [];
-  const filteredTasks = allTasks.filter((task) => {
+  const myUserId = user?.id || 'user_izza';
+
+  const myTasksCount = allTasks.filter((t) => (t.createdBy || 'user_sayang') === myUserId).length;
+  const partnerTasksCount = allTasks.filter((t) => (t.createdBy || 'user_sayang') === partnerId).length;
+
+  const ownerFilteredTasks = allTasks.filter((task) => {
+    const owner = task.createdBy || 'user_sayang';
+    if (taskOwnerFilter === 'my') return owner === myUserId;
+    if (taskOwnerFilter === 'partner') return owner === partnerId;
+    return true;
+  });
+
+  const filteredTasks = ownerFilteredTasks.filter((task) => {
     if (taskFilter === 'active') return !task.isCompleted;
     if (taskFilter === 'completed') return task.isCompleted;
     return true;
   });
 
-  const activeCount = allTasks.filter((t) => !t.isCompleted).length;
-  const completedCount = allTasks.filter((t) => t.isCompleted).length;
+  const activeCount = ownerFilteredTasks.filter((t) => !t.isCompleted).length;
+  const completedCount = ownerFilteredTasks.filter((t) => t.isCompleted).length;
 
   // Format tanggal WITA untuk header
   const baliDateFormatted = new Intl.DateTimeFormat('id-ID', {
@@ -252,7 +284,10 @@ export default function DailyChecklistView({ onBack, user }) {
         <div className="flex items-center p-1 rounded-2xl bg-white/[0.04] border border-white/10">
           <button
             type="button"
-            onClick={() => setSelectedUserId(user?.id || 'user_sayang')}
+            onClick={() => {
+              setSelectedUserId(user?.id || 'user_sayang');
+              setTaskOwnerFilter('my');
+            }}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 ${
               selectedUserId === user?.id
                 ? 'bg-pink-500/20 text-pink-100 border border-pink-500/30 shadow-[0_0_12px_rgba(244,114,182,0.2)]'
@@ -264,7 +299,10 @@ export default function DailyChecklistView({ onBack, user }) {
           </button>
           <button
             type="button"
-            onClick={() => setSelectedUserId(partnerId)}
+            onClick={() => {
+              setSelectedUserId(partnerId);
+              setTaskOwnerFilter('partner');
+            }}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 ${
               selectedUserId === partnerId
                 ? 'bg-pink-500/20 text-pink-100 border border-pink-500/30 shadow-[0_0_12px_rgba(244,114,182,0.2)]'
@@ -327,7 +365,7 @@ export default function DailyChecklistView({ onBack, user }) {
 
           {/* Right Column: Custom Tasks Section (6 cols on lg) */}
           <div className="lg:col-span-6">
-            <GlassCard className="space-y-4 border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent">
+            <GlassCard className="space-y-3.5 border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent">
               {/* Section Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -344,35 +382,81 @@ export default function DailyChecklistView({ onBack, user }) {
                   </div>
                 </div>
 
-                {isMyChecklist && (
-                  <button
-                    type="button"
-                    onClick={() => setIsAddTaskOpen(true)}
-                    className="p-1.5 px-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-1"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Tambah
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingTask(null);
+                    setIsAddTaskOpen(true);
+                  }}
+                  className="p-1.5 px-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Tambah
+                </button>
               </div>
 
-              {/* Task Filters */}
-              <div className="flex items-center p-1 rounded-xl bg-black/40 border border-white/10 text-xs">
+              {/* Task Owner Filter (Pemisahan Checklist Milikku vs Pasangan) */}
+              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-black/40 border border-white/10 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setTaskOwnerFilter('my')}
+                  className={`py-1.5 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1 truncate ${
+                    taskOwnerFilter === 'my'
+                      ? 'bg-indigo-500/20 text-indigo-200 border border-indigo-500/40 shadow-sm'
+                      : 'text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  <User className="w-3 h-3 text-indigo-400 shrink-0" />
+                  <span className="truncate">Tugasku</span>
+                  <span className="text-[10px] opacity-75 font-mono">({myTasksCount})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTaskOwnerFilter('partner')}
+                  className={`py-1.5 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1 truncate ${
+                    taskOwnerFilter === 'partner'
+                      ? 'bg-pink-500/20 text-pink-200 border border-pink-500/40 shadow-sm'
+                      : 'text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  <Heart className="w-3 h-3 text-pink-400 fill-pink-400/20 shrink-0" />
+                  <span className="truncate">{partnerName}</span>
+                  <span className="text-[10px] opacity-75 font-mono">({partnerTasksCount})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTaskOwnerFilter('all')}
+                  className={`py-1.5 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1 truncate ${
+                    taskOwnerFilter === 'all'
+                      ? 'bg-white/15 text-pink-100 border border-white/20 shadow-sm'
+                      : 'text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  <Users className="w-3 h-3 text-neutral-400 shrink-0" />
+                  <span className="truncate">Semua</span>
+                  <span className="text-[10px] opacity-75 font-mono">({allTasks.length})</span>
+                </button>
+              </div>
+
+              {/* Status Filter (Semua, Aktif, Selesai) */}
+              <div className="flex items-center p-1 rounded-xl bg-white/[0.02] border border-white/10 text-xs">
                 <button
                   type="button"
                   onClick={() => setTaskFilter('all')}
-                  className={`flex-1 py-1.5 rounded-lg font-medium transition-all ${
+                  className={`flex-1 py-1 rounded-lg font-medium transition-all ${
                     taskFilter === 'all'
                       ? 'bg-white/10 text-pink-100 shadow-sm'
                       : 'text-neutral-400 hover:text-neutral-200'
                   }`}
                 >
-                  Semua ({allTasks.length})
+                  Semua ({ownerFilteredTasks.length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setTaskFilter('active')}
-                  className={`flex-1 py-1.5 rounded-lg font-medium transition-all ${
+                  className={`flex-1 py-1 rounded-lg font-medium transition-all ${
                     taskFilter === 'active'
                       ? 'bg-white/10 text-pink-100 shadow-sm'
                       : 'text-neutral-400 hover:text-neutral-200'
@@ -383,7 +467,7 @@ export default function DailyChecklistView({ onBack, user }) {
                 <button
                   type="button"
                   onClick={() => setTaskFilter('completed')}
-                  className={`flex-1 py-1.5 rounded-lg font-medium transition-all ${
+                  className={`flex-1 py-1 rounded-lg font-medium transition-all ${
                     taskFilter === 'completed'
                       ? 'bg-white/10 text-pink-100 shadow-sm'
                       : 'text-neutral-400 hover:text-neutral-200'
@@ -401,7 +485,9 @@ export default function DailyChecklistView({ onBack, user }) {
                       key={task.id}
                       task={task}
                       onToggle={handleToggleTask}
+                      onEdit={handleStartEditTask}
                       onDelete={handleDeleteTask}
+                      showOwnerBadge={taskOwnerFilter === 'all'}
                     />
                   ))
                 ) : (
@@ -410,7 +496,13 @@ export default function DailyChecklistView({ onBack, user }) {
                       ? 'Belum ada tugas yang selesai.'
                       : taskFilter === 'active'
                       ? 'Yeay! Semua tugas aktif sudah selesai 🎉'
-                      : 'Belum ada tugas yang ditambahkan.'}
+                      : `Belum ada tugas untuk ${
+                          taskOwnerFilter === 'my'
+                            ? 'kamu'
+                            : taskOwnerFilter === 'partner'
+                            ? partnerName
+                            : 'siapapun'
+                        }.`}
                   </div>
                 )}
               </div>
@@ -426,12 +518,16 @@ export default function DailyChecklistView({ onBack, user }) {
         </p>
       </footer>
 
-      {/* Add Task Modal */}
+      {/* Add / Edit Task Modal */}
       <AddTaskModal
-        isOpen={isAddTaskOpen}
-        onClose={() => setIsAddTaskOpen(false)}
+        isOpen={isAddTaskOpen || Boolean(editingTask)}
+        onClose={handleCloseModal}
         onAddTask={handleAddTask}
+        onSaveTask={editingTask ? handleEditTask : handleAddTask}
+        initialTask={editingTask}
         user={user}
+        partnerName={partnerName}
+        defaultOwner={taskOwnerFilter === 'partner' ? partnerId : (user?.id || 'user_izza')}
       />
 
       {/* Partner Reminder Modal */}
@@ -445,3 +541,4 @@ export default function DailyChecklistView({ onBack, user }) {
     </GradientBackground>
   );
 }
+

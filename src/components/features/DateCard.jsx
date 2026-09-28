@@ -148,7 +148,7 @@ export default function DateCard({
 
   return (
     <div
-      className={`group relative rounded-2xl border backdrop-blur-md transition-all duration-300 overflow-hidden p-4 sm:p-5 flex flex-col justify-between shadow-[0_8px_24px_rgba(0,0,0,0.35)] ${
+      className={`group relative w-full min-w-0 rounded-2xl border backdrop-blur-md transition-all duration-300 overflow-hidden p-3.5 sm:p-5 flex flex-col justify-between shadow-[0_8px_24px_rgba(0,0,0,0.35)] ${
         isCompleted
           ? 'border-emerald-500/20 bg-gradient-to-b from-emerald-500/[0.04] to-white/[0.01] hover:border-emerald-500/40 opacity-90 hover:opacity-100'
           : isScheduled
@@ -156,25 +156,25 @@ export default function DateCard({
           : `${moodStyle.cardBorder} ${moodStyle.cardGlow}`
       }`}
     >
-      <div className="space-y-3">
+      <div className="space-y-3 min-w-0">
         {/* Top Header: Mood Badge & Status Tag */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
             <span
-              className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${moodStyle.badge}`}
+              className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border flex items-center gap-1 shrink-0 ${moodStyle.badge}`}
             >
               <span>{energy.icon || '✨'}</span>
               <span>{energy.shortLabel || energy.label}</span>
             </span>
 
             {date.category && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-neutral-300">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-neutral-300 shrink-0">
                 {date.category}
               </span>
             )}
           </div>
 
-          <div>
+          <div className="shrink-0">
             {isCompleted ? (
               <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3 text-emerald-400" />
@@ -194,19 +194,19 @@ export default function DateCard({
         </div>
 
         {/* Card Main: Title + Sticker Emoji */}
-        <div className="flex items-start justify-between gap-3 pt-0.5">
+        <div className="flex items-start justify-between gap-2.5 sm:gap-3 pt-0.5 min-w-0">
           <div className="space-y-1 flex-1 min-w-0">
             {/* Title with modern sans typography, overriding Cinzel */}
-            <h3 className="!font-sans font-bold text-base sm:text-lg text-white group-hover:text-pink-200 transition-colors tracking-tight leading-snug">
+            <h3 className="!font-sans font-bold text-base sm:text-lg text-white group-hover:text-pink-200 transition-colors tracking-tight leading-snug break-words">
               {friendlyTitle}
             </h3>
 
             {/* Inline Metadata: Location & Dress Code */}
-            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-neutral-300 pt-0.5">
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-neutral-300 pt-0.5 min-w-0">
               {date.location && (
-                <span className="flex items-center gap-1 text-neutral-300">
-                  <MapPin className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" />
-                  <span className="truncate max-w-[180px] sm:max-w-[220px] text-neutral-200">
+                <span className="flex items-center gap-1 text-neutral-300 min-w-0 max-w-full">
+                  <MapPin className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+                  <span className="truncate max-w-[130px] sm:max-w-[200px] text-neutral-200">
                     {date.location}
                   </span>
                   {date.gmapsUrl && (
@@ -214,7 +214,7 @@ export default function DateCard({
                       type="button"
                       onClick={handleOpenMaps}
                       title="Buka rute Maps"
-                      className="text-[10px] text-pink-300 hover:text-pink-200 underline ml-0.5 flex items-center gap-0.5"
+                      className="text-[10px] text-pink-300 hover:text-pink-200 underline ml-0.5 flex items-center gap-0.5 shrink-0"
                     >
                       Maps <ExternalLink className="w-2.5 h-2.5" />
                     </button>
@@ -223,9 +223,9 @@ export default function DateCard({
               )}
 
               {date.dressCode && (
-                <span className="flex items-center gap-1 text-neutral-300">
-                  <Shirt className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
-                  <span className="text-pink-200/90 font-medium">
+                <span className="flex items-center gap-1 text-neutral-300 shrink-0 max-w-full">
+                  <Shirt className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                  <span className="text-pink-200/90 font-medium truncate max-w-[140px] sm:max-w-[200px]">
                     {date.dressCode}
                   </span>
                 </span>
@@ -235,7 +235,7 @@ export default function DateCard({
 
           {/* Visual Sticker Emoji */}
           <div
-            className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-xl sm:text-2xl flex-shrink-0 border transition-transform duration-300 group-hover:scale-110 select-none ${moodStyle.iconBg}`}
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-lg sm:text-2xl shrink-0 border transition-transform duration-300 group-hover:scale-110 select-none ${moodStyle.iconBg}`}
           >
             {emoji}
           </div>
@@ -243,9 +243,9 @@ export default function DateCard({
 
         {/* Scheduled Info Banner (if scheduled) */}
         {isScheduled && date.scheduledDate && (
-          <div className="flex items-center gap-2 text-xs text-pink-200 font-medium bg-pink-500/15 border border-pink-500/30 px-3 py-1.5 rounded-xl">
-            <Clock className="w-3.5 h-3.5 text-pink-300 flex-shrink-0" />
-            <span>
+          <div className="flex items-center gap-2 text-xs text-pink-200 font-medium bg-pink-500/15 border border-pink-500/30 px-3 py-1.5 rounded-xl min-w-0">
+            <Clock className="w-3.5 h-3.5 text-pink-300 shrink-0" />
+            <span className="truncate">
               {date.scheduledDate}
               {date.scheduledStartTime ? ` • ${date.scheduledStartTime} WITA` : ''}
             </span>
@@ -254,8 +254,8 @@ export default function DateCard({
 
         {/* Completed Info (if completed) */}
         {isCompleted && date.completedAt && (
-          <div className="flex items-center gap-1.5 text-xs text-emerald-300/90 font-medium bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+          <div className="flex items-center gap-1.5 text-xs text-emerald-300/90 font-medium bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl min-w-0 flex-wrap">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span>Telah terlaksana: {date.completedAt}</span>
             {date.driveFolder && (
               <span className="text-neutral-400 font-normal">({date.driveFolder})</span>
@@ -265,16 +265,16 @@ export default function DateCard({
 
         {/* Notes / Quote Box */}
         {(date.notes || date.caption) && (
-          <p className="text-xs text-neutral-300/90 leading-relaxed px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5 italic">
+          <p className="text-xs text-neutral-300/90 leading-relaxed px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5 italic break-words">
             &ldquo;{date.notes || date.caption}&rdquo;
           </p>
         )}
       </div>
 
       {/* Card Action Footer */}
-      <div className="pt-3 mt-3 border-t border-white/10 flex items-center justify-between gap-2 flex-wrap">
+      <div className="pt-3 mt-3 border-t border-white/10 flex items-center justify-between gap-2 flex-wrap min-w-0">
         {/* Left Actions (Delete, Drive) */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           {onDelete && (
             <button
               type="button"
@@ -311,23 +311,23 @@ export default function DateCard({
                   ? `Buka foto kencan di Google Drive`
                   : 'Buka folder foto di Google Drive'
               }
-              className="py-1 px-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-neutral-300 hover:text-white border border-white/10 transition-all flex items-center gap-1"
+              className="py-1 px-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-neutral-300 hover:text-white border border-white/10 transition-all flex items-center gap-1 shrink-0"
             >
-              <FolderHeart className="w-3 h-3 text-pink-400" />
+              <FolderHeart className="w-3 h-3 text-pink-400 shrink-0" />
               <span>Drive</span>
             </button>
           )}
         </div>
 
         {/* Right Primary Action */}
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2 ml-auto shrink-0">
           {isWishlist && onSchedule && (
             <button
               type="button"
               onClick={() => onSchedule(date)}
-              className="py-1.5 px-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-1.5"
+              className="py-1.5 px-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-1.5 whitespace-nowrap"
             >
-              <CalendarHeart className="w-3.5 h-3.5 text-pink-200" />
+              <CalendarHeart className="w-3.5 h-3.5 text-pink-200 shrink-0" />
               <span>Jadwalkan Kencan</span>
             </button>
           )}
@@ -338,9 +338,9 @@ export default function DateCard({
                 type="button"
                 onClick={handleOpenCalendar}
                 title="Buka atau sinkronkan ke Google Calendar"
-                className="py-1.5 px-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-xs font-medium text-pink-200 active:scale-95 transition-all flex items-center gap-1"
+                className="py-1.5 px-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-xs font-medium text-pink-200 active:scale-95 transition-all flex items-center gap-1 shrink-0"
               >
-                <Calendar className="w-3.5 h-3.5 text-pink-300" />
+                <Calendar className="w-3.5 h-3.5 text-pink-300 shrink-0" />
                 <span className="hidden sm:inline">Kalender</span>
               </button>
 
@@ -348,9 +348,9 @@ export default function DateCard({
                 <button
                   type="button"
                   onClick={() => onComplete(date)}
-                  className="py-1.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-1.5"
+                  className="py-1.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0"
                 >
-                  <Camera className="w-3.5 h-3.5 text-white" />
+                  <Camera className="w-3.5 h-3.5 text-white shrink-0" />
                   <span>Abadikan Kenangan</span>
                 </button>
               )}
@@ -362,9 +362,9 @@ export default function DateCard({
               type="button"
               onClick={() => onComplete(date)}
               title="Edit Polaroid kenangan ini"
-              className="py-1 px-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs text-neutral-300 hover:text-white transition-all flex items-center gap-1"
+              className="py-1 px-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs text-neutral-300 hover:text-white transition-all flex items-center gap-1 shrink-0"
             >
-              <Camera className="w-3 h-3 text-pink-400" />
+              <Camera className="w-3 h-3 text-pink-400 shrink-0" />
               <span>Lihat Polaroid</span>
             </button>
           )}

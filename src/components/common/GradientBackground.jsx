@@ -13,7 +13,7 @@ export default function GradientBackground({
 
       {/* Main Responsive Wrapper */}
       <main
-        className={`relative z-10 mx-auto min-h-screen w-full px-4 sm:px-6 md:px-8 py-6 flex flex-col justify-between transition-all duration-300 ${maxWidthClass} ${className}`}
+        className={`relative z-10 mx-auto min-h-screen w-full min-w-0 max-w-full px-4 sm:px-6 md:px-8 py-6 flex flex-col justify-between transition-all duration-300 ${maxWidthClass} ${className}`}
       >
         {children}
       </main>

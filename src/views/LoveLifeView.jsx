@@ -159,7 +159,7 @@ export default function LoveLifeView({ onBack, user }) {
   const scheduledCount = allDates.filter((d) => d.status === 'scheduled').length;
 
   return (
-    <GradientBackground>
+    <GradientBackground maxWidthClass="w-full max-w-5xl">
       {/* Top Header */}
       <AppHeader
         title="Kisah Cinta Kita"
@@ -170,30 +170,30 @@ export default function LoveLifeView({ onBack, user }) {
             type="button"
             onClick={() => handleOpenDriveFolder(MAIN_GOOGLE_DRIVE_FOLDER)}
             title="Buka Folder Google Drive Bersama"
-            className="py-1 px-2.5 rounded-full bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30 text-xs font-medium text-pink-200 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+            className="py-1 px-2.5 rounded-full bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30 text-xs font-medium text-pink-200 transition-all flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
           >
-            <FolderHeart className="w-3.5 h-3.5 text-pink-400" />
+            <FolderHeart className="w-3.5 h-3.5 text-pink-400 shrink-0" />
             <span className="hidden sm:inline">Folder Drive</span>
-            <ExternalLink className="w-2.5 h-2.5 text-neutral-400" />
+            <ExternalLink className="w-2.5 h-2.5 text-neutral-400 shrink-0" />
           </button>
         }
       />
 
-      <div className="max-w-5xl mx-auto space-y-4 pb-12 px-1">
+      <div className="w-full min-w-0 max-w-5xl mx-auto space-y-4 pb-12">
         {/* Main 2 Sub-Tabs (Kartu Kencan vs Galeri Kenangan) */}
-        <div className="flex items-center p-1 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-sm">
+        <div className="w-full min-w-0 flex items-center p-1 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-sm">
           <button
             type="button"
             onClick={() => setActiveTab('dates')}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 min-w-0 py-2.5 px-2 sm:px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
               activeTab === 'dates'
                 ? 'bg-gradient-to-r from-pink-500/30 to-rose-500/30 text-pink-100 border border-pink-500/40 shadow-[0_0_15px_rgba(244,114,182,0.25)]'
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            <CalendarHeart className="w-4 h-4 text-pink-400" />
-            <span>Kartu Kencan</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-pink-200 font-mono">
+            <CalendarHeart className="w-4 h-4 text-pink-400 shrink-0" />
+            <span className="truncate">Kartu Kencan</span>
+            <span className="text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-pink-200 font-mono shrink-0">
               {allDates.length}
             </span>
           </button>
@@ -201,15 +201,15 @@ export default function LoveLifeView({ onBack, user }) {
           <button
             type="button"
             onClick={() => setActiveTab('memories')}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 min-w-0 py-2.5 px-2 sm:px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
               activeTab === 'memories'
                 ? 'bg-gradient-to-r from-pink-500/30 to-rose-500/30 text-pink-100 border border-pink-500/40 shadow-[0_0_15px_rgba(244,114,182,0.25)]'
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            <Image className="w-4 h-4 text-rose-400" />
-            <span>Galeri Kenangan</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-rose-200 font-mono">
+            <Image className="w-4 h-4 text-rose-400 shrink-0" />
+            <span className="truncate">Galeri Kenangan</span>
+            <span className="text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-rose-200 font-mono shrink-0">
               {completedCount}
             </span>
           </button>
@@ -217,12 +217,12 @@ export default function LoveLifeView({ onBack, user }) {
 
         {/* 1. DATE DECK VIEW */}
         {activeTab === 'dates' && (
-          <div className="space-y-4 animate-in fade-in duration-200">
+          <div className="w-full min-w-0 space-y-4 animate-in fade-in duration-200">
             {/* Action Bar (Header Actions: Shuffler & Add Date) */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-white/[0.03] border border-white/5 backdrop-blur-sm">
-              <div className="flex items-center gap-2 px-1">
-                <Sparkles className="w-4 h-4 text-pink-400 flex-shrink-0 animate-soft-pulse" />
-                <p className="text-xs text-neutral-300">
+            <div className="w-full min-w-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-white/[0.03] border border-white/5 backdrop-blur-sm">
+              <div className="flex items-center gap-2 px-1 min-w-0">
+                <Sparkles className="w-4 h-4 text-pink-400 shrink-0 animate-soft-pulse" />
+                <p className="text-xs text-neutral-300 leading-snug">
                   {statusFilter === 'wishlist' && (
                     <span>
                       Ada <strong className="text-pink-300 font-semibold">{wishlistCount} ide kencan</strong> yang siap dicoba!
@@ -246,40 +246,40 @@ export default function LoveLifeView({ onBack, user }) {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsShufflerOpen(true)}
-                  className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl bg-gradient-to-r from-purple-600/30 via-pink-600/30 to-rose-600/30 hover:from-purple-600/40 hover:to-rose-600/40 border border-pink-500/40 text-xs font-semibold text-pink-100 active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(244,114,182,0.15)]"
+                  className="flex-1 sm:flex-initial py-2 px-3 sm:px-3.5 rounded-xl bg-gradient-to-r from-purple-600/30 via-pink-600/30 to-rose-600/30 hover:from-purple-600/40 hover:to-rose-600/40 border border-pink-500/40 text-xs font-semibold text-pink-100 active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(244,114,182,0.15)] whitespace-nowrap min-w-0"
                 >
-                  <Shuffle className="w-3.5 h-3.5 text-pink-300" />
-                  <span>Acak Kencan 🎲</span>
+                  <Shuffle className="w-3.5 h-3.5 text-pink-300 shrink-0" />
+                  <span className="truncate">Acak Kencan 🎲</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setIsAddDateOpen(true)}
-                  className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-xs font-medium text-pink-200 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                  className="flex-1 sm:flex-initial py-2 px-3 sm:px-3.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-xs font-medium text-pink-200 active:scale-95 transition-all flex items-center justify-center gap-1.5 whitespace-nowrap min-w-0"
                 >
-                  <Plus className="w-3.5 h-3.5 text-pink-400" />
-                  <span>Tambah Ide</span>
+                  <Plus className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+                  <span className="truncate">Tambah Ide</span>
                 </button>
               </div>
             </div>
 
             {/* Status Filter Tabs (Wishlist First, Clean Segmented Control) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs">
+            <div className="w-full min-w-0 grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs">
               <button
                 type="button"
                 onClick={() => setStatusFilter('wishlist')}
-                className={`py-2 px-2.5 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1 sm:gap-1.5 min-w-0 ${
                   statusFilter === 'wishlist'
                     ? 'bg-pink-500/30 text-pink-100 border border-pink-500/50 shadow-[0_0_12px_rgba(244,114,182,0.2)]'
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                <span>💡 Ide Kencan</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
+                <span className="truncate">💡 Ide Kencan</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono shrink-0">
                   {wishlistCount}
                 </span>
               </button>
@@ -287,14 +287,14 @@ export default function LoveLifeView({ onBack, user }) {
               <button
                 type="button"
                 onClick={() => setStatusFilter('scheduled')}
-                className={`py-2 px-2.5 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1 sm:gap-1.5 min-w-0 ${
                   statusFilter === 'scheduled'
                     ? 'bg-pink-500/30 text-pink-100 border border-pink-500/50 shadow-[0_0_12px_rgba(244,114,182,0.2)]'
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                <span>🗓️ Terjadwal</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
+                <span className="truncate">🗓️ Terjadwal</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono shrink-0">
                   {scheduledCount}
                 </span>
               </button>
@@ -302,14 +302,14 @@ export default function LoveLifeView({ onBack, user }) {
               <button
                 type="button"
                 onClick={() => setStatusFilter('completed')}
-                className={`py-2 px-2.5 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1 sm:gap-1.5 min-w-0 ${
                   statusFilter === 'completed'
                     ? 'bg-emerald-500/25 text-emerald-200 border border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                <span>✨ Selesai</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
+                <span className="truncate">✨ Selesai</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono shrink-0">
                   {completedCount}
                 </span>
               </button>
@@ -317,21 +317,21 @@ export default function LoveLifeView({ onBack, user }) {
               <button
                 type="button"
                 onClick={() => setStatusFilter('all')}
-                className={`py-2 px-2.5 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2 rounded-xl font-semibold text-center transition-all flex items-center justify-center gap-1 sm:gap-1.5 min-w-0 ${
                   statusFilter === 'all'
                     ? 'bg-white/15 text-pink-100 border border-white/20 shadow-sm'
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                <span>Semua</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono">
+                <span className="truncate">Semua</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-mono shrink-0">
                   {allDates.length}
                 </span>
               </button>
             </div>
 
             {/* Energy Level Filter Pills (Spacious, Touch-Friendly, No Ugly Scrollbar) */}
-            <div className="flex items-center gap-2 overflow-x-auto py-1 px-0.5 no-scrollbar">
+            <div className="w-full min-w-0 max-w-full flex items-center gap-2 overflow-x-auto py-1 px-0.5 no-scrollbar touch-pan-x overscroll-x-contain">
               {ENERGY_LEVELS.map((energy) => {
                 const isSelected = energyFilter === energy.id;
                 return (
@@ -339,7 +339,7 @@ export default function LoveLifeView({ onBack, user }) {
                     key={energy.id}
                     type="button"
                     onClick={() => setEnergyFilter(energy.id)}
-                    className={`text-xs font-semibold py-1.5 px-3 sm:px-3.5 rounded-xl border whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 shadow-sm ${
+                    className={`text-xs font-semibold py-1.5 px-3 sm:px-3.5 rounded-xl border whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 shadow-sm shrink-0 ${
                       isSelected
                         ? 'bg-pink-500/30 border-pink-400 text-pink-100 shadow-[0_0_12px_rgba(244,114,182,0.3)]'
                         : 'bg-white/[0.03] border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.06]'
@@ -353,7 +353,7 @@ export default function LoveLifeView({ onBack, user }) {
             </div>
 
             {/* Dates Grid / List (1 Col on Mobile, 2 Cols on PC) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="w-full min-w-0 grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredDates.length > 0 ? (
                 filteredDates.map((date) => (
                   <DateCard
@@ -406,27 +406,27 @@ export default function LoveLifeView({ onBack, user }) {
 
         {/* 2. MEMORY VAULT VIEW */}
         {activeTab === 'memories' && (
-          <div className="space-y-4 animate-in fade-in duration-200">
+          <div className="w-full min-w-0 space-y-4 animate-in fade-in duration-200">
             {/* Header Memory Vault with Drive Link */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-pink-500/15 via-purple-500/10 to-rose-500/15 border border-pink-500/30 shadow-[0_0_25px_rgba(244,114,182,0.15)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-pink-500/15 via-purple-500/10 to-rose-500/15 border border-pink-500/30 shadow-[0_0_25px_rgba(244,114,182,0.15)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 min-w-0">
+              <div className="min-w-0">
                 <h3 className="text-sm font-bold text-pink-100 flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-pink-300" />
-                  Galeri Polaroid Kenangan Kita
+                  <Sparkles className="w-4 h-4 text-pink-300 shrink-0" />
+                  <span>Galeri Polaroid Kenangan Kita</span>
                 </h3>
                 <p className="text-xs text-neutral-300 mt-0.5">
                   {completedCount} kencan manis telah dilalui bersama. Foto original tersimpan di Google Drive.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
                 <button
                   type="button"
                   onClick={() => handleOpenDriveFolder(MAIN_GOOGLE_DRIVE_FOLDER)}
                   className="flex-1 sm:flex-initial py-2 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-xs font-semibold text-pink-200 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
                 >
-                  <FolderHeart className="w-3.5 h-3.5 text-pink-400" />
-                  Buka Drive
+                  <FolderHeart className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+                  <span>Buka Drive</span>
                 </button>
 
                 <button
@@ -437,14 +437,14 @@ export default function LoveLifeView({ onBack, user }) {
                   }}
                   className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5"
                 >
-                  <Camera className="w-3.5 h-3.5 text-pink-200" />
-                  + Polaroid
+                  <Camera className="w-3.5 h-3.5 text-pink-200 shrink-0" />
+                  <span>+ Polaroid</span>
                 </button>
               </div>
             </div>
 
             {/* Polaroid Cards Grid (1 Col on Mobile, 2 Col on Tablet, 3 Col on PC) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="w-full min-w-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {completedMemories.length > 0 ? (
                 completedMemories.map((memory) => (
                   <MemoryCard
