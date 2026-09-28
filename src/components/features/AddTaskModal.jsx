@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ModalWrapper from '../common/ModalWrapper';
 import {
   Plus,
@@ -9,7 +9,6 @@ import {
   Calendar,
   User,
   Heart,
-  Pencil,
   Save,
 } from 'lucide-react';
 import { getBaliDateString } from '../../services/checklistService';
@@ -110,8 +109,7 @@ function parseInitialDeadline(task) {
   };
 }
 
-export default function AddTaskModal({
-  isOpen,
+function AddTaskForm({
   onClose,
   onAddTask,
   onSaveTask,
@@ -125,42 +123,18 @@ export default function AddTaskModal({
   const myName = user?.name || 'Izza';
   const partnerId = myId === 'user_sayang' ? 'user_izza' : 'user_sayang';
 
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('Kuliah');
-  const [createdBy, setCreatedBy] = useState(myId);
-  const [hasDeadline, setHasDeadline] = useState(true);
-  const [deadlineDate, setDeadlineDate] = useState('');
-  const [deadlineTime, setDeadlineTime] = useState('17:00');
-  const [notes, setNotes] = useState('');
+  const initialDeadline = parseInitialDeadline(initialTask);
+
+  const [title, setTitle] = useState(initialTask?.title || '');
+  const [category, setCategory] = useState(initialTask?.category || 'Kuliah');
+  const [createdBy, setCreatedBy] = useState(
+    initialTask?.createdBy || defaultOwner || myId
+  );
+  const [hasDeadline, setHasDeadline] = useState(initialDeadline.hasDeadline);
+  const [deadlineDate, setDeadlineDate] = useState(initialDeadline.deadlineDate);
+  const [deadlineTime, setDeadlineTime] = useState(initialDeadline.deadlineTime);
+  const [notes, setNotes] = useState(initialTask?.notes || '');
   const [error, setError] = useState('');
-
-  // Sync state whenever modal opens or initialTask changes
-  useEffect(() => {
-    if (isOpen) {
-      if (initialTask) {
-        setTitle(initialTask.title || '');
-        setCategory(initialTask.category || 'Kuliah');
-        setCreatedBy(initialTask.createdBy || myId);
-        setNotes(initialTask.notes || '');
-
-        const parsed = parseInitialDeadline(initialTask);
-        setHasDeadline(parsed.hasDeadline);
-        setDeadlineDate(parsed.deadlineDate);
-        setDeadlineTime(parsed.deadlineTime);
-      } else {
-        setTitle('');
-        setCategory('Kuliah');
-        setCreatedBy(defaultOwner || myId);
-        setNotes('');
-
-        const parsed = parseInitialDeadline(null);
-        setHasDeadline(true);
-        setDeadlineDate(parsed.deadlineDate);
-        setDeadlineTime(parsed.deadlineTime);
-      }
-      setError('');
-    }
-  }, [isOpen, initialTask, myId, defaultOwner]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -202,12 +176,7 @@ export default function AddTaskModal({
     : 'Tanpa batas waktu';
 
   return (
-    <ModalWrapper
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isEditMode ? 'Edit Tugas' : 'Tambah Tugas Baru'}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
         {/* Title Input */}
         <div>
           <label className="block text-xs font-medium text-pink-200 mb-1.5">
@@ -437,6 +406,25 @@ export default function AddTaskModal({
           </button>
         </div>
       </form>
+  );
+}
+
+export default function AddTaskModal(props) {
+  const { isOpen, onClose, initialTask } = props;
+  const isEditMode = Boolean(initialTask);
+
+  return (
+    <ModalWrapper
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isEditMode ? 'Edit Tugas' : 'Tambah Tugas Baru'}
+    >
+      {isOpen && (
+        <AddTaskForm
+          key={initialTask?.id || 'new'}
+          {...props}
+        />
+      )}
     </ModalWrapper>
   );
 }
